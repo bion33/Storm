@@ -1,0 +1,62 @@
+body {
+	background: #f1f1f1;
+}
+
+input {
+	font-size: 30px;
+    color: #006400;
+	background: #FFFFFF;
+	padding: 8px;
+    border-radius: 10px;
+}
+a:link {
+	font-family: Helvetica Neue;
+	font-size: 30px;
+	color: #006400;
+	background: #dadada;
+	padding: 8px;
+	margin-top: 28px;
+	margin-bottom: 28px;
+	text-decoration: none;
+	border-radius: 10px;
+	box-shadow: 1px 2px 2px #000000;
+}
+a:visited {
+	color: #000000;
+}
+button {
+	font-family: Helvetica Neue;
+	font-size: 30px;
+	color: #006400;
+	background: #dadada;
+	padding: 8px;
+	border-radius: 10px;
+	box-shadow: 1px 2px 2px #000000;
+}
+p {
+	font-size: 12px;
+	color: #474747;
+}
+span {
+	font-size: 18px;
+	margin-top: 28px;
+	margin-bottom: 28px;
+}
+ul {
+	list-style=none;
+	padding-left: 0px;
+}
+li {
+	font-size: 14px;
+	margin-top: 38px;
+	margin-bottom: 38px;
+}
+h1 {
+	font-size: 14px;
+	color: #474747;
+}
+h2 {
+	font-size: 14px;
+}
+
+
