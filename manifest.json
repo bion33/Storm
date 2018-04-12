@@ -9,7 +9,7 @@
 		"default_popup": "./popup.html",
 		"default_title": "AIR-Breeze"
 	},
-    "permissions": [ "activeTab", "tabs", "*://*.nationstates.net/*" ],
+    "permissions": [ "activeTab", "*://*.nationstates.net/*" ],
     "content_scripts": [ {
 		"js": [ "./ext-resources/jquery-3.1.1.min.js", "content.js" ],
 		"matches": [ "https://*.nationstates.net/*" ],
