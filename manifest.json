@@ -1,21 +1,21 @@
 {
 	"manifest_version": 2,
     "name": "AIR-Breeze",
-	"version": "1.3",
+	"version": "1.4",
 	"author": "Krypton Nova",
 	"description": "AIR-Breeze is an add-on for the NationStates website. It is a variant of Breeze++ for AIR-Force and, like Breeze++, makes frequently used actions more convenient by assigning hotkeys to them.",
 	"browser_action": {
-		"default_icon": "icon.png",
-		"default_popup": "popup.html",
-		"default_title": "Open"
+		"default_icon": "./ext-resources/icon.png",
+		"default_popup": "./popup.html",
+		"default_title": "AIR-Breeze"
 	},
     "permissions": [ "activeTab", "tabs", "*://*.nationstates.net/*" ],
     "content_scripts": [ {
-		"js": [ "jquery-3.1.1.min.js", "content.js" ],
+		"js": [ "./ext-resources/jquery-3.1.1.min.js", "content.js" ],
 		"matches": [ "https://*.nationstates.net/*" ],
 		"run_at": "document_start"
     }, {
-		"css": [ "reports-no-template-style.css" ],
+		"css": [ "./ext-resources/reports-no-template-style.css" ],
 		"matches": [ "https://*.nationstates.net/template-overall=none/page=reports" ],
 		"run_at": "document_start"
     } ]

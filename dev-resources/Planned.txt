@@ -1,0 +1,8 @@
+Planned
+
+- Automatically updating reports page (no more spamming reload)
+- Check for add-on updates
+- Delay cross-endorse opening tabs (to not piss off NS)
+- [F6] to select and copy the current page link
+- Automatically reload page when using previous/next page.
+- Puppet creation

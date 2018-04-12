@@ -1,41 +1,118 @@
 <!DOCTYPE html>
 <html>
-	<body style="min-width: 478px; font-family: arial; background-color: #E0E0E0;">
-		<b style="font-size: 18px; color: red;">QUICK KEY LIST</b><br>
-		Including keys native to your browser<br>
+	<head>
+		<meta charset="UTF-8"> 
+		<style type="text/css">
+			html {
+				background-image: url("./ext-resources/background.jpg"); 
+				background-repeat: no-repeat;
+				background-position: center;
+    			background-attachment: fixed;
+    			background-size: cover;
+    			border: 1px solid rgba(0, 0, 0, 0);			/* Invisible border prevents weird bug with table */
+			}
+			body {
+				padding: 5px 33px; 
+				font-family: 'Helvetica Neue',Verdana,Tahoma,sans-serif;
+			}
+			table {
+				width: 100%;
+				border-collapse: collapse;
+			}
+			tr:nth-child(even) {background: rgba(120, 120, 120, 0.1);}
+			tr:hover {background: rgba(120, 0, 0, 0.2);}
+			th {
+				background: rgba(120, 120, 120, 0.75);
+				text-align: left;
+			}
+			th, td {
+				border-bottom: 1px solid #abb;
+				padding: 2px 5px;
+			}
+			.box {
+				min-width: 480px;
+				width: 90%; 
+				padding: 5px 25px; 
+				margin: auto;
+				border: 1px solid #000; 
+				border-radius: 25px; 
+				background: rgba(240, 240, 240, 0.65);
+			}
+			.title {
+				text-align: center; 
+				font-size: 18px; 
+				font-weight: bold;
+				color: red;
+			}
+			.version {
+				font-size: 12px;
+				font-weight: normal;
+				color: black;
+				text-align: right;
+			}
+			.buttons {
+				width: 100%;
+				margin: auto;
+				text-align: center;
+			}
+			.button {display: inline-block;}
+		</style>
+	</head>
+	<body>
+		<h1 class="box title">
+			<span>AIR-BREEZE</span>
+			<span class="version">v1.4</span>
+		</h1>
 		<br>
-		<b><a href="./layout.png" target="_blank">Open key layout image</a></b><br>
+		<div class="buttons">
+			<form class="button" action="./ext-resources/layout.png" target="_blank">
+				<input type="submit" value="Key Layout" />
+			</form>
+			<form class="button" action="./readme.html" target="_blank">
+				<input type="submit" value="Full Readme" />
+			</form>
+		</div>
 		<br>
-		<a href="./readme.txt" target="_blank">Open full readme</a>
-		<p>
-			<b>[Enter]</b> = Confirm dialogue (useful in WA)<br>
-			<b>[Backspace]</b> = Previous page<br>
-			<b>[Spacebar]</b> = Reports page<br>
-			<b>[Ctrl] + [Tab]</b> = Switch browser tab<br>
-			<b>[Ctrl] + [W]</b> = Close browser tab<br>
-			<br>
-			<b>[F5]</b> = Refresh page<br>
-			<b>[F6]</b> = Select link to current page. Press [Ctrl] + [C] to copy<br>
-			<b>[F7]</b> = Previous page<br>
-			<b>[F8]</b> = Next page<br>
-			<b>WARNING</b>: Reload page after using [F7], [F8] or [Backspace]!<br>
-			<br>
-			<b>[1-5]</b> = Open nation on left side to doss<br>
-			<b>Keypad [1-5]</b> = Same as above but on the right side<br>
-			<br>
-			<b>[A]</b> = Activity (spotting). Press 2nd time to remove filters<br>
-			<b>[B]</b> = The Pareven Isles<br>
-			<b>[C]</b> = Cross (open nations endorsing this nation)<br>
-			<b>[D]</b> = Doss (nation or region)<br>
-			<b>[E]</b> = Endorse<br>
-			<b>[J]</b> = Apply/Join/Leave WA<br>
-			<b>[L]</b> = Apply/Join/Leave WA<br>
-			<b>[M]</b> = Move to region<br>
-			<b>[N]</b> = Nation<br>
-			<b>[R]</b> = Region<br>
-			<b>[U]</b> = Check if you updated<br>
-			<b>[W]</b> = Open region, press again to view WAD<br>
-			<b>[X]</b> = Open dossier, press again to clear<br>
-		</p>
+		<div class="box">
+			<p>
+				Quick key list. See the full readme for better explanations.<br>
+				<br>
+				<table>
+					<tr><th>Key(s)</th><th>Function</th></tr>
+					<tr><td><b>[Enter]</b></td><td>Yes, confirm (useful in WA)</td></tr>
+					<tr><td><b>[Backspace]</b></td><td>Previous page ⚠</td></tr>
+					<tr><td><b>[Spacebar]</b></td><td>Reports page</td></tr>
+					<tr><td><b>[Ctrl] + [Tab]</b></td><td>Switch browser tabs</td></tr>
+					<tr><td><b>[Ctrl] + [W]</b></td><td>Close browser tab</td></tr>
+					<tr><td></td><td><br></td></tr>
+					<tr><td><b>[F5]</b></td><td>Refresh page</td></tr>
+					<tr><td><b>[F6]</b></td><td>Select link to current page.</td></tr>
+					<tr><td><b>[F7]</b></td><td>Previous page ⚠</td></tr>
+					<tr><td><b>[F8]</b></td><td>Next page ⚠</td></tr>
+					<tr><td><b>WARNING ⚠</b></td><td><b>Reload page after previous/next!</b></td></tr>
+					<tr><td></td><td><br></td></tr>
+					<tr><td><b>[1-5]</b></td><td>Open nation on left side of happening</td></tr>
+					<tr><td><b>Keypad [1-5]</b></td><td>Above, but right side</td></tr>
+					<tr><td></td><td><br></td></tr>
+					<tr><td><b>[A]</b></td><td>Spot activity ↔ remove activity filters</td></tr>
+					<tr><td><b>[B]</b></td><td>Banject</td></tr>
+					<tr><td><b>[C]</b></td><td>Cross (open nations endorsing this nation)</td></tr>
+					<tr><td><b>[D]</b></td><td>Doss (nation or region)</td></tr>
+					<tr><td><b>[E]</b></td><td>Endorse</td></tr>
+					<tr><td><b>[J]</b></td><td>Apply/Join/Leave WA</td></tr>
+					<tr><td><b>[L]</b></td><td>Apply/Join/Leave WA</td></tr>
+					<tr><td><b>[M]</b></td><td>Move</td></tr>
+					<tr><td><b>[N]</b></td><td>Nation</td></tr>
+					<tr><td><b>[O]</b></td><td>Regional controls → Appoint/Dismiss RO</td></tr>
+					<tr><td><b>[P]</b></td><td>The Pareven Isles</td></tr>
+					<tr><td><b>[R]</b></td><td>Region</td></tr>
+					<tr><td><b>[S]</b></td><td>Spear Danes</td></tr>
+					<tr><td><b>[U]</b></td><td>Updated?</td></tr>
+					<tr><td><b>[W]</b></td><td>Region → view WAD</td></tr>
+					<tr><td><b>[X]</b></td><td>Open dossier → clear dossier</td></tr>
+					<!--<tr><td><b>[Z]</b></td><td>Zombie control</td></tr>-->
+				</table>
+			</p>
+		</div>
 	</body>
 </html>

@@ -1,25 +1,13 @@
 (function() {
-	// Detect Shift, Control and Alt keys being pressed, as well as any key
+	// Detect Shift, Control and Alt keys being pressed
 	var shifted = false;
 	var controlled = false;
 	var alternated = false;
-	var pressed = false;
 	$(document).keydown(function(f) {
 		shifted = f.shiftKey;
         controlled = f.ctrlKey;
 		alternated = f.altKey;
-		pressed = f;
 	});
-	// Continually refreshes reports page unless a key is pressed
-	var current_url = $(location).attr('href');
-	if (current_url == "https://www.nationstates.net/template-overall=none/page=reports"){
-		if (pressed == false) {
-			// setTimeout(function(){ window.location.reload(false); }, 1000);
-		}
-		else {
-			window.alert("something was pressed")
-		}
-	}
 	$(document).keyup(function(e) {
         if (shifted || controlled || alternated){
 			return;
@@ -36,10 +24,7 @@
 				window.location.href = "https://www.nationstates.net/template-overall=none/page=reports";
 			}
 			// [F5] Refreshes window in both Chrome and Firefox by default. No code required.
-			// [F6] Planned to copy link to current page.
-			// [F7] & [Backspace] Goes to previous page. 
-			// [F7] Shortcut for caret browsing in Firefox.
-			// [Backspace] Default in Firefox but not used in Chrome.
+			// [F7] & [Backspace] Goes to previous page. [F7] is the shortcut for caret browsing in Firefox but can be disabled. [Backspace] is default for previous page in Firefox but not used in Chrome.
 			else if (e.keyCode == 118 || e.keyCode == 8){
 				e.preventDefault();
 				window.history.back();
@@ -237,6 +222,38 @@
 			else if (e.keyCode == 85){
 				window.location.href = "https://www.nationstates.net/page=ajax2/a=reports/view=self/filter=change";
 			}
+			// [O] Regional officer functionality
+			else if (e.keyCode == 79){
+				var current_url = $(location).attr('href');
+				var current_nation = $('#loggedin').attr('data-nname');
+				if (current_url.indexOf("/page=region_control") !== -1){
+					window.location.href = "https://www.nationstates.net/page=regional_officer/nation=" + current_nation;
+				}
+				else if (current_url.indexOf("/page=regional_officer") !== -1 && current_url.indexOf(current_nation) !== -1) {
+					$('input[name=office_name]').val("Pilot");
+					$('input[name=authority_A]').prop('checked', true);
+					$('input[name=authority_C]').prop('checked', true);
+					$('input[name=authority_E]').prop('checked', true);	
+					$('input[name=authority_P]').prop('checked', true);
+					$('button[name=editofficer]').trigger('click');
+				}
+				else if (current_url.indexOf("/page=regional_officer") !== -1) {
+					$("button[name=abolishofficer]").trigger('click');
+				}
+				else {
+					window.location.href = "https://www.nationstates.net/page=region_control";
+				}
+			}
+			// [P] Open The Pareven Isles, Move to The Pareven Isles (2x)
+			else if (e.keyCode == 80){
+				var current_url = $(location).attr('href');
+				if (current_url == "https://www.nationstates.net/region=the_pareven_isles"){
+					$('.button[name=move_region], input[name=move_region]').first().trigger('click');
+				}
+				else {	  
+					window.location.href = "https://www.nationstates.net/region=the_pareven_isles";
+				}
+			}
 			// [A] Activity Feed With Chasing Filters, Activity Feed Without (2x)
 			else if (e.keyCode == 65){
 				var current_url = $(location).attr('href');
@@ -308,15 +325,9 @@
 						cross[i].click();
 				}
 			}
-			// [B] Open The Pareven Isles, Move to The Pareven Isles (2x)
+			// [B] Ban nation
 			else if (e.keyCode == 66){
-				var current_url = $(location).attr('href');
-				if (current_url == "https://www.nationstates.net/region=the_pareven_isles"){
-					$('.button[name=move_region], input[name=move_region]').first().trigger('click');
-				}
-				else {	  
-					window.location.href = "https://www.nationstates.net/region=the_pareven_isles";
-				}
+				$('button[name=ban]').trigger('click');
 			}
 			// [N] My Nation
 			else if (e.keyCode == 78){
