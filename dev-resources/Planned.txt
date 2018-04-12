@@ -6,3 +6,4 @@ Planned
 - [F6] to select and copy the current page link
 - Automatically reload page when using previous/next page.
 - Puppet creation
+- Fix bug with WA Delegate right after switching regions
