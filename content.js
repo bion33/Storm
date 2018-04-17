@@ -1,6 +1,6 @@
 (function() {
 	// Send current page to background script
-	$(window).on('load', function(){
+	$(window).on("load", function(){
 		browser.runtime.sendMessage({action: "store", url: window.location.href});
 	});
 	// Detect Shift, Control and Alt keys being pressed
@@ -356,7 +356,7 @@
 			// [C] Open nations to cross
 			// WARNING: NS Script Rules dictate a limit of 10 requests/minute.
 			else if (e.keyCode == 67){
-				var cross = $('.unbox').children('p').children('a');
+				var cross = $(".unbox").children("p").children("a");
 				// Open the first 10 endorsers in separate tabs. As a user doesn't normally cross more than once a minute, this satisfies script rules. Only opening the first 10 nations discourages the user to press [C] more than once (it's useless and not intended to be used that way).
 				for (var i = 0; i < 10 && i < cross.length; i++) {
 				 	cross[i].target = "_blank";
