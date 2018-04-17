@@ -4,7 +4,8 @@
 
 ## ABOUT
 
-### Version **1.5**
+### Latest release: **v1.5**
+### WIP: **v1.6**
 
 AIR-Breeze is a variant of Breeze++ for [AIR Force](https://www.nationstates.net/region=AIR).
 
@@ -71,6 +72,12 @@ Keys native to your browser included.
  
 
 ## CHANGELOG
+
+
+**WIP v1.6 (2018/04/??)**
+
+* Re-enabled [C]. It now opens the first 10 endorsers. This satisfies NS script rules as [C] is not intended to be pressed more than once a minute.
+* Fixed the issue with trying to open the WA-Delegate's page using [W] immediately after changing regions.
 
 
 **v1.5 (2018/04/17)**

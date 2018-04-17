@@ -56,7 +56,7 @@
 		<div class="box">
 			<p>
 				<h2 class="box_title">ABOUT</h2>
-				Version <b>1.5</b><br>
+				Version <b>1.6</b><br>
 				<br>
 				AIR-Breeze is a variant of Breeze++ for <a href="https://www.nationstates.net/region=AIR">AIR Force</a>.<br>
 				<br>
@@ -105,6 +105,7 @@
 					<tr><td><b>Keypad [1-5]</b></td><td>Select and add the second nation in a happening (Activity or Reports Page) to your dossier.</td></tr>
 					<tr><td></td><td><br></td></tr>
 					<tr><td><b>[A]</b></td><td>View the activity page with the filters "World", "Move", "Member" and "Endorsements". This is ideal for spotting. Press again to view the activity page without filters. This is handy to see if a GCR is updating.</td></tr>
+					<tr><td><b>[C]</b></td><td>Open the first 10 nations endorsing this nation in a separate tab. This function is limited to 10 nations to satisfy NS script rules. If your browser warns you about popups, be sure to allow them for "https://www.nationstates.net".</td></tr>
 					<tr><td><b>[B]</b></td><td>Ban and eject this nation.</td></tr>
 					<tr><td><b>[D]</b></td><td>Add this nation or region to your dossier.</td></tr>
 					<tr><td><b>[E]</b></td><td>Endorse this nation.</td></tr>
@@ -120,7 +121,6 @@
 					<tr><td><b>[W]</b></td><td>Opens the region you are in, when pressed there goes to its WA Delegate.</td></tr>
 					<tr><td><b>[X]</b></td><td>Open your dossier. Press again to clear the nations in it.</td></tr>
 					<!--
-						<tr><td><b>[C]</b></td><td>Open all nations endorsing this nation in a separate tab. If your browser warns you about popups, be sure to allow them for "https://www.nationstates.net". If you use Firefox, your browser limits the amount of popups to 20 even if you allow popups. To change this, type about:config in your address bar, go there, and search for "dom.popup_maximum". Set it to 50.</td></tr>
 						<tr><td><b>[Z]</b></td><td>Zombie control.</td></tr>
 					-->
 				</table>
@@ -133,6 +133,12 @@
 		<div class="box">
 			<p>
 				<h2 class="box_title">CHANGELOG</h2>
+				<br>
+				<b>WIP v1.6 (2018/04/??)</b><br>
+				<ul>
+					<li>Re-enabled [C]. It now opens the first 10 endorsers. This satisfies NS script rules as [C] is not intended to be pressed more than once a minute.</li>
+					<li>Fixed the issue with trying to open the WA-Delegate's page using [W] immediately after changing regions.</li>
+				</ul>
 				<br>
 				<b>v1.5 (2018/04/17)</b><br>
 				<ul>
@@ -181,7 +187,7 @@
 					<li>Changed [N] from refreshing page to opening own nation (press [F5] to refresh page)</li>
 					<li>Changed [B] to relocate to The Pareven Isles instead of Spear Danes</li>
 					<li>Removed [V] as an alternative key to doss</li>
-					<li>Removed [<] to go back</li>
+					<li>Removed [<] to go back ([F7] and [Backspace now serve that function])</li>
 					<li>Removed ['] to apply/join/leave the WA ([J] and [L] now serve that function)</li>
 					<li>Disabled [Z] to open zombie control (will be re-enabled around halloween)</li>
 					<li>Disabled [?] to file GHR (may be re-enabled by popular request)</li>

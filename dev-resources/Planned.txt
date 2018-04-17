@@ -1,9 +1,6 @@
 Planned
 
-- Fix bug with WA Delegate right after switching regions
 - Automatically reload page when using previous/next page.
-- Automatically updating reports page (no more spamming reload)
-- Delay cross-endorse opening tabs
 - [F6] to select and copy the current page link
 
 - Check for add-on updates

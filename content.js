@@ -28,7 +28,8 @@
 			// [F7] & [Backspace] Goes to previous page. [F7] is the shortcut for caret browsing in Firefox but can be disabled. [Backspace] is default for previous page in Firefox but not used in Chrome.
 			else if (e.keyCode == 118 || e.keyCode == 8){
 				e.preventDefault();
-				window.history.back();
+				// window.history.back();
+				location.href = document.referrer;
 			}
 			// [F8] Goes to next page. Unused by both Chrome and Firefox.
 			else if (e.keyCode == 119){
@@ -187,10 +188,14 @@
 			// [W] WA Delegate
 			else if(e.keyCode == 87){
 				var current_url_11 = $(location).attr("href");
-				var region = "region=";
-				if (current_url_11.indexOf(region) !== -1){
+				if (current_url_11.indexOf("/region=") !== -1){
 					// On region"s page
 					$("#content").children("p:nth-child(2)").children("a.nlink:first")[0].click();
+				}
+				else if (current_url_11.indexOf("/page=change_region") !== -1 && $(".featuredregion").length == 0) {
+					// If just moved to another region (not just on the change_region page with the featured region)
+					// The region in the sidebar updates too slow when you move regions, so this works better in that case
+					$(".info").children("a")[0].click();
 				}
 				else {
 					// Go to region"s page
@@ -322,6 +327,16 @@
 					window.location.href = "https://www.nationstates.net/page=dossier";
 				}
 			}
+			// [C] Open nations to cross
+			// WARNING: NS Script Rules dictate a limit of 10 requests/minute.
+			else if (e.keyCode == 67){
+				var cross = $('.unbox').children('p').children('a');
+				// Open the first 10 endorsers in separate tabs. As a user doesn't normally cross more than once a minute, this satisfies script rules. Only opening the first 10 nations discourages the user to press [C] more than once (it's useless and not intended to be used that way).
+				for (var i = 0; i < 10 && i < cross.length; i++) {
+				 	cross[i].target = "_blank";
+					cross[i].click();
+				}
+			}
 			// [B] Ban nation
 			else if (e.keyCode == 66){
 				$("button[name=ban]").trigger("click");
@@ -343,16 +358,6 @@
 				}
 			}
 			// Disabled Hotkeys
-			// [C] Open nations to cross
-			// WARNING: This violates script rules. See https://forum.nationstates.net/viewtopic.php?f=15&t=425399&p=32654680
-			// This would be possible if it had a delay so it only opens 1 tab every 6 seconds, but I'm not sure if that's useful.
-			// else if (e.keyCode == 67){
-			// 	var cross = $('.unbox').children('p').children('a');
-			// 	for (var i = 0; i < cross.length; i++) {
-			// 			cross[i].target = "_blank";
-			//			cross[i].click();
-			//	}
-			// }
 			// [Z] Zombie Control
 			// else if (e.keyCode == 90){
 			//		window.location.href = "https://www.nationstates.net/page=zombie_control";

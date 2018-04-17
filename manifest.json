@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
     "name": "AIR-Breeze",
-	"version": "1.5",
+	"version": "1.6",
 	"author": "Krypton Nova",
 	"description": "AIR-Breeze is an add-on for the NationStates website. It is a variant of Breeze++ for AIR-Force and, like Breeze++, makes frequently used actions more convenient by assigning hotkeys to them.",
 	"browser_action": {
