@@ -50,7 +50,6 @@ Keys native to your browser included.
 |  |  |
 | **[A]** | View the activity page with the filters "World", "Move", "Member" and "Endorsements". This is ideal for spotting. Press again to view the activity page without filters. This is handy to see if a GCR is updating. |
 | **[B]** | Ban and eject this nation. |
-| **[C]** | Open all nations endorsing this nation in a separate tab. If your browser warns you about popups, be sure to allow them for "https://www.nationstates.net". If you use Firefox, your browser limits the amount of popups to 20 even if you allow popups. To change this, type about:config in your address bar, go there, and search for "dom.popup_maximum". Set it to 50. |
 | **[D]** | Add this nation or region to your dossier. |
 | **[E]** | Endorse this nation. |
 | **[J]** | Apply/Join/Leave the World Assembly. |
