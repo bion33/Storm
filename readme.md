@@ -4,7 +4,7 @@
 
 ## ABOUT
 
-### Version **1.4**
+### Version **1.5**
 
 AIR-Breeze is a variant of Breeze++ for [AIR Force](https://www.nationstates.net/region=AIR).
 
@@ -72,6 +72,13 @@ Keys native to your browser included.
  
 
 ## CHANGELOG
+
+
+**v1.5 (2018/04/17)**
+
+* Disabled [C] as it broke the rules for automated tools. Extensions are not allowed to open more than 10 tabs per minute.
+* Renamed the "Pilot" regional officer role to "Ace". It sounds better overall I think.
+* A few things that aren't all that noteworthy have been fixed: the extension didn't need tabs permission, the keyboard layout image has been updated, the link to it from the full readme works again, and corrected a minor mistake in the CSS.
 
 
 **v1.4 (2018/04/12)**
