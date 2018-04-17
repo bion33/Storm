@@ -28,8 +28,7 @@
 			// [F7] & [Backspace] Goes to previous page. [F7] is the shortcut for caret browsing in Firefox but can be disabled. [Backspace] is default for previous page in Firefox but not used in Chrome.
 			else if (e.keyCode == 118 || e.keyCode == 8){
 				e.preventDefault();
-				// window.history.back();
-				location.href = document.referrer;
+				window.history.back();
 			}
 			// [F8] Goes to next page. Unused by both Chrome and Firefox.
 			else if (e.keyCode == 119){
