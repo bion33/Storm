@@ -1,8 +1,4 @@
 Planned
 
-- Automatically reload page when using previous/next page.
-- [F6] to select and copy the current page link
-
 - Check for add-on updates
 - Puppet creation
-

@@ -1,4 +1,8 @@
 (function() {
+	// Send current page to background script
+	$(window).on('load', function(){
+		browser.runtime.sendMessage({action: "store", url: window.location.href});
+	});
 	// Detect Shift, Control and Alt keys being pressed
 	var shifted = false;
 	var controlled = false;
@@ -7,6 +11,8 @@
 		shifted = f.shiftKey;
         controlled = f.ctrlKey;
 		alternated = f.altKey;
+		// Prevent defaults on keydown
+		if (f.keyCode == 8 || f.keyCode == 32 || f.keyCode == 117 || f.keyCode == 118 || f.keyCode == 119) f.preventDefault();
 	});
 	$(document).keyup(function(e) {
         if (shifted || controlled || alternated){
@@ -25,14 +31,36 @@
 				window.location.href = "https://www.nationstates.net/template-overall=none/page=reports";
 			}
 			// [F5] Refreshes window in both Chrome and Firefox by default. No code required.
+			// [F6] copies the link to the current page to the clipboard
+			else if (e.keyCode == 117){
+				e.preventDefault();
+				var $temp = $("<input>");
+				$("body").append($temp);
+				$temp.val(window.location.href).select();
+				document.execCommand("copy");
+				$temp.remove();
+			}
 			// [F7] & [Backspace] Goes to previous page. [F7] is the shortcut for caret browsing in Firefox but can be disabled. [Backspace] is default for previous page in Firefox but not used in Chrome.
 			else if (e.keyCode == 118 || e.keyCode == 8){
 				e.preventDefault();
-				window.history.back();
+				// Send message to background script
+				browser.runtime.sendMessage({action: "previous", url: window.location.href});
+				// Receive and load page in message
+				function loadpage(load){
+					window.location.href = load.url;
+				}
+				browser.runtime.onMessage.addListener(loadpage);
 			}
 			// [F8] Goes to next page. Unused by both Chrome and Firefox.
 			else if (e.keyCode == 119){
-				window.history.forward();
+				e.preventDefault();
+				// Send message to background script
+				browser.runtime.sendMessage({action: "next", url: window.location.href});
+				// Receive and load page in message
+				function loadpage(load){
+					window.location.href = load.url;
+				}
+				browser.runtime.onMessage.addListener(loadpage);
 			}
 			// [1] Add to Dossier
 			else if (e.keyCode == 49){
@@ -192,8 +220,7 @@
 					$("#content").children("p:nth-child(2)").children("a.nlink:first")[0].click();
 				}
 				else if (current_url_11.indexOf("/page=change_region") !== -1 && $(".featuredregion").length == 0) {
-					// If just moved to another region (not just on the change_region page with the featured region)
-					// The region in the sidebar updates too slow when you move regions, so this works better in that case
+					// The region in the sidebar updates too slow when you move regions, so this works better in that case. Should work on the page you get when you just moved, but not on the page with the featured region.
 					$(".info").children("a")[0].click();
 				}
 				else {

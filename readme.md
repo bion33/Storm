@@ -5,6 +5,7 @@
 ## ABOUT
 
 ### Latest release: **v1.5**
+### WIP: **v1.6**
 
 AIR-Breeze is a variant of Breeze++ for [AIR Force](https://www.nationstates.net/region=AIR).
 
@@ -40,7 +41,7 @@ Keys native to your browser included.
 | **[Ctrl] + [W]** | Close this browser tab. |
 |  |  |
 | **[F5]** | Refresh this page. |
-| **[F6]** | Select the link to the current page. Press [Ctrl] + [C] to copy. |
+| **[F6]** | Copy link to this page. |
 | **[F7]** | Go to the previous page. ⚠ |
 | **[F8]** | Go to the next page. ⚠ |
 | **WARNING ⚠** | Reload the page after going to the previous or next page, otherwise the hotkeys will not work and the page may be outdated. |
@@ -50,6 +51,7 @@ Keys native to your browser included.
 |  |  |
 | **[A]** | View the activity page with the filters "World", "Move", "Member" and "Endorsements". This is ideal for spotting. Press again to view the activity page without filters. This is handy to see if a GCR is updating. |
 | **[B]** | Ban and eject this nation. |
+| **[C]** | Open the first 10 nations endorsing this nation in a separate tab. This function is limited to 10 nations to satisfy NS script rules. If your browser warns you about popups, be sure to allow them for "https://www.nationstates.net". |
 | **[D]** | Add this nation or region to your dossier. |
 | **[E]** | Endorse this nation. |
 | **[J]** | Apply/Join/Leave the World Assembly. |
@@ -75,8 +77,10 @@ Keys native to your browser included.
 
 **WIP v1.6 (2018/04/??)**
 
+* Added [F6] to copy the link to the current page
 * Re-enabled [C]. It now opens the first 10 endorsers. This satisfies NS script rules as [C] is not intended to be pressed more than once a minute.
 * Fixed the issue with trying to open the WA-Delegate's page using [W] immediately after changing regions.
+* Solved the inherent browser problem with cached previous/next pages. If you use F7 or Backspace and F8 to navigate, you won't need to reload the page any more. You still have to reload the page if you use the back/forward buttons in your browser. This is so that AIR-Breeze does not interfere with basic browser functionality
 
 
 **v1.5 (2018/04/17)**

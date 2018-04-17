@@ -48,6 +48,20 @@
 			.image {
 				width: 100%;
 			}
+			.authors-table {
+				display: table;
+				width: 50%;
+				table-layout: fixed;
+			}
+			.authors-row:nth-child(even) {background: rgba(0, 0, 0, 0);}
+			.authors-row:hover {background: rgba(0, 0, 0, 0);}
+			.authors-row > th, td {
+				padding: 6px 13px;
+				border: 1px solid #abb;
+				text-align: center;
+			}
+			.authors-row > td:hover {background: rgba(0, 0, 0, 0.075);}
+			.arrow {float: right;}
 		</style>
 	</head>
 	<body>
@@ -60,13 +74,10 @@
 				<br>
 				AIR-Breeze is a variant of Breeze++ for <a href="https://www.nationstates.net/region=AIR">AIR Force</a>.<br>
 				<br>
-				<b>NSBreeze:</b><br>
-					<span class="indent">Shizensky</span><br>
-				<b>Breeze++:</b><br>
-					<span class="indent">Vincent W. Drake</span><br>
-					<span class="indent">Special thanks to Roavin & Shizensky</span><br>
-				<b>AIR-Breeze:</b><br>
-					<span class="indent">Krypton Nova</span><br>
+				<table class="authors-table">
+				<tr class="authors-row"><th>NSBreeze<b class="arrow">»</b></th><th>Breeze++<b class="arrow">»</b></th><th>AIR-Breeze</th></tr>
+				<tr class="authors-row"><td><a href="https://nationstates.net/Shizensky">Shizensky</a></td><td><a href="https://www.nationstates.net/nation=vincent_drake">Vincent W. Drake</a></td><td><a href="https://www.nationstates.net/nation=krypton_nova">Krypton Nova</a></td></tr>
+				</table>
 				<br>
 				<b>Contribute/Collaborate:</b><br>
 				All help in making this extension better is welcome! Contact me if you have suggestions, or if you'd like to help with the code (HTML, CSS and JavaScript). I'm also open to suggestions for collaboration between similar extensions.<br>
@@ -90,16 +101,16 @@
 				<table>
 					<tr><th><b>Key(s)</b></th><th>Function</th></tr>
 					<tr><td><b>[Enter]</b></td><td>Confirm dialogue (useful in the World Assembly).</td></tr>
-					<tr><td><b>[Backspace]</b></td><td>Go to the previous page. ⚠</td></tr>
+					<tr><td><b>[Backspace]</b></td><td>Go to the previous page.</td></tr>
 					<tr><td><b>[Spacebar]</b></td><td>View the reports page.</td></tr>
 					<tr><td><b>[Ctrl] + [Tab]</b></td><td>Switch between browser tabs.</td></tr>
 					<tr><td><b>[Ctrl] + [W]</b></td><td>Close this browser tab.</td></tr>
 					<tr><td></td><td><br></td></tr>
 					<tr><td><b>[F5]</b></td><td>Refresh this page.</td></tr>
-					<tr><td><b>[F6]</b></td><td>Select the link to the current page. Press [Ctrl] + [C] to copy.</td></tr>
-					<tr><td><b>[F7]</b></td><td>Go to the previous page. ⚠</td></tr>
-					<tr><td><b>[F8]</b></td><td>Go to the next page. ⚠</td></tr>
-					<tr><td><b>WARNING ⚠</b></td><td>Reload the page after going to the previous or next page, otherwise the hotkeys will not work and the page may be outdated.</td></tr>
+					<tr><td><b>[F6]</b></td><td>Copy link to this page. Use [Ctr]+[V] to paste.</td></tr>
+					<tr><td><b>[F7]</b></td><td>Go to the previous page.</td></tr>
+					<tr><td><b>[F8]</b></td><td>Go to the next page.</td></tr>
+					<tr><td><b>WARNING ⚠</b></td><td>Reload the page after clicking back/forward browser buttons. This is not needed for [F7], [Backspace] and [F8].</td></tr>
 					<tr><td></td><td><br></td>
 					<tr><td><b>[1-5]</b></td><td>Select and add the first nation in a happening (Activity or Reports Page) to your dossier.</td></tr>
 					<tr><td><b>Keypad [1-5]</b></td><td>Select and add the second nation in a happening (Activity or Reports Page) to your dossier.</td></tr>
@@ -136,15 +147,17 @@
 				<br>
 				<b>WIP v1.6 (2018/04/??)</b><br>
 				<ul>
-					<li>Re-enabled [C]. It now opens the first 10 endorsers. This satisfies NS script rules as [C] is not intended to be pressed more than once a minute.</li>
-					<li>Fixed the issue with trying to open the WA-Delegate's page using [W] immediately after changing regions.</li>
+					<li>Added [F6] to copy the link to the current page</li>
+					<li>Re-enabled [C]. It now opens the first 10 endorsers. This satisfies NS script rules as [C] is not intended to be pressed more than once a minute</li>
+					<li>Fixed the issue with trying to open the WA-Delegate's page using [W] immediately after changing regions</li>
+					<li>Solved the inherent browser problem with cached previous/next pages. If you use F7 or Backspace and F8 to navigate, you won't need to reload the page any more. You still have to reload the page if you use the back/forward buttons in your browser. This is so that AIR-Breeze does not interfere with basic browser functionality.</li>
 				</ul>
 				<br>
 				<b>v1.5 (2018/04/17)</b><br>
 				<ul>
-					<li>Disabled [C] as it broke the rules for automated tools. Extensions are not allowed to open more than 10 tabs per minute.</li>
-					<li>Renamed the "Pilot" regional officer role to "Ace". It sounds better overall I think.</li>
-					<li>A few things that aren't all that noteworthy have been fixed: the extension didn't need tabs permission, the keyboard layout image has been updated, the link to it from the full readme works again, and corrected a minor mistake in the CSS.</li>
+					<li>Disabled [C] as it broke the rules for automated tools. Extensions are not allowed to open more than 10 tabs per minute</li>
+					<li>Renamed the "Pilot" regional officer role to "Ace". It sounds better overall I think</li>
+					<li>A few things that aren't all that noteworthy have been fixed: the extension didn't need tabs permission, the keyboard layout image has been updated, the link to it from the full readme works again, and corrected a minor mistake in the CSS</li>
 				</ul>
 				<b>v1.4 (2018/04/12)</b><br>
 				<ul>
