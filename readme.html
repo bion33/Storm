@@ -56,7 +56,7 @@
 		<div class="box">
 			<p>
 				<h2 class="box_title">ABOUT</h2>
-				Version <b>1.4</b><br>
+				Version <b>1.5</b><br>
 				<br>
 				AIR-Breeze is a variant of Breeze++ for <a href="https://www.nationstates.net/region=AIR">AIR Force</a>.<br>
 				<br>
@@ -106,7 +106,6 @@
 					<tr><td></td><td><br></td></tr>
 					<tr><td><b>[A]</b></td><td>View the activity page with the filters "World", "Move", "Member" and "Endorsements". This is ideal for spotting. Press again to view the activity page without filters. This is handy to see if a GCR is updating.</td></tr>
 					<tr><td><b>[B]</b></td><td>Ban and eject this nation.</td></tr>
-					<tr><td><b>[C]</b></td><td>Open all nations endorsing this nation in a separate tab. If your browser warns you about popups, be sure to allow them for "https://www.nationstates.net". If you use Firefox, your browser limits the amount of popups to 20 even if you allow popups. To change this, type about:config in your address bar, go there, and search for "dom.popup_maximum". Set it to 50.</td></tr>
 					<tr><td><b>[D]</b></td><td>Add this nation or region to your dossier.</td></tr>
 					<tr><td><b>[E]</b></td><td>Endorse this nation.</td></tr>
 					<tr><td><b>[J]</b></td><td>Apply/Join/Leave the World Assembly.</td></tr>
@@ -120,7 +119,10 @@
 					<tr><td><b>[U]</b></td><td>A quick way to check if your nation has updated.</td></tr>
 					<tr><td><b>[W]</b></td><td>Opens the region you are in, when pressed there goes to its WA Delegate.</td></tr>
 					<tr><td><b>[X]</b></td><td>Open your dossier. Press again to clear the nations in it.</td></tr>
-					<!--<tr><td><b>[Z]</b></td><td>Zombie control.</td></tr>-->
+					<!--
+						<tr><td><b>[C]</b></td><td>Open all nations endorsing this nation in a separate tab. If your browser warns you about popups, be sure to allow them for "https://www.nationstates.net". If you use Firefox, your browser limits the amount of popups to 20 even if you allow popups. To change this, type about:config in your address bar, go there, and search for "dom.popup_maximum". Set it to 50.</td></tr>
+						<tr><td><b>[Z]</b></td><td>Zombie control.</td></tr>
+					-->
 				</table>
 				<br>
 				<a href="./ext-resources/layout.png"><img class="image" src="./ext-resources/layout.png" alt="Keypboard Layout"><img></a><br>
@@ -132,6 +134,12 @@
 			<p>
 				<h2 class="box_title">CHANGELOG</h2>
 				<br>
+				<b>v1.5 (2018/04/17)</b><br>
+				<ul>
+					<li>Disabled [C] as it broke the rules for automated tools. Extensions are not allowed to open more than 10 tabs per minute.</li>
+					<li>Renamed the "Pilot" regional officer role to "Ace". It sounds better overall I think.</li>
+					<li>A few things that aren't all that noteworthy have been fixed: the extension didn't need tabs permission, the keyboard layout image has been updated, the link to it from the full readme works again, and corrected a minor mistake in the CSS.</li>
+				</ul>
 				<b>v1.4 (2018/04/12)</b><br>
 				<ul>
 					<li>Added [S] to go to Spear Danes</li>
