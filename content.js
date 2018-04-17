@@ -227,20 +227,24 @@
 			else if (e.keyCode == 79){
 				var current_url_12 = $(location).attr("href");
 				var current_nation = $("#loggedin").attr("data-nname");
+				// If on the regional control page, open own regional officer page
 				if (current_url_12.indexOf("/page=region_control") !== -1){
 					window.location.href = "https://www.nationstates.net/page=regional_officer/nation=" + current_nation;
 				}
+				// If on on own regional officer page, assign officer role
 				else if (current_url_12.indexOf("/page=regional_officer") !== -1 && current_url_12.indexOf(current_nation) !== -1) {
-					$("input[name=office_name]").val("Pilot");
+					$("input[name=office_name]").val("Ace");
 					$("input[name=authority_A]").prop("checked", true);
 					$("input[name=authority_C]").prop("checked", true);
 					$("input[name=authority_E]").prop("checked", true);	
 					$("input[name=authority_P]").prop("checked", true);
 					$("button[name=editofficer]").trigger("click");
 				}
+				// If on someone else's regional officer page, dismiss them
 				else if (current_url_12.indexOf("/page=regional_officer") !== -1) {
 					$("button[name=abolishofficer]").trigger("click");
 				}
+				// If on none of these pages, open regional control page
 				else {
 					window.location.href = "https://www.nationstates.net/page=region_control";
 				}
@@ -318,14 +322,6 @@
 					window.location.href = "https://www.nationstates.net/page=dossier";
 				}
 			}
-			// [C] Open nations to cross
-			else if (e.keyCode == 67){
-				var cross = $(".unbox").children("p").children("a");
-				for (var i = 0; i < cross.length; i++) {
-						cross[i].target = "_blank";
-						cross[i].click();
-				}
-			}
 			// [B] Ban nation
 			else if (e.keyCode == 66){
 				$("button[name=ban]").trigger("click");
@@ -347,6 +343,16 @@
 				}
 			}
 			// Disabled Hotkeys
+			// [C] Open nations to cross
+			// WARNING: This violates script rules. See https://forum.nationstates.net/viewtopic.php?f=15&t=425399&p=32654680
+			// This would be possible if it had a delay so it only opens 1 tab every 6 seconds, but I'm not sure if that's useful.
+			// else if (e.keyCode == 67){
+			// 	var cross = $('.unbox').children('p').children('a');
+			// 	for (var i = 0; i < cross.length; i++) {
+			// 			cross[i].target = "_blank";
+			//			cross[i].click();
+			//	}
+			// }
 			// [Z] Zombie Control
 			// else if (e.keyCode == 90){
 			//		window.location.href = "https://www.nationstates.net/page=zombie_control";
