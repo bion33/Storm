@@ -1,4 +1,5 @@
 Planned
 
-- Check for add-on updates
+- Visual aid for reloading on reports page
+- Raider JP bookmarks (If possible?)
 - Puppet creation
