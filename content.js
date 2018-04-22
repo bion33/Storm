@@ -1,34 +1,46 @@
 (function() {
+	// Variables
+	var current_url = window.location.href;
+	var shifted = false;
+	var controlled = false;
+	var alternated = false;
 	// On page load
 	$(window).on("load", function(){
 		// Send current page to background script
-		browser.runtime.sendMessage({action: "store", url: window.location.href});
+		chrome.runtime.sendMessage({action: "store", url: current_url});
 		// If on the reports page and it is loaded
-		if ($(location).attr("href") == "https://www.nationstates.net/template-overall=none/page=reports"){
+		if (current_url == "https://www.nationstates.net/template-overall=none/page=reports"){
 			// Make the page border green so the user knows they can safely refresh.
 			$("html").css({"border-color": "#33cc00"});
 		}
 	});
-	// Detect Shift, Control and Alt keys being pressed
-	var shifted = false;
-	var controlled = false;
-	var alternated = false;
+	// Key down
 	$(document).keydown(function(f) {
+		// Detect Shift, Control and Alt keys being pressed
 		shifted = f.shiftKey;
         controlled = f.ctrlKey;
 		alternated = f.altKey;
-		// Prevent defaults on keydown
-		if (f.keyCode == 8 || f.keyCode == 32 || f.keyCode == 117 || f.keyCode == 118 || f.keyCode == 119) f.preventDefault();
-		if ($(location).attr("href") == "https://www.nationstates.net/template-overall=none/page=reports" && f.keyCode == 116){
+		// Prevent defaults on keydown for [Backspace] and [Spacebar], except for typing keys in an input or textarea.
+		if (!$("input,textarea").is(":focus")){
+			if (f.keyCode == 8 || f.keyCode == 32){
+				f.preventDefault();
+			}
+		}
+		// Prevent defaults on keydown for [F6], [F7] and [F8]
+		if (f.keyCode == 117 || f.keyCode == 118 || f.keyCode == 119) {
+			f.preventDefault();
+		}
+		// Prevent defaults on keydown for [F5] on the reports page, where this extension will press the "Generate Report" button instead of refreshing the page manually.
+		if (current_url == "https://www.nationstates.net/template-overall=none/page=reports" && f.keyCode == 116){
 			f.preventDefault();
 		}
 	});
+	// Key up
 	$(document).keyup(function(e) {
         if (shifted || controlled || alternated){
 			return;
         }
 		else {
-			// RSTS: var current_url = $(location).attr("href");
 			if ($("input,textarea").is(":focus")){
 				return;
 			}
@@ -40,9 +52,9 @@
 				window.location.href = "https://www.nationstates.net/template-overall=none/page=reports";
 			}
 			// [F5] Refreshes window in both Chrome and Firefox by default.
-			// If on the reports page and it is reloaded, make the green banner red so the user knows they shouldn't press refresh again.
+			// If on the reports page and it is reloaded, make the green page border red so the user knows they shouldn't press refresh again.
 			else if (e.keyCode == 116){
-				if ($(location).attr("href") == "https://www.nationstates.net/template-overall=none/page=reports"){
+				if (current_url == "https://www.nationstates.net/template-overall=none/page=reports"){
 					// Instead of refreshing, press the "Generate Report" button. If NS ever decides to not make this page refresh when that button is clicked, this extension will benefit from that (as it would load changes faster).
 					e.preventDefault();
 					// Only get reports for the last 6 minutes. 
@@ -58,7 +70,7 @@
 				e.preventDefault();
 				var $temp = $("<input>");
 				$("body").append($temp);
-				$temp.val(window.location.href).select();
+				$temp.val(current_url).select();
 				document.execCommand("copy");
 				$temp.remove();
 			}
@@ -66,27 +78,26 @@
 			else if (e.keyCode == 118 || e.keyCode == 8){
 				e.preventDefault();
 				// Send message to background script
-				browser.runtime.sendMessage({action: "previous", url: window.location.href});
+				chrome.runtime.sendMessage({action: "previous", url: current_url});
 				// Receive and load page in message
 				function loadpage(load){
 					window.location.href = load.url;
 				}
-				browser.runtime.onMessage.addListener(loadpage);
+				chrome.runtime.onMessage.addListener(loadpage);
 			}
 			// [F8] Goes to next page. Unused by both Chrome and Firefox.
 			else if (e.keyCode == 119){
 				e.preventDefault();
 				// Send message to background script
-				browser.runtime.sendMessage({action: "next", url: window.location.href});
+				chrome.runtime.sendMessage({action: "next", url: current_url});
 				// Receive and load page in message
 				function loadpage(load){
 					window.location.href = load.url;
 				}
-				browser.runtime.onMessage.addListener(loadpage);
+				chrome.runtime.onMessage.addListener(loadpage);
 			}
 			// [1] Add to Dossier
 			else if (e.keyCode == 49){
-				var current_url = $(location).attr("href");
 				if (current_url == "https://www.nationstates.net/template-overall=none/page=reports"){
 					$("li a:nth-of-type(1)")[0].click(); 
 					$("li a:nth-of-type(1)").eq(0).css("background-color", "yellow");
@@ -101,12 +112,11 @@
 			}
 			// [2] Add to Dossier
 			else if (e.keyCode == 50){
-				var current_url_2 = $(location).attr("href");
-				if (current_url_2 == "https://www.nationstates.net/template-overall=none/page=reports"){
+				if (current_url == "https://www.nationstates.net/template-overall=none/page=reports"){
 					$("li a:nth-of-type(1)")[1].click(); 
 					$("li a:nth-of-type(1)").eq(1).css("background-color", "yellow");
 				} 
-				if (current_url_2 == "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
+				if (current_url == "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
 					$("#reports li a:nth-of-type(1)")[1].click(); 
 					$("#reports li a:nth-of-type(1)").eq(1).css("background-color", "yellow");
 				} 
@@ -116,12 +126,11 @@
 			}
 			// [3] Add to Dossier
 			else if (e.keyCode == 51){
-				var current_url_3 = $(location).attr("href");
-				if (current_url_3 == "https://www.nationstates.net/template-overall=none/page=reports"){
+				if (current_url == "https://www.nationstates.net/template-overall=none/page=reports"){
 					$("li a:nth-of-type(1)")[2].click(); 
 					$("li a:nth-of-type(1)").eq(2).css("background-color", "yellow");
 				} 
-				if (current_url_3 == "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
+				if (current_url == "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
 					$("#reports li a:nth-of-type(1)")[2].click(); 
 					$("#reports li a:nth-of-type(1)").eq(2).css("background-color", "yellow");
 				} 
@@ -131,12 +140,11 @@
 			}
 			// [4] Add to Dossier
 			else if (e.keyCode == 52){
-				var current_url_4 = $(location).attr("href");
-				if (current_url_4 == "https://www.nationstates.net/template-overall=none/page=reports"){
+				if (current_url == "https://www.nationstates.net/template-overall=none/page=reports"){
 					$("li a:nth-of-type(1)")[3].click(); 
 					$("li a:nth-of-type(1)").eq(3).css("background-color", "yellow");
 				} 
-				if (current_url_4 == "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
+				if (current_url == "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
 					$("#reports li a:nth-of-type(1)")[3].click(); 
 					$("#reports li a:nth-of-type(1)").eq(3).css("background-color", "yellow");
 				} 
@@ -146,12 +154,11 @@
 			}
 			// [5] Add to Dossier
 			else if (e.keyCode == 53){
-				var current_url_5 = $(location).attr("href");
-				if (current_url_5 == "https://www.nationstates.net/template-overall=none/page=reports"){
+				if (current_url == "https://www.nationstates.net/template-overall=none/page=reports"){
 					$("li a:nth-of-type(1)")[4].click(); 
 					$("li a:nth-of-type(1)").eq(4).css("background-color", "yellow");
 				} 
-				if (current_url_5 == "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
+				if (current_url == "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
 					$("#reports li a:nth-of-type(1)")[4].click(); 
 					$("#reports li a:nth-of-type(1)").eq(4).css("background-color", "yellow");
 				} 
@@ -161,12 +168,11 @@
 			}
 			// [Keypad 1] Add to Dossier
 			else if (e.keyCode == 97){
-				var current_url_6 = $(location).attr("href");
-				if (current_url_6 == "https://www.nationstates.net/template-overall=none/page=reports"){
+				if (current_url == "https://www.nationstates.net/template-overall=none/page=reports"){
 					$("li a:nth-of-type(2)")[0].click(); 
 					$("li a:nth-of-type(2)").eq(0).css("background-color", "yellow");
 				} 
-				if (current_url_6 == "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
+				if (current_url == "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
 					$("#reports li a:nth-of-type(2)")[0].click(); 
 					$("#reports li a:nth-of-type(2)").eq(0).css("background-color", "yellow");
 				} 
@@ -176,12 +182,11 @@
 			}
 			// [Keypad 2] Add to Dossier
 			else if (e.keyCode == 98){
-				var current_url_7 = $(location).attr("href");
-				if (current_url_7 == "https://www.nationstates.net/template-overall=none/page=reports"){
+				if (current_url == "https://www.nationstates.net/template-overall=none/page=reports"){
 					$("li a:nth-of-type(2)")[1].click(); 
 					$("li a:nth-of-type(2)").eq(1).css("background-color", "yellow");
 				} 
-				if (current_url_7 == "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
+				if (current_url == "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
 					$("#reports li a:nth-of-type(2)")[1].click(); 
 					$("#reports li a:nth-of-type(2)").eq(1).css("background-color", "yellow");
 				} 
@@ -191,12 +196,11 @@
 			}
 			// [Keypad 3] Add to Dossier
 			else if (e.keyCode == 99){
-				var current_url_8 = $(location).attr("href");
-				if (current_url_8 == "https://www.nationstates.net/template-overall=none/page=reports"){
+				if (current_url == "https://www.nationstates.net/template-overall=none/page=reports"){
 					$("li a:nth-of-type(2)")[2].click(); 
 					$("li a:nth-of-type(2)").eq(2).css("background-color", "yellow");
 				} 
-				if (current_url_8 == "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
+				if (current_url == "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
 					$("#reports li a:nth-of-type(2)")[2].click(); 
 					$("#reports li a:nth-of-type(2)").eq(2).css("background-color", "yellow");
 				} 
@@ -206,12 +210,11 @@
 			}
 			// [Keypad 4] Add to Dossier
 			else if (e.keyCode == 100){
-				var current_url_9 = $(location).attr("href");
-				if (current_url_9 == "https://www.nationstates.net/template-overall=none/page=reports"){
+				if (current_url == "https://www.nationstates.net/template-overall=none/page=reports"){
 					$("li a:nth-of-type(2)")[3].click(); 
 					$("li a:nth-of-type(2)").eq(3).css("background-color", "yellow");
 				} 
-				if (current_url_9 == "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
+				if (current_url == "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
 					$("#reports li a:nth-of-type(2)")[3].click(); 
 					$("#reports li a:nth-of-type(2)").eq(3).css("background-color", "yellow");
 				} 
@@ -221,12 +224,11 @@
 			}
 			// [Keypad 5] Add to Dossier
 			else if (e.keyCode == 101){
-				var current_url_10 = $(location).attr("href");
-				if (current_url_10 == "https://www.nationstates.net/template-overall=none/page=reports"){
+				if (current_url == "https://www.nationstates.net/template-overall=none/page=reports"){
 					$("li a:nth-of-type(2)")[4].click(); 
 					$("li a:nth-of-type(2)").eq(4).css("background-color", "yellow");
 				} 
-				if (current_url_10 == "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
+				if (current_url == "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
 					$("#reports li a:nth-of-type(2)")[4].click(); 
 					$("#reports li a:nth-of-type(2)").eq(4).css("background-color", "yellow");
 				} 
@@ -236,12 +238,11 @@
 			}
 			// [W] WA Delegate
 			else if(e.keyCode == 87){
-				var current_url_11 = $(location).attr("href");
-				if (current_url_11.indexOf("/region=") !== -1){
+				if (current_url.indexOf("/region=") !== -1){
 					// On region"s page
 					$("#content").children("p:nth-child(2)").children("a.nlink:first")[0].click();
 				}
-				else if (current_url_11.indexOf("/page=change_region") !== -1 && $(".featuredregion").length == 0) {
+				else if (current_url.indexOf("/page=change_region") !== -1 && $(".featuredregion").length == 0) {
 					// The region in the sidebar updates too slow when you move regions, so this works better in that case. Should work on the page you get when you just moved, but not on the page with the featured region.
 					$(".info").children("a")[0].click();
 				}
@@ -278,14 +279,13 @@
 			}
 			// [O] Regional officer functionality
 			else if (e.keyCode == 79){
-				var current_url_12 = $(location).attr("href");
 				var current_nation = $("#loggedin").attr("data-nname");
 				// If on the regional control page, open own regional officer page
-				if (current_url_12.indexOf("/page=region_control") !== -1){
+				if (current_url.indexOf("/page=region_control") !== -1){
 					window.location.href = "https://www.nationstates.net/page=regional_officer/nation=" + current_nation;
 				}
 				// If on on own regional officer page, assign officer role
-				else if (current_url_12.indexOf("/page=regional_officer") !== -1 && current_url_12.indexOf(current_nation) !== -1) {
+				else if (current_url.indexOf("/page=regional_officer") !== -1 && current_url.indexOf(current_nation) !== -1) {
 					$("input[name=office_name]").val("Ace");
 					$("input[name=authority_A]").prop("checked", true);
 					$("input[name=authority_C]").prop("checked", true);
@@ -294,7 +294,7 @@
 					$("button[name=editofficer]").trigger("click");
 				}
 				// If on someone else's regional officer page, dismiss them
-				else if (current_url_12.indexOf("/page=regional_officer") !== -1) {
+				else if (current_url.indexOf("/page=regional_officer") !== -1) {
 					$("button[name=abolishofficer]").trigger("click");
 				}
 				// If on none of these pages, open regional control page
@@ -304,8 +304,7 @@
 			}
 			// [P] Open The Pareven Isles, Move to The Pareven Isles (2x)
 			else if (e.keyCode == 80){
-				var current_url_13 = $(location).attr("href");
-				if (current_url_13 == "https://www.nationstates.net/region=the_pareven_isles"){
+				if (current_url == "https://www.nationstates.net/region=the_pareven_isles"){
 					$(".button[name=move_region], input[name=move_region]").first().trigger("click");
 				}
 				else {	  
@@ -314,11 +313,10 @@
 			}
 			// [A] Activity Feed With Chasing Filters, Activity Feed Without (2x)
 			else if (e.keyCode == 65){
-				var current_url_14 = $(location).attr("href");
-				if (current_url_14 == "https://www.nationstates.net/page=activity/view=world"){
+				if (current_url == "https://www.nationstates.net/page=activity/view=world"){
 					window.location.href = "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo";
 				}
-				else if (current_url_14 == "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
+				else if (current_url == "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
 					window.location.href = "https://www.nationstates.net/page=activity/view=world";
 				}
 				else {
@@ -327,8 +325,7 @@
 			}
 			// [S] Open Spear Danes, Move to Spear Danes (2x)
 			else if (e.keyCode == 83){
-				var current_url_15 = $(location).attr("href");
-				if (current_url_15 == "https://www.nationstates.net/region=spear_danes"){
+				if (current_url == "https://www.nationstates.net/region=spear_danes"){
 					$(".button[name=move_region], input[name=move_region]").first().trigger("click");
 				}
 				else {	  
@@ -337,9 +334,7 @@
 			}
 			// [D] Add to Dossier
 			else if (e.keyCode == 68){
-				var current_url_16 = $(location).attr("href");
-				var region = "region="
-				if (current_url_16.indexOf(region) !== -1){
+				if (current_url.indexOf("region=") !== -1){
 					// On region"s page
 					$(".button[name=add_to_dossier]").first().trigger("click"); 
 				}
@@ -350,8 +345,7 @@
 			} 
 			// [J] & [L] Open WA, Apply/Join/Resign in the WA (2x)
 			else if (e.keyCode == 74 || e.keyCode == 76){
-				var current_url_17 = $(location).attr("href");
-				if (current_url_17 == "https://www.nationstates.net/page=un"){
+				if (current_url == "https://www.nationstates.net/page=un"){
 					if ($("#content").length > 0){
 						// Modern themes
 						$("#content").children("form").children("p").children("button").trigger("click");
@@ -367,8 +361,7 @@
 			}
 			// [X] Open Dossier, Clear Dossier (2x)
 			else if (e.keyCode == 88){
-				var current_url_18 = $(location).attr("href");
-				if (current_url_18 == "https://www.nationstates.net/page=dossier"){
+				if (current_url == "https://www.nationstates.net/page=dossier"){
 					$(".button[name=clear_dossier]").first().trigger("click");
 				}
 				else {
@@ -395,8 +388,7 @@
 			}
 			// [M] Move, Chase Move (2x)
 			else if (e.keyCode == 77){
-				var current_url_19 = $(location).attr("href");
-				if (current_url_19 == "https://www.nationstates.net/template-overall=none/page=reports"){
+				if (current_url == "https://www.nationstates.net/template-overall=none/page=reports"){
 					$("li a:nth-of-type(3)")[0].click(); 
 					$("li a:nth-of-type(3)").eq(0).css("background-color", "yellow");
 				} 

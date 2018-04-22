@@ -1,4 +1,3 @@
 Planned
 
-- Raider JP bookmarks (If possible?)
 - Puppet creation

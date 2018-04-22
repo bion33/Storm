@@ -34,20 +34,10 @@ function pages(page){
 		prevpages.splice(prevpages.length - 1, 1);
 		// Set this to true so the to-be-loaded page isn't immediately stored back into prevpages
 		usedprev = true;
-		// Get the active tab ID and send message to that tab
-		function onGot(tabInfo) {
-			var curtab = tabInfo.id;
-			// Send page to load content.js
-			browser.tabs.sendMessage(curtab, {url: pagetoload});
-		}
-		function getInfoForTab(tabs) {
-			if (tabs.length > 0) {
-				var gettingInfo = browser.tabs.get(tabs[0].id);
-				gettingInfo.then(onGot);
-			}
-		}
-		var querying = browser.tabs.query({currentWindow: true, active: true});
-		querying.then(getInfoForTab);
+		// Get the active tab and send message to that tab
+		chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+			chrome.tabs.sendMessage(tabs[0].id, {url: pagetoload});
+		});
 	}
 	// Go to the next page, if any
 	else if (page.action == "next" && nextpages.length > 0){
@@ -55,29 +45,19 @@ function pages(page){
 		var pagetoload = nextpages[nextpages.length - 1];
 		// Remove it from next pages (because it will be loaded and not be a next page any more)
 		nextpages.splice(nextpages.length - 1, 1);
-		// Get the active tab ID and send message to that tab
-		function onGot(tabInfo) {
-			var curtab = tabInfo.id;
-			// Send page to load content.js
-			browser.tabs.sendMessage(curtab, {url: pagetoload});
-		}
-		function getInfoForTab(tabs) {
-			if (tabs.length > 0) {
-				var gettingInfo = browser.tabs.get(tabs[0].id);
-				gettingInfo.then(onGot);
-			}
-		}
-		var querying = browser.tabs.query({currentWindow: true, active: true});
-		querying.then(getInfoForTab);
+		// Get the active tab and send message to that tab
+		chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+			chrome.tabs.sendMessage(tabs[0].id, {url: pagetoload});
+		});
 	}
 }
 
 // Listener
-browser.runtime.onMessage.addListener(pages);
+chrome.runtime.onMessage.addListener(pages);
 
-// Code to test functionality:
+// Code to test functionality (add temporary "notifications" permission in manifest.json):
 /*
-browser.notifications.create({
+chrome.notifications.create({
 	"type": "basic",
 	"title": page.action,
 	"message": "prevpages:\n" + prevpages.toString() + "\nnextpages:\n" + nextpages.toString()
