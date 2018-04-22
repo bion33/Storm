@@ -35,16 +35,16 @@ Keys native to your browser included.
 | **Key(s)** | Function |
 | --- | --- |
 | **[Enter]** | Confirm dialogue (useful in the World Assembly). |
-| **[Backspace]** | Go to the previous page. ⚠ |
+| **[Backspace]** | Go to the previous page. |
 | **[Spacebar]** | View the reports page. |
 | **[Ctrl] + [Tab]** | Switch between browser tabs. |
 | **[Ctrl] + [W]** | Close this browser tab. |
 |  |  |
 | **[F5]** | Refresh this page. |
 | **[F6]** | Copy link to this page. |
-| **[F7]** | Go to the previous page. ⚠ |
-| **[F8]** | Go to the next page. ⚠ |
-| **WARNING ⚠** | Reload the page after going to the previous or next page, otherwise the hotkeys will not work and the page may be outdated. |
+| **[F7]** | Go to the previous page. |
+| **[F8]** | Go to the next page. |
+| **WARNING ⚠** | Reload the page after clicking back/forward browser buttons, otherwise hotkeys will not work and the page may be outdated. This is not needed for [F7], [Backspace] and [F8]. |
 |  |  |
 | **[1-5]** | Select and add the first nation in a happening (Activity or Reports Page) to your dossier. |
 | **Keypad [1-5]** | Select and add the second nation in a happening (Activity or Reports Page) to your dossier. |
