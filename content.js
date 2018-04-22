@@ -1,7 +1,13 @@
 (function() {
-	// Send current page to background script
+	// On page load
 	$(window).on("load", function(){
+		// Send current page to background script
 		browser.runtime.sendMessage({action: "store", url: window.location.href});
+		// If on the reports page and it is loaded
+		if ($(location).attr("href") == "https://www.nationstates.net/template-overall=none/page=reports"){
+			// Make the page border green so the user knows they can safely refresh.
+			$("html").css({"border-color": "#33cc00"});
+		}
 	});
 	// Detect Shift, Control and Alt keys being pressed
 	var shifted = false;
@@ -13,6 +19,9 @@
 		alternated = f.altKey;
 		// Prevent defaults on keydown
 		if (f.keyCode == 8 || f.keyCode == 32 || f.keyCode == 117 || f.keyCode == 118 || f.keyCode == 119) f.preventDefault();
+		if ($(location).attr("href") == "https://www.nationstates.net/template-overall=none/page=reports" && f.keyCode == 116){
+			f.preventDefault();
+		}
 	});
 	$(document).keyup(function(e) {
         if (shifted || controlled || alternated){
@@ -30,7 +39,20 @@
  				e.preventDefault();
 				window.location.href = "https://www.nationstates.net/template-overall=none/page=reports";
 			}
-			// [F5] Refreshes window in both Chrome and Firefox by default. No code required.
+			// [F5] Refreshes window in both Chrome and Firefox by default.
+			// If on the reports page and it is reloaded, make the green banner red so the user knows they shouldn't press refresh again.
+			else if (e.keyCode == 116){
+				if ($(location).attr("href") == "https://www.nationstates.net/template-overall=none/page=reports"){
+					// Instead of refreshing, press the "Generate Report" button. If NS ever decides to not make this page refresh when that button is clicked, this extension will benefit from that (as it would load changes faster).
+					e.preventDefault();
+					// Only get reports for the last 6 minutes. 
+					$("input[name=report_hours]").val("0.10");
+					// Set the border to red so the user knows not to press refresh.
+					$("html").css({"border-color": "#ff0000"});
+					// Generate new report.
+					$("input[name=generate_report]").first().trigger("click");
+				}
+			}
 			// [F6] copies the link to the current page to the clipboard
 			else if (e.keyCode == 117){
 				e.preventDefault();
