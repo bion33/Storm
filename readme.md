@@ -78,7 +78,7 @@ Keys native to your browser included.
 **WIP v1.6 (2018/04/??)**
 
 * Added [F6] to copy the link to the current page
-* Re-enabled [C]. It now opens the first 10 endorsers. This satisfies NS script rules as [C] is not intended to be pressed more than once a minute.
+* Re-enabled [C]. It now opens the first 10 endorsers and can not be used more than once a minute. This satisfies NS script rules.
 * Added a visual aid for reloading the reports page, and automatically set "Show reports from last ... hours" to 0.10
 * Fixed the issue with trying to open the WA-Delegate's page using [W] immediately after changing regions.
 * Solved the inherent browser problem with cached previous/next pages. If you use F7 or Backspace and F8 to navigate, you won't need to reload the page any more. You still have to reload the page if you use the back/forward buttons in your browser. This is so that AIR-Breeze does not interfere with basic browser functionality

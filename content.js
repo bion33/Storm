@@ -80,10 +80,9 @@
 				// Send message to background script
 				chrome.runtime.sendMessage({action: "previous", url: current_url});
 				// Receive and load page in message
-				function loadpage(load){
+				chrome.runtime.onMessage.addListener(function(load){
 					window.location.href = load.url;
-				}
-				chrome.runtime.onMessage.addListener(loadpage);
+				});
 			}
 			// [F8] Goes to next page. Unused by both Chrome and Firefox.
 			else if (e.keyCode == 119){
@@ -91,10 +90,9 @@
 				// Send message to background script
 				chrome.runtime.sendMessage({action: "next", url: current_url});
 				// Receive and load page in message
-				function loadpage(load){
+				chrome.runtime.onMessage.addListener(function(load){
 					window.location.href = load.url;
-				}
-				chrome.runtime.onMessage.addListener(loadpage);
+				});
 			}
 			// [1] Add to Dossier
 			else if (e.keyCode == 49){
@@ -369,14 +367,22 @@
 				}
 			}
 			// [C] Open nations to cross
-			// WARNING: NS Script Rules dictate a limit of 10 requests/minute.
 			else if (e.keyCode == 67){
-				var cross = $(".unbox").children("p").children("a");
-				// Open the first 10 endorsers in separate tabs. As a user doesn't normally cross more than once a minute, this satisfies script rules. Only opening the first 10 nations discourages the user to press [C] more than once (it's useless and not intended to be used that way).
-				for (var i = 0; i < 10 && i < cross.length; i++) {
-				 	cross[i].target = "_blank";
-					cross[i].click();
-				}
+				// Send message to background script that C has been pressed
+				chrome.runtime.sendMessage({cancross: "?"});
+				// Receive message.
+				chrome.runtime.onMessage.addListener(function docross(reply){
+					// If the user hasn't pressed the cross-endorse button 60 seconds ago or less, open the first 10 endorsers in separate tabs. This satisfies the limit of 10 requests/minute for scripts on NS.
+					if (reply.cancross == true){
+						var cross = $(".unbox").children("p").children("a");
+						for (var i = 0; i < 10 && i < cross.length; i++) {
+						 	cross[i].target = "_blank";
+							cross[i].click();
+						}
+					}
+					// Remove the listener, or it will keep listening if reply.cancross is not true. That would result in it opening the tabs to cross times the amount you pressed [C] while reply.cancross was not true.
+					chrome.runtime.onMessage.removeListener(docross);
+				});
 			}
 			// [B] Ban nation
 			else if (e.keyCode == 66){

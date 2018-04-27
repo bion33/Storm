@@ -1,4 +1,4 @@
-// This background script keeps track of 4 previous and 4 next pages in relation to the current page.
+// This section of the background script keeps track of 4 previous and 4 next pages in relation to the current page.
 // The purpose of this is to get the latest previous/next page instead of getting it from cache, 
 // otherwise shortcuts don't work and information might be out of date.
 
@@ -7,7 +7,7 @@ var nextpages = [];
 var usedprev = false;
 
 // Store the last two pages and the current page, or, the previous page, current page and the next page.
-function pages(page){
+chrome.runtime.onMessage.addListener(function(page){
 	// This action means the user is on a new page, and didn't arrive here by going to the previous page
 	if (page.action == "store" && usedprev == false){
 		// Unless there is no last item or the current page was reloaded
@@ -50,16 +50,41 @@ function pages(page){
 			chrome.tabs.sendMessage(tabs[0].id, {url: pagetoload});
 		});
 	}
-}
+});
 
-// Listener
-chrome.runtime.onMessage.addListener(pages);
+
+// This section of the background script keeps track of [C] being pressed for the content script.
+// The purpose of this is to make sure [C], which can open a maximum of 10 tabs, is not pressed more than once a minute.
+// This is to satisfy the script rate limits for NationStates.
+
+var didcross = false;
+
+chrome.runtime.onMessage.addListener(function(request){
+	// If a cross request is received and the user did not cross in the last minute
+	if (request.cancross == "?" && didcross == false){
+		// Get the active tab and tell it the user can cross
+		chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+			chrome.tabs.sendMessage(tabs[0].id, {cancross: true});
+		});
+		// Cross timeout of 60 seconds
+		didcross = true;
+		setTimeout(function(){didcross = false;}, 60000);
+	}
+	// If a cross request is received and the user did cross in the last minute
+	else if (request.cancross == "?" && didcross == true){
+		// Get the active tab and tell it the user can't cross
+		chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+			chrome.tabs.sendMessage(tabs[0].id, {cancross: false});
+		});
+	}
+});
+
 
 // Code to test functionality (add temporary "notifications" permission in manifest.json):
 /*
 chrome.notifications.create({
 	"type": "basic",
-	"title": page.action,
-	"message": "prevpages:\n" + prevpages.toString() + "\nnextpages:\n" + nextpages.toString()
+	"title": "some title",
+	"message": "some message"
 });
 */
