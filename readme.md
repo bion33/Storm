@@ -4,8 +4,8 @@
 
 ## ABOUT
 
-### Latest release: **v1.5**
-### WIP: **v1.6**
+### Latest release: **v1.6**
+### WIP: **v1.7**
 
 AIR-Breeze is a variant of Breeze++ for [AIR Force](https://www.nationstates.net/region=AIR).
 
