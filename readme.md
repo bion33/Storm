@@ -5,7 +5,8 @@
 ## ABOUT
 
 ### Latest release: **v1.6**
-### WIP: **v1.7**
+[Mozilla Firefox](https://addons.mozilla.org/en-US/firefox/addon/air-breeze/)<br>
+[Google Chrome](https://chrome.google.com/webstore/detail/air-breeze/dbmojgocnaeejbjnjgkcpehdpgjnhhpo)
 
 AIR-Breeze is a variant of Breeze++ for [AIR Force](https://www.nationstates.net/region=AIR).
 
@@ -82,6 +83,7 @@ Keys native to your browser included.
 * Added a visual aid for reloading the reports page, and automatically set "Show reports from last ... hours" to 0.10
 * Fixed the issue with trying to open the WA-Delegate's page using [W] immediately after changing regions.
 * Solved the inherent browser problem with cached previous/next pages. If you use F7 or Backspace and F8 to navigate, you won't need to reload the page any more. You still have to reload the page if you use the back/forward buttons in your browser. This is so that AIR-Breeze does not interfere with basic browser functionality
+* Published on https://chrome.google.com/webstore/detail/air-breeze/dbmojgocnaeejbjnjgkcpehdpgjnhhpo
 
 
 **v1.5 (2018/04/17)**
@@ -109,7 +111,7 @@ Keys native to your browser included.
 
 **v1.2 (2018/03/18)**
 
-* Published
+* Published on https://addons.mozilla.org/en-US/firefox/addon/air-breeze/
 
 
 **v1.1 (2018/03/16)**
@@ -132,4 +134,7 @@ Keys native to your browser included.
 * Changed [N] from refreshing page to opening own nation (press [F5] to refresh page)
 * Changed [B] to relocate to The Pareven Isles instead of Spear Danes
 * Removed [V] as an alternative key to doss
-* Removed [
+* Removed [<] to go back ([F7] and [Backspace now serve that function])
+* Removed ['] to apply/join/leave the WA ([J] and [L] now serve that function)
+* Disabled [Z] to open zombie control (will be re-enabled around halloween)
+* Disabled [?] to file GHR (may be re-enabled by popular request)
