@@ -1,16 +1,16 @@
-# AIR-Breeze README
+# Storm README
 
 
 
 ## ABOUT
 
-### Latest release: **v1.6**
+### Latest release: **v1.7**
 [Mozilla Firefox](https://addons.mozilla.org/en-US/firefox/addon/air-breeze/)<br>
 [Google Chrome](https://chrome.google.com/webstore/detail/air-breeze/dbmojgocnaeejbjnjgkcpehdpgjnhhpo)
 
-AIR-Breeze is a variant of Breeze++ for [AIR Force](https://www.nationstates.net/region=AIR).
+Storm is a variant of Breeze++ with additional functionality. See the keylist and changelog for differences between the two.
 
-| NSBreeze  | Breeze++         | AIR-Breeze   |
+| NSBreeze  | Breeze++         | Storm   |
 |-----------|------------------|--------------|
 | [Shizensky](http://nationstates.net/Shizensky) | [Vincent W. Drake](https://www.nationstates.net/nation=vincent_drake) | [Krypton Nova](https://www.nationstates.net/nation=krypton_nova) |
 
@@ -22,7 +22,7 @@ All help in making this extension better is welcome! Contact me if you have sugg
 
 #### **Contact me:**
 
-[bion3@outlook.com](mailto:bion3@outlook.com?Subject=AIR-Breeze)
+[bion3@outlook.com](mailto:bion3@outlook.com?Subject=Storm)
 KN#4693 on Discord
 
 
@@ -76,7 +76,12 @@ Keys native to your browser included.
 ## CHANGELOG
 
 
-**WIP v1.6 (2018/04/??)**
+**v1.7 (2018/07/09)**
+
+* Name changed from AIR-Breeze to Storm. Icons changed.
+
+
+**v1.6 (2018/04/28)**
 
 * Added [F6] to copy the link to the current page
 * Re-enabled [C]. It now opens the first 10 endorsers and can not be used more than once a minute. This satisfies NS script rules.

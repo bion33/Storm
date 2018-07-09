@@ -1,10 +1,10 @@
 {
 	"manifest_version": 2,
-    "name": "AIR-Breeze",
-    "short_name": "AIR-Breeze",
+    "name": "Storm",
+    "short_name": "Storm",
 	"version": "1.6",
 	"author": "Krypton Nova",
-	"description": "AIR-Breeze enables hotkeys for military gameplay on NationStates.",
+	"description": "Storm enables hotkeys for military gameplay on NationStates.",
 	"browser_action": {
 		"browser_style": false,
 		"default_icon": "./ext-resources/icon.png",
