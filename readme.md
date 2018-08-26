@@ -4,7 +4,7 @@
 
 ## ABOUT
 
-### Latest release: **v1.7**
+### Latest release: **v1.8**
 [Mozilla Firefox](https://addons.mozilla.org/en-US/firefox/addon/air-breeze/)<br>
 [Google Chrome](https://chrome.google.com/webstore/detail/air-breeze/dbmojgocnaeejbjnjgkcpehdpgjnhhpo)
 
@@ -74,6 +74,11 @@ Keys native to your browser included.
  
 
 ## CHANGELOG
+
+
+**v1.8 (2018/08/26)**
+
+* Changed [P] from The Pareven Isles to By the Sword.
 
 
 **v1.7 (2018/07/09)**

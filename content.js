@@ -300,13 +300,13 @@
 					window.location.href = "https://www.nationstates.net/page=region_control";
 				}
 			}
-			// [P] Open The Pareven Isles, Move to The Pareven Isles (2x)
+			// [P] Open By the Sword, Move to By the Sword (2x)
 			else if (e.keyCode == 80){
-				if (current_url == "https://www.nationstates.net/region=the_pareven_isles"){
+				if (current_url == "https://www.nationstates.net/region=by_the_sword"){
 					$(".button[name=move_region], input[name=move_region]").first().trigger("click");
 				}
 				else {	  
-					window.location.href = "https://www.nationstates.net/region=the_pareven_isles";
+					window.location.href = "https://www.nationstates.net/region=by_the_sword";
 				}
 			}
 			// [A] Activity Feed With Chasing Filters, Activity Feed Without (2x)
