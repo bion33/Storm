@@ -22,7 +22,7 @@ All help in making this extension better is welcome! Contact me if you have sugg
 
 #### **Contact me:**
 
-[bion3@outlook.com](mailto:bion@disroot.org?Subject=Storm)
+[bion@disroot.org](mailto:bion@disroot.org?Subject=Storm)
 KN#4693 on Discord
 
 
