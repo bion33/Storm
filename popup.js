@@ -8,7 +8,7 @@ function loaded() {
                     .split(" ")
                     .map((s) => s.charAt(0).toUpperCase() + s.substring(1))
                     .join(" ");
-            document.getElementById("jumpPoint").innerHTML = jp;
+            document.getElementById("jumpPoint").textContent = jp;
             console.log(jp);
         });
     });
