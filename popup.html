@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 	<head>
+		<title>Plugin-Window</title>
 		<meta charset="UTF-8"> 
 		<style type="text/css">
 			html {
@@ -58,11 +59,12 @@
 			}
 			.button {display: inline-block;}
 		</style>
+		<script src="popup.js"></script>
 	</head>
 	<body>
 		<h1 class="box title">
 			<span>STORM</span>
-			<span class="version">v1.8</span>
+			<span class="version">v1.9</span>
 		</h1>
 		<br>
 		<div class="buttons">
@@ -76,6 +78,8 @@
 		<br>
 		<div class="box">
 			<p>
+				<b>Your current Jump Point: </b><span id="jumpPoint"></span><br><br>
+
 				Quick key list. See the full readme for better explanations.<br>
 				<br>
 				<table>
@@ -104,9 +108,8 @@
 					<tr><td><b>[M]</b></td><td>Move</td></tr>
 					<tr><td><b>[N]</b></td><td>Nation</td></tr>
 					<tr><td><b>[O]</b></td><td>Regional controls → Appoint/Dismiss RO</td></tr>
-					<tr><td><b>[P]</b></td><td>The Pareven Isles</td></tr>
+					<tr><td><b>[P]</b></td><td>Move to jump point ([Shift]+[P] to set)</td></tr>
 					<tr><td><b>[R]</b></td><td>Region</td></tr>
-					<tr><td><b>[S]</b></td><td>Spear Danes</td></tr>
 					<tr><td><b>[U]</b></td><td>Updated?</td></tr>
 					<tr><td><b>[W]</b></td><td>Region → view WAD</td></tr>
 					<tr><td><b>[X]</b></td><td>Open dossier → clear dossier</td></tr>

@@ -1,9 +1,24 @@
 (function() {
 	// Variables
-	var current_url = window.location.href;
-	var shifted = false;
-	var controlled = false;
-	var alternated = false;
+	let current_url = window.location.href;
+	let shifted = false;
+	let controlled = false;
+	let alternated = false;
+	if (typeof localStorage.jumpPoint != "string") localStorage.jumpPoint = "https://www.nationstates.net/region=artificial_solar_system";
+
+	// On popup.js requisting jumpPoint
+	chrome.runtime.onMessage.addListener(
+		function(message, sender, sendResponse) {
+			switch(message.type) {
+				case "getJumpPoint":
+					sendResponse(localStorage.jumpPoint);
+					break;
+				default:
+					console.error("Unrecognised message: ", message);
+			}
+		}
+	);
+
 	// On page load
 	$(window).on("load", function(){
 		// Send current page to background script
@@ -37,7 +52,7 @@
 	});
 	// Key up
 	$(document).keyup(function(e) {
-        if (shifted || controlled || alternated){
+        if (controlled || alternated){
 			return;
         }
 		else {
@@ -68,7 +83,7 @@
 			// [F6] copies the link to the current page to the clipboard
 			else if (e.keyCode == 117){
 				e.preventDefault();
-				var $temp = $("<input>");
+				let $temp = $("<input>");
 				$("body").append($temp);
 				$temp.val(current_url).select();
 				document.execCommand("copy");
@@ -277,7 +292,7 @@
 			}
 			// [O] Regional officer functionality
 			else if (e.keyCode == 79){
-				var current_nation = $("#loggedin").attr("data-nname");
+				let current_nation = $("#loggedin").attr("data-nname");
 				// If on the regional control page, open own regional officer page
 				if (current_url.indexOf("/page=region_control") !== -1){
 					window.location.href = "https://www.nationstates.net/page=regional_officer/nation=" + current_nation;
@@ -300,13 +315,16 @@
 					window.location.href = "https://www.nationstates.net/page=region_control";
 				}
 			}
-			// [P] Open By the Sword, Move to By the Sword (2x)
+			// [P] Open jump point, Move to jump point (2x), set jump point (+ [Shift])
 			else if (e.keyCode == 80){
-				if (current_url == "https://www.nationstates.net/region=by_the_sword"){
+				if (shifted) {
+					if (current_url.indexOf("https://www.nationstates.net/region=") !== -1) localStorage.jumpPoint = current_url;
+				}
+				else if (current_url == localStorage.jumpPoint){
 					$(".button[name=move_region], input[name=move_region]").first().trigger("click");
 				}
 				else {	  
-					window.location.href = "https://www.nationstates.net/region=by_the_sword";
+					window.location.href = localStorage.jumpPoint;
 				}
 			}
 			// [A] Activity Feed With Chasing Filters, Activity Feed Without (2x)
@@ -319,15 +337,6 @@
 				}
 				else {
 					window.location.href = "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo";
-				}
-			}
-			// [S] Open Spear Danes, Move to Spear Danes (2x)
-			else if (e.keyCode == 83){
-				if (current_url == "https://www.nationstates.net/region=spear_danes"){
-					$(".button[name=move_region], input[name=move_region]").first().trigger("click");
-				}
-				else {	  
-					window.location.href = "https://www.nationstates.net/region=spear_danes";
 				}
 			}
 			// [D] Add to Dossier
@@ -374,8 +383,8 @@
 				chrome.runtime.onMessage.addListener(function docross(reply){
 					// If the user hasn't pressed the cross-endorse button 60 seconds ago or less, open the first 10 endorsers in separate tabs. This satisfies the limit of 10 requests/minute for scripts on NS.
 					if (reply.cancross == true){
-						var cross = $(".unbox").children("p").children("a");
-						for (var i = 0; i < 10 && i < cross.length; i++) {
+						let cross = $(".unbox").children("p").children("a");
+						for (let i = 0; i < 10 && i < cross.length; i++) {
 						 	cross[i].target = "_blank";
 							cross[i].click();
 						}

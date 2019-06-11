@@ -4,7 +4,7 @@
 
 ## ABOUT
 
-### Latest release: **v1.8**
+### Latest release: **v1.9**
 [Mozilla Firefox](https://addons.mozilla.org/en-US/firefox/addon/air-breeze/)<br>
 [Google Chrome](https://chrome.google.com/webstore/detail/air-breeze/dbmojgocnaeejbjnjgkcpehdpgjnhhpo)
 
@@ -60,7 +60,7 @@ Keys native to your browser included.
 | **[M]** | Move to this region. |
 | **[N]** | The nation you're logged into. |
 | **[O]** | Opens regional controls. There, press to appoint yourself "Pilot" with permissions over Appearance, Communications, Embassies and Polls. If you modify another officer, press to dismiss them. |
-| **[P]** | Open The Pareven Isles. Press again to move there. |
+| **[P]** | Open jump point. Press again to move there. Hold shift and this key to set your custom jump point. Default: Spear Danes. |
 | **[R]** | The region your nation is in. |
 | **[S]** | Open Spear Danes. Press again to move there. |
 | **[U]** | A quick way to check if your nation has updated. |
@@ -74,6 +74,12 @@ Keys native to your browser included.
  
 
 ## CHANGELOG
+
+**v1.9 (2019/06/11)**
+
+* Show currently selected jump point in extension popup
+* Added [Shift]+[P] to set custom region.
+* Changed [P] from By the Sword to custom region.
 
 
 **v1.8 (2018/08/26)**
