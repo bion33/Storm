@@ -60,7 +60,7 @@ Keys native to your browser included.
 | **[L]** | Apply/Join/Leave the World Assembly. |
 | **[M]** | Move to this region. |
 | **[N]** | The nation you're logged into. |
-| **[O]** | Opens regional controls. There, press to appoint yourself "Pilot" with permissions over Appearance, Communications, Embassies and Polls. If you modify another officer, press to dismiss them. |
+| **[O]** | Opens regional controls. There, press to appoint yourself "Ace" with permissions over Appearance, Communications, Embassies and Polls. If you modify another officer, press to dismiss them. |
 | **[P]** | Open jump point. Press again to move there. Hold shift and this key to set your custom jump point. Default: Spear Danes. |
 | **[S]** | Prepare Switchers (press 4 times). |
 | **[T]** | Toggle Templates on and off. |
