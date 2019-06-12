@@ -5,7 +5,8 @@
 ## ABOUT
 
 ### Latest release: **v2.0**
-[Mozilla Firefox](https://addons.mozilla.org/en-US/firefox/addon/storm-ns/)<br>
+[Firefox add-on](https://addons.mozilla.org/en-US/firefox/addon/storm-ns/versions/)<br>
+[Chrome Installation Instructions](https://docs.google.com/document/d/103SyyFSHejWzWgktYLY7iP21Z5twQdy5-K9g5k5Yvys/edit?usp=sharing)<br>
 
 Storm is a variant of Breeze++ with additional functionality. See the keylist and changelog for differences between the two.
 
