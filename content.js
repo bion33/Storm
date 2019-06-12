@@ -24,7 +24,7 @@
 		// Send current page to background script
 		chrome.runtime.sendMessage({action: "store", url: current_url});
 		// If on the reports page and it is loaded
-		if (current_url == "https://www.nationstates.net/template-overall=none/page=reports"){
+		if (current_url === "https://www.nationstates.net/template-overall=none/page=reports"){
 			// Make the page border green so the user knows they can safely refresh.
 			$("html").css({"border-color": "#33cc00"});
 		}
@@ -37,39 +37,39 @@
 		alternated = f.altKey;
 		// Prevent defaults on keydown for [Backspace] and [Spacebar], except for typing keys in an input or textarea.
 		if (!$("input,textarea").is(":focus")){
-			if (f.keyCode == 8 || f.keyCode == 32){
+			if (f.keyCode === 8 || f.keyCode === 32){
 				f.preventDefault();
 			}
 		}
 		// Prevent defaults on keydown for [F6], [F7] and [F8]
-		if (f.keyCode == 117 || f.keyCode == 118 || f.keyCode == 119) {
+		if (f.keyCode === 117 || f.keyCode === 118 || f.keyCode === 119) {
 			f.preventDefault();
 		}
 		// Prevent defaults on keydown for [F5] on the reports page, where this extension will press the "Generate Report" button instead of refreshing the page manually.
-		if (current_url == "https://www.nationstates.net/template-overall=none/page=reports" && f.keyCode == 116){
+		if (current_url === "https://www.nationstates.net/template-overall=none/page=reports" && f.keyCode === 116){
 			f.preventDefault();
 		}
 	});
 	// Key up
 	$(document).keyup(function(e) {
-        if (controlled || alternated){
-			return;
-        }
-		else {
-			if ($("input,textarea").is(":focus")){
-				return;
-			}
+		if (!(controlled || alternated || (shifted && e.keyCode !== 80))) {
+			if (!$("input,textarea").is(":focus")){}
 			// [Enter] confirms dialogs in Chrome and Firefox by default. No code required.
 			// [Ctrl]+[Tab] switches between browser tabs in Chrome and Firefox by default. No code required.
-			// [Space] Reports Page (no template) with auto-refresh.
-			else if (e.keyCode == 32 && e.target == document.body) {
- 				e.preventDefault();
-				window.location.href = "https://www.nationstates.net/template-overall=none/page=reports";
+			// [Space] Reports Page (no template)
+			else if (e.keyCode === 32 && e.target === document.body) {
+				let current_url = $(location).attr('href');
+				if (current_url == "https://www.nationstates.net/template-overall=none/page=reports"){
+					window.location.href = "https://www.nationstates.net/page=ajax2/a=reports/view=world/filter=move+member+endo";
+				}
+				else {
+					window.location.href = "https://www.nationstates.net/template-overall=none/page=reports";
+				}
 			}
 			// [F5] Refreshes window in both Chrome and Firefox by default.
 			// If on the reports page and it is reloaded, make the green page border red so the user knows they shouldn't press refresh again.
-			else if (e.keyCode == 116){
-				if (current_url == "https://www.nationstates.net/template-overall=none/page=reports"){
+			else if (e.keyCode === 116){
+				if (current_url === "https://www.nationstates.net/template-overall=none/page=reports"){
 					// Instead of refreshing, press the "Generate Report" button. If NS ever decides to not make this page refresh when that button is clicked, this extension will benefit from that (as it would load changes faster).
 					e.preventDefault();
 					// Only get reports for the last 6 minutes. 
@@ -81,7 +81,7 @@
 				}
 			}
 			// [F6] copies the link to the current page to the clipboard
-			else if (e.keyCode == 117){
+			else if (e.keyCode === 117){
 				e.preventDefault();
 				let $temp = $("<input>");
 				$("body").append($temp);
@@ -90,7 +90,7 @@
 				$temp.remove();
 			}
 			// [F7] & [Backspace] Goes to previous page. [F7] is the shortcut for caret browsing in Firefox but can be disabled. [Backspace] is default for previous page in Firefox but not used in Chrome.
-			else if (e.keyCode == 118 || e.keyCode == 8){
+			else if (e.keyCode === 118 || e.keyCode === 8){
 				e.preventDefault();
 				// Send message to background script
 				chrome.runtime.sendMessage({action: "previous", url: current_url});
@@ -100,7 +100,7 @@
 				});
 			}
 			// [F8] Goes to next page. Unused by both Chrome and Firefox.
-			else if (e.keyCode == 119){
+			else if (e.keyCode === 119){
 				e.preventDefault();
 				// Send message to background script
 				chrome.runtime.sendMessage({action: "next", url: current_url});
@@ -110,40 +110,40 @@
 				});
 			}
 			// [1] Add to Dossier
-			else if (e.keyCode == 49){
-				if (current_url == "https://www.nationstates.net/template-overall=none/page=reports"){
+			else if (e.keyCode === 49){
+				if (current_url === "https://www.nationstates.net/template-overall=none/page=reports"){
 					$("li a:nth-of-type(1)")[0].click(); 
 					$("li a:nth-of-type(1)").eq(0).css("background-color", "yellow");
 				} 
-				if (current_url == "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
-					$("#reports li a:nth-of-type(1)")[0].click(); 
+				if (current_url === "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
+					$("#reports li a:nth-of-type(1)")[0].click();
 					$("#reports li a:nth-of-type(1)").eq(0).css("background-color", "yellow");
 				} 
 				else {
-				$(".button[name=action]").first().trigger("click"); 
+					$(".button[name=action]").first().trigger("click");
 				}
 			}
 			// [2] Add to Dossier
-			else if (e.keyCode == 50){
-				if (current_url == "https://www.nationstates.net/template-overall=none/page=reports"){
+			else if (e.keyCode === 50){
+				if (current_url === "https://www.nationstates.net/template-overall=none/page=reports"){
 					$("li a:nth-of-type(1)")[1].click(); 
 					$("li a:nth-of-type(1)").eq(1).css("background-color", "yellow");
 				} 
-				if (current_url == "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
+				if (current_url === "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
 					$("#reports li a:nth-of-type(1)")[1].click(); 
 					$("#reports li a:nth-of-type(1)").eq(1).css("background-color", "yellow");
 				} 
 				else {
-				$(".button[name=action]").first().trigger("click"); 
+					$(".button[name=action]").first().trigger("click");
 				}
 			}
 			// [3] Add to Dossier
-			else if (e.keyCode == 51){
-				if (current_url == "https://www.nationstates.net/template-overall=none/page=reports"){
+			else if (e.keyCode === 51){
+				if (current_url === "https://www.nationstates.net/template-overall=none/page=reports"){
 					$("li a:nth-of-type(1)")[2].click(); 
 					$("li a:nth-of-type(1)").eq(2).css("background-color", "yellow");
 				} 
-				if (current_url == "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
+				if (current_url === "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
 					$("#reports li a:nth-of-type(1)")[2].click(); 
 					$("#reports li a:nth-of-type(1)").eq(2).css("background-color", "yellow");
 				} 
@@ -152,101 +152,101 @@
 				}
 			}
 			// [4] Add to Dossier
-			else if (e.keyCode == 52){
-				if (current_url == "https://www.nationstates.net/template-overall=none/page=reports"){
-					$("li a:nth-of-type(1)")[3].click(); 
+			else if (e.keyCode === 52){
+				if (current_url === "https://www.nationstates.net/template-overall=none/page=reports"){
+					$("li a:nth-of-type(1)")[3].click();
 					$("li a:nth-of-type(1)").eq(3).css("background-color", "yellow");
-				} 
-				if (current_url == "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
-					$("#reports li a:nth-of-type(1)")[3].click(); 
+				}
+				if (current_url === "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
+					$("#reports li a:nth-of-type(1)")[3].click();
 					$("#reports li a:nth-of-type(1)").eq(3).css("background-color", "yellow");
-				} 
+				}
 				else {
-				$(".button[name=action]").first().trigger("click"); 
+				$(".button[name=action]").first().trigger("click");
 				}
 			}
 			// [5] Add to Dossier
-			else if (e.keyCode == 53){
-				if (current_url == "https://www.nationstates.net/template-overall=none/page=reports"){
-					$("li a:nth-of-type(1)")[4].click(); 
+			else if (e.keyCode === 53){
+				if (current_url === "https://www.nationstates.net/template-overall=none/page=reports"){
+					$("li a:nth-of-type(1)")[4].click();
 					$("li a:nth-of-type(1)").eq(4).css("background-color", "yellow");
-				} 
-				if (current_url == "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
-					$("#reports li a:nth-of-type(1)")[4].click(); 
+				}
+				if (current_url === "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
+					$("#reports li a:nth-of-type(1)")[4].click();
 					$("#reports li a:nth-of-type(1)").eq(4).css("background-color", "yellow");
-				} 
+				}
 				else {
-				$(".button[name=action]").first().trigger("click"); 
+				$(".button[name=action]").first().trigger("click");
 				}
 			}
 			// [Keypad 1] Add to Dossier
-			else if (e.keyCode == 97){
-				if (current_url == "https://www.nationstates.net/template-overall=none/page=reports"){
-					$("li a:nth-of-type(2)")[0].click(); 
+			else if (e.keyCode === 97){
+				if (current_url === "https://www.nationstates.net/template-overall=none/page=reports"){
+					$("li a:nth-of-type(2)")[0].click();
 					$("li a:nth-of-type(2)").eq(0).css("background-color", "yellow");
-				} 
-				if (current_url == "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
-					$("#reports li a:nth-of-type(2)")[0].click(); 
+				}
+				if (current_url === "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
+					$("#reports li a:nth-of-type(2)")[0].click();
 					$("#reports li a:nth-of-type(2)").eq(0).css("background-color", "yellow");
-				} 
+				}
 				else {
-				$(".button[name=action]").first().trigger("click"); 
+					$(".button[name=action]").first().trigger("click");
 				}
 			}
 			// [Keypad 2] Add to Dossier
-			else if (e.keyCode == 98){
-				if (current_url == "https://www.nationstates.net/template-overall=none/page=reports"){
-					$("li a:nth-of-type(2)")[1].click(); 
+			else if (e.keyCode === 98){
+				if (current_url === "https://www.nationstates.net/template-overall=none/page=reports"){
+					$("li a:nth-of-type(2)")[1].click();
 					$("li a:nth-of-type(2)").eq(1).css("background-color", "yellow");
-				} 
-				if (current_url == "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
-					$("#reports li a:nth-of-type(2)")[1].click(); 
+				}
+				if (current_url === "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
+					$("#reports li a:nth-of-type(2)")[1].click();
 					$("#reports li a:nth-of-type(2)").eq(1).css("background-color", "yellow");
-				} 
+				}
 				else {
-				$(".button[name=action]").first().trigger("click"); 
+				$(".button[name=action]").first().trigger("click");
 				}
 			}
 			// [Keypad 3] Add to Dossier
-			else if (e.keyCode == 99){
-				if (current_url == "https://www.nationstates.net/template-overall=none/page=reports"){
-					$("li a:nth-of-type(2)")[2].click(); 
+			else if (e.keyCode === 99){
+				if (current_url === "https://www.nationstates.net/template-overall=none/page=reports"){
+					$("li a:nth-of-type(2)")[2].click();
 					$("li a:nth-of-type(2)").eq(2).css("background-color", "yellow");
-				} 
-				if (current_url == "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
-					$("#reports li a:nth-of-type(2)")[2].click(); 
+				}
+				if (current_url === "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
+					$("#reports li a:nth-of-type(2)")[2].click();
 					$("#reports li a:nth-of-type(2)").eq(2).css("background-color", "yellow");
-				} 
+				}
 				else {
-				$(".button[name=action]").first().trigger("click"); 
+				$(".button[name=action]").first().trigger("click");
 				}
 			}
 			// [Keypad 4] Add to Dossier
-			else if (e.keyCode == 100){
-				if (current_url == "https://www.nationstates.net/template-overall=none/page=reports"){
-					$("li a:nth-of-type(2)")[3].click(); 
+			else if (e.keyCode === 100){
+				if (current_url === "https://www.nationstates.net/template-overall=none/page=reports"){
+					$("li a:nth-of-type(2)")[3].click();
 					$("li a:nth-of-type(2)").eq(3).css("background-color", "yellow");
-				} 
-				if (current_url == "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
-					$("#reports li a:nth-of-type(2)")[3].click(); 
+				}
+				if (current_url === "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
+					$("#reports li a:nth-of-type(2)")[3].click();
 					$("#reports li a:nth-of-type(2)").eq(3).css("background-color", "yellow");
-				} 
+				}
 				else {
-				$(".button[name=action]").first().trigger("click"); 
+				$(".button[name=action]").first().trigger("click");
 				}
 			}
 			// [Keypad 5] Add to Dossier
-			else if (e.keyCode == 101){
-				if (current_url == "https://www.nationstates.net/template-overall=none/page=reports"){
-					$("li a:nth-of-type(2)")[4].click(); 
+			else if (e.keyCode === 101){
+				if (current_url === "https://www.nationstates.net/template-overall=none/page=reports"){
+					$("li a:nth-of-type(2)")[4].click();
 					$("li a:nth-of-type(2)").eq(4).css("background-color", "yellow");
-				} 
-				if (current_url == "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
-					$("#reports li a:nth-of-type(2)")[4].click(); 
+				}
+				if (current_url === "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
+					$("#reports li a:nth-of-type(2)")[4].click();
 					$("#reports li a:nth-of-type(2)").eq(4).css("background-color", "yellow");
-				} 
+				}
 				else {
-				$(".button[name=action]").first().trigger("click"); 
+				$(".button[name=action]").first().trigger("click");
 				}
 			}
 			// [W] WA Delegate
@@ -268,30 +268,64 @@
 					else{
 						// Other themes
 						$("#panel").children("ul").children("li").children("a")[1].click();
-					}	 
+					}
 				}
 			}
 			// [E] Endorse
-			else if (e.keyCode == 69){
-				if ($("input[name=action]").val() == "endorse") $("button.endorse").first().trigger("click");  
+			else if (e.keyCode === 69){
+				if ($("input[name=action]").val() === "endorse") $("button.endorse").first().trigger("click");
 			}
 			// [R] Region
-			else if (e.keyCode == 82){
-				if ($("#paneltitle").length > 0){
-					// Using Rift
-					$("#panel").children(".panelcontent").children(".menu").children("li").children("a")[0].click();
+			else if (e.keyCode === 82){
+				if (window.location.href.indexOf("net/region=") > -1 || window.location.href.indexOf("none/region=") > -1) {
+					window.location.reload();
 				}
-				else{
-					// Other themes
-					$("#panel").children("ul").children("li").children("a")[1].click();
-				}	 
+				if (window.location.href.indexOf("template-overall=none/page=change_region") > -1) {
+					let region_url = $('a[href^="/region"]').first().text().toLowerCase().split(' ').join('_');
+					window.location.replace("https://www.nationstates.net/region=' "+region_url+"'");
+				}
+				if (window.location.href.indexOf("none/page=reports") > -1 || window.location.href.indexOf("page=ajax2/a=reports") > -1) {
+					$('li a:nth-of-type(3)')[0].click();
+					$('li a:nth-of-type(3)').eq(0).css("background-color", "yellow");
+				}
+				else {
+					if ($('#paneltitle').length > 0){
+						// using Rift
+						$('#panel').children('.panelcontent').children('.menu').children('li').children('a')[0].click();
+					}
+					else{
+						// Default theme
+						$('#panel').children('ul').children('li').children('a')[1].click();
+					}
+				}
+			}
+			// [T] Toggle site template on or off
+			else if (e.keyCode === 84){
+				if (window.location.href.indexOf("none/region") > -1) {
+					var region_url = $('a[href^="/region"]').first().text().toLowerCase().split(' ').join('_');
+					console.log(region_url);
+					window.location.replace("https://www.nationstates.net/region="+region_url+" ");
+				}
+				if (window.location.href.indexOf("none/nation") > -1) {
+					var nation_url = $('.quietlink').first().text().toLowerCase().split(' ').join('_');
+					window.location.replace("https://www.nationstates.net/nation="+nation_url+" ");
+				}
+				if (window.location.href.indexOf("net/region") > -1) {
+					var region_url = $('a[href^="/region"]').first().text().toLowerCase().split(' ').join('_');
+					console.log(region_url);
+					window.location.replace("https://www.nationstates.net/template-overall=none/region="+region_url+" ");
+				}
+				if (window.location.href.indexOf("net/nation") > -1) {
+					var nation_url = $('.quietlink:eq(1)').text().toLowerCase().split(' ').join('_');
+					window.location.replace("https://www.nationstates.net/template-overall=none/nation="+nation_url+" ");
+				}
 			}
 			// [U] Did My Nation Update?
-			else if (e.keyCode == 85){
+			else if (e.keyCode === 85){
 				window.location.href = "https://www.nationstates.net/page=ajax2/a=reports/view=self/filter=change";
 			}
 			// [O] Regional officer functionality
-			else if (e.keyCode == 79){
+			else if (e.keyCode === 79){
 				let current_nation = $("#loggedin").attr("data-nname");
 				// If on the regional control page, open own regional officer page
 				if (current_url.indexOf("/page=region_control") !== -1){
@@ -302,7 +336,7 @@
 					$("input[name=office_name]").val("Ace");
 					$("input[name=authority_A]").prop("checked", true);
 					$("input[name=authority_C]").prop("checked", true);
-					$("input[name=authority_E]").prop("checked", true);	
+					$("input[name=authority_E]").prop("checked", true);
 					$("input[name=authority_P]").prop("checked", true);
 					$("button[name=editofficer]").trigger("click");
 				}
@@ -316,43 +350,69 @@
 				}
 			}
 			// [P] Open jump point, Move to jump point (2x), set jump point (+ [Shift])
-			else if (e.keyCode == 80){
+			else if (e.keyCode === 80){
 				if (shifted) {
 					if (current_url.indexOf("https://www.nationstates.net/region=") !== -1) localStorage.jumpPoint = current_url;
 				}
-				else if (current_url == localStorage.jumpPoint){
+				else if (current_url === localStorage.jumpPoint){
 					$(".button[name=move_region], input[name=move_region]").first().trigger("click");
 				}
-				else {	  
+				else {
 					window.location.href = localStorage.jumpPoint;
 				}
 			}
 			// [A] Activity Feed With Chasing Filters, Activity Feed Without (2x)
-			else if (e.keyCode == 65){
-				if (current_url == "https://www.nationstates.net/page=activity/view=world"){
+			else if (e.keyCode === 65){
+				if (current_url === "https://www.nationstates.net/page=activity/view=world"){
 					window.location.href = "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo";
 				}
-				else if (current_url == "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
+				else if (current_url === "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
 					window.location.href = "https://www.nationstates.net/page=activity/view=world";
 				}
 				else {
 					window.location.href = "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo";
 				}
 			}
+			// [S] Prep Switchers
+			else if (e.keyCode === 83){
+				if (window.location.href.indexOf("page=un") <= -1 && window.location.href.indexOf !== localStorage.jumpPoint) {
+					window.location.href = "https://www.nationstates.net/template-overall=none/page=un";
+				}
+				if (window.location.href.indexOf("page=un") > -1) {
+					$('.button[name=submit]').first().trigger('click');
+				}
+				if (window.location.href.indexOf("page=UN_status") > -1) {
+					window.location.href = localStorage.jumpPoint;
+				}
+				if (window.location.href === localStorage.jumpPoint) {
+					$('.button[name=move_region], input[name=move_region]').first().trigger('click');
+				}
+			}
 			// [D] Add to Dossier
-			else if (e.keyCode == 68){
+			else if (e.keyCode === 68){
 				if (current_url.indexOf("region=") !== -1){
 					// On region"s page
-					$(".button[name=add_to_dossier]").first().trigger("click"); 
+					$(".button[name=add_to_dossier]").first().trigger("click");
 				}
 				else {
 					// Elsewhere
-					$(".button[name=action]").first().trigger("click"); 
+					$(".button[name=action]").first().trigger("click");
 				}
-			} 
+			}
+			// [G] Check if a GCR is updating (Same as the plain Activity page, but faster)
+			else if (e.keyCode === 71){
+				window.location.href = "https://www.nationstates.net/page=ajax2/a=reports/view=world/filter=change";
+			}
+			// [H] Ajax2 feed for region happenings
+			else if (e.keyCode === 72){
+				if (window.location.href.indexOf("region=") > -1) {
+					let region_url = $('a[href^="/region"]').first().text().toLowerCase().split(' ').join('_');
+					window.location.href = "https://www.nationstates.net/page=ajax2/a=reports/view=region." +region_url+"/filter=move+member+endo";
+				}
+			}
 			// [J] & [L] Open WA, Apply/Join/Resign in the WA (2x)
-			else if (e.keyCode == 74 || e.keyCode == 76){
-				if (current_url == "https://www.nationstates.net/page=un"){
+			else if (e.keyCode === 74 || e.keyCode === 76){
+				if (current_url === "https://www.nationstates.net/page=un"){
 					if ($("#content").length > 0){
 						// Modern themes
 						$("#content").children("form").children("p").children("button").trigger("click");
@@ -360,29 +420,33 @@
 					else{
 						// Using Antiquity
 						$("#main").children("form").children("p").children("button").trigger("click");
-					}	 
+					}
 				}
 				else {
 					window.location.href = "https://www.nationstates.net/page=un";
 				}
 			}
 			// [X] Open Dossier, Clear Dossier (2x)
-			else if (e.keyCode == 88){
-				if (current_url == "https://www.nationstates.net/page=dossier"){
+			else if (e.keyCode === 88){
+				if (current_url === "https://www.nationstates.net/page=dossier"){
 					$(".button[name=clear_dossier]").first().trigger("click");
 				}
 				else {
 					window.location.href = "https://www.nationstates.net/page=dossier";
 				}
 			}
+			// [Z] Zombie Control
+			else if (e.keyCode === 90){
+				window.location.href = "https://www.nationstates.net/page=zombie_control";
+			}
 			// [C] Open nations to cross
-			else if (e.keyCode == 67){
+			else if (e.keyCode === 67){
 				// Send message to background script that C has been pressed
 				chrome.runtime.sendMessage({cancross: "?"});
 				// Receive message.
 				chrome.runtime.onMessage.addListener(function docross(reply){
 					// If the user hasn't pressed the cross-endorse button 60 seconds ago or less, open the first 10 endorsers in separate tabs. This satisfies the limit of 10 requests/minute for scripts on NS.
-					if (reply.cancross == true){
+					if (reply.cancross === true){
 						let cross = $(".unbox").children("p").children("a");
 						for (let i = 0; i < 10 && i < cross.length; i++) {
 						 	cross[i].target = "_blank";
@@ -394,33 +458,54 @@
 				});
 			}
 			// [B] Ban nation
-			else if (e.keyCode == 66){
+			else if (e.keyCode === 66){
 				$("button[name=ban]").trigger("click");
 			}
 			// [N] My Nation
-			else if (e.keyCode == 78){
-				window.location.href = "https://www.nationstates.net"; 
+			else if (e.keyCode === 78){
+				window.location.href = "https://www.nationstates.net";
 			}
 			// [M] Move, Chase Move (2x)
-			else if (e.keyCode == 77){
-				if (current_url == "https://www.nationstates.net/template-overall=none/page=reports"){
-					$("li a:nth-of-type(3)")[0].click(); 
+			else if (e.keyCode === 77){
+				if (current_url === "https://www.nationstates.net/template-overall=none/page=reports"){
+					$("li a:nth-of-type(3)")[0].click();
 					$("li a:nth-of-type(3)").eq(0).css("background-color", "yellow");
-				} 
+				}
 				else {
-					
+
 					$(".button[name=move_region], input[name=move_region]").first().trigger("click");
 				}
 			}
 			// Disabled Hotkeys
-			// [Z] Zombie Control
-			// else if (e.keyCode == 90){
-			//		window.location.href = "https://www.nationstates.net/page=zombie_control";
-			// }
-			// [H] File GHR
+			// [H] File a GHR, for salty bois
 			// else if (e.keyCode == 72){
 			//		window.location.href = "https://www.nationstates.net/page=help";
 			// }
 		}
 	});
 })();
+
+$( document ).ready(function() {
+	// Displays load time on the reports page
+	if (window.location.href.indexOf("page=reports") > -1 ) {
+		var loadTime = window.performance.timing.domContentLoadedEventEnd- window.performance.timing.navigationStart;
+		$( "h1:first" ).append(" - PAGE LOAD TIME: " +loadTime+ " ms").css( "color", "#006400" );
+	}
+	// Starts nation pages at the bottom when you load them, so you can endorse easier
+	if (window.location.href.indexOf("nation=") > -1 && window.location.href.indexOf('template-overall=none') === -1 &&  window.location.href.indexOf('page=join_WA') === -1) {
+		$('html, body').scrollTop( $(document).height() );
+	}
+	if (window.location.href.indexOf("page=ajax2") > -1 || window.location.href.indexOf("page=reports") > -1) {
+		// Enables clicking on ajax2 reports links
+		$('.nlink').each(function() {
+			$(this).attr("href", function(index, old) {
+				return old.replace("nation", "/template-overall=none/nation");
+			});
+		});
+		$('.rlink').each(function() {
+			$(this).attr("href", function(index, old) {
+				return old.replace("region", "/template-overall=none/region");
+			});
+		});
+	}
+});

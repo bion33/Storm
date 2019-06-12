@@ -4,7 +4,7 @@
 
 ## ABOUT
 
-### Latest release: **v1.9**
+### Latest release: **v2.0**
 [Mozilla Firefox](https://addons.mozilla.org/en-US/firefox/addon/air-breeze/)<br>
 [Google Chrome](https://chrome.google.com/webstore/detail/air-breeze/dbmojgocnaeejbjnjgkcpehdpgjnhhpo)
 
@@ -37,7 +37,7 @@ Keys native to your browser included.
 | --- | --- |
 | **[Enter]** | Confirm dialogue (useful in the World Assembly). |
 | **[Backspace]** | Go to the previous page. |
-| **[Spacebar]** | View the reports page. |
+| **[Spacebar]** | View the reports page. 2x for Ajax2 version. |
 | **[Ctrl] + [Tab]** | Switch between browser tabs. |
 | **[Ctrl] + [W]** | Close this browser tab. |
 |  |  |
@@ -55,17 +55,20 @@ Keys native to your browser included.
 | **[C]** | Open the first 10 nations endorsing this nation in a separate tab. This function is limited to 10 nations to satisfy NS script rules. If your browser warns you about popups, be sure to allow them for "https://www.nationstates.net". |
 | **[D]** | Add this nation or region to your dossier. |
 | **[E]** | Endorse this nation. |
+| **[G]** | What's updating? |
+| **[H]** | Region Happenings |
 | **[J]** | Apply/Join/Leave the World Assembly. |
 | **[L]** | Apply/Join/Leave the World Assembly. |
 | **[M]** | Move to this region. |
 | **[N]** | The nation you're logged into. |
 | **[O]** | Opens regional controls. There, press to appoint yourself "Pilot" with permissions over Appearance, Communications, Embassies and Polls. If you modify another officer, press to dismiss them. |
 | **[P]** | Open jump point. Press again to move there. Hold shift and this key to set your custom jump point. Default: Spear Danes. |
-| **[R]** | The region your nation is in. |
-| **[S]** | Open Spear Danes. Press again to move there. |
+| **[S]** | Prepare Switchers (press 4 times). |
+| **[T]** | Toggle Templates on and off. |
 | **[U]** | A quick way to check if your nation has updated. |
 | **[W]** | Opens the region you are in, when pressed there goes to its WA Delegate. |
 | **[X]** | Open your dossier. Press again to clear the nations in it. |
+| **[Z]** | Zombie Control |
 
 
 
@@ -74,6 +77,12 @@ Keys native to your browser included.
  
 
 ## CHANGELOG
+
+**v2.0 (2019/06/12)**
+
+* Added features from Breeze++ v3.0.0 (Author: Vincent W. Drake)
+* Re-enabled [Z] (Zombie Control)
+
 
 **v1.9 (2019/06/11)**
 
@@ -138,7 +147,7 @@ Keys native to your browser included.
 
 **v1.0 (2018/03/15)**
 
-* Forked from Breeze++
+* Forked from Breeze++ v2.1.4
 * Added a popup readme (left-click the extension's button) and extension icon
 * Added a keyboard layout image (see popup readme)
 * Added [Backspace] to go to the previous page
