@@ -5,8 +5,7 @@
 ## ABOUT
 
 ### Latest release: **v2.0**
-[Mozilla Firefox](https://addons.mozilla.org/en-US/firefox/addon/air-breeze/)<br>
-[Google Chrome](https://chrome.google.com/webstore/detail/air-breeze/dbmojgocnaeejbjnjgkcpehdpgjnhhpo)
+[Mozilla Firefox](https://addons.mozilla.org/en-US/firefox/addon/storm-ns/)<br>
 
 Storm is a variant of Breeze++ with additional functionality. See the keylist and changelog for differences between the two.
 
