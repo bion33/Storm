@@ -4,7 +4,7 @@
 
 ## ABOUT
 
-### Latest release: **v2.1**
+### Latest release: **v2.2**
 [Firefox add-on](https://addons.mozilla.org/en-US/firefox/addon/storm-ns/versions/)<br>
 [Chrome Installation Instructions](https://docs.google.com/document/d/103SyyFSHejWzWgktYLY7iP21Z5twQdy5-K9g5k5Yvys/edit?usp=sharing)<br>
 
@@ -78,7 +78,12 @@ Keys native to your browser included.
 
 ## CHANGELOG
 
-**v2.0 (2019/06/12)**
+**v2.2 (2019/06/13)**
+
+* Hotfix to disable extension in input fields.
+
+
+**v2.1 (2019/06/13)**
 
 * Disabled extension on forum.nationstates.net
 
