@@ -80,6 +80,11 @@ Keys native to your browser included.
 
 **v2.0 (2019/06/12)**
 
+* Disabled extension on forum.nationstates.net
+
+
+**v2.0 (2019/06/12)**
+
 * Added features from Breeze++ v3.0.0 (Author: Vincent W. Drake)
 * Re-enabled [Z] (Zombie Control)
 
