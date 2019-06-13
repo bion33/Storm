@@ -1,6 +1,7 @@
 (function() {
 	// Variables
 	let current_url = window.location.href;
+	if (window.location.href.indexOf("forum.nationstates.net") > -1) return;	// Disable in the forums
 	let shifted = false;
 	let controlled = false;
 	let alternated = false;
