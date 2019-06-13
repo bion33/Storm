@@ -1,4 +1,5 @@
 (function() {
+
 	// Variables
 	let current_url = window.location.href;
 	let shifted = false;
@@ -29,8 +30,12 @@
 			$("html").css({"border-color": "#33cc00"});
 		}
 	});
+
 	// Key down
 	$(document).keydown(function(f) {
+		if ($('input:focus').length > 0 || $('textarea:focus').length > 0) 	return;		// Disable in inputs & textareas
+		if (window.location.href.indexOf("forum.nationstates.net") > -1) 	return;		// Disable in the forums
+
 		// Detect Shift, Control and Alt keys being pressed
 		shifted = f.shiftKey;
         controlled = f.ctrlKey;
@@ -48,11 +53,13 @@
 			f.preventDefault();
 		}
 	});
+
 	// Key up
 	$(document).keyup(function(e) {
 		if ($('input:focus').length > 0 || $('textarea:focus').length > 0) 	return;		// Disable in inputs & textareas
 		if (window.location.href.indexOf("forum.nationstates.net") > -1) 	return;		// Disable in the forums
 		if ((controlled || alternated || (shifted && e.keyCode !== 80))) 	return; 	// Ignore most combinations
+		
 		// [Enter] confirms dialogs in Chrome and Firefox by default. No code required.
 		// [Ctrl]+[Tab] switches between browser tabs in Chrome and Firefox by default. No code required.
 		// [Space] Reports Page (no template)
