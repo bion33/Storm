@@ -40,6 +40,9 @@
 		shifted = f.shiftKey;
         controlled = f.ctrlKey;
 		alternated = f.altKey;
+		if (shifted) alert("Shifted");
+		if (controlled) alert("Controlled");
+		if (alternated) alert("Alternated");
 		// Prevent defaults on keydown for [Backspace] and [Spacebar]
 		if (f.keyCode === 8 || f.keyCode === 32){
 			f.preventDefault();

@@ -4,7 +4,7 @@
 
 ## ABOUT
 
-### Latest release: **v2.3**
+### Latest release: **v2.4**
 [Firefox add-on](https://addons.mozilla.org/en-US/firefox/addon/storm-ns/versions/)<br>
 [Chrome Installation Instructions](https://docs.google.com/document/d/103SyyFSHejWzWgktYLY7iP21Z5twQdy5-K9g5k5Yvys/edit?usp=sharing)<br>
 
@@ -23,7 +23,7 @@ All help in making this extension better is welcome! Contact me if you have sugg
 #### **Contact me:**
 
 [bion@disroot.org](mailto:bion@disroot.org?Subject=Storm)
-KN#4693 on Discord
+David.#4693 on Discord
 
 
 
@@ -77,6 +77,11 @@ Keys native to your browser included.
  
 
 ## CHANGELOG
+
+**v2.4 (2020/01/12)**
+
+* Bugfix to for Ctrl+W opening delegate page (fixes Ctrl, Alt & Shift combinations in general).
+
 
 **v2.3 (2019/06/13)**
 
