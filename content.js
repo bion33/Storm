@@ -40,9 +40,6 @@
 		shifted = f.shiftKey;
         controlled = f.ctrlKey;
 		alternated = f.altKey;
-		if (shifted) alert("Shifted");
-		if (controlled) alert("Controlled");
-		if (alternated) alert("Alternated");
 		// Prevent defaults on keydown for [Backspace] and [Spacebar]
 		if (f.keyCode === 8 || f.keyCode === 32){
 			f.preventDefault();
@@ -361,7 +358,10 @@
 		// [P] Open jump point, Move to jump point (2x), set jump point (+ [Shift])
 		else if (e.keyCode === 80){
 			if (shifted) {
-				if (current_url.indexOf("https://www.nationstates.net/region=") !== -1) localStorage.jumpPoint = current_url;
+				if (current_url.indexOf("https://www.nationstates.net/region=") !== -1) {
+					localStorage.jumpPoint = current_url;
+					alert("Jump Point Updated")
+				}
 			}
 			else if (current_url === localStorage.jumpPoint){
 				$(".button[name=move_region], input[name=move_region]").first().trigger("click");
