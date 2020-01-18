@@ -4,7 +4,7 @@
 
 ## ABOUT
 
-### Latest release: **v2.5**
+### Latest release: **v2.6**
 [Firefox add-on](https://addons.mozilla.org/en-US/firefox/addon/storm-ns/versions/)<br>
 [Chrome Installation Instructions](https://docs.google.com/document/d/103SyyFSHejWzWgktYLY7iP21Z5twQdy5-K9g5k5Yvys/edit?usp=sharing)<br>
 
@@ -22,7 +22,7 @@ All help in making this extension better is welcome! Contact me if you have sugg
 
 #### **Contact me:**
 
-[bion@disroot.org](mailto:bion@disroot.org?Subject=Storm)
+[bion@disroot.org](mailto:bion@disroot.org?Subject=Storm)<br>
 David.#4693 on Discord
 
 
@@ -77,6 +77,13 @@ Keys native to your browser included.
  
 
 ## CHANGELOG
+
+**v2.6 (2020/01/18)**
+
+* Added dropdown for jump points to extension menu. There you can select and delete JP's from among the saved regions. Remember, you can save and set a region as JP by pressing [Shift]+[P].
+* Added configuration capability for the officer role name. The default role name is now simply "Officer".
+* Bugfix (2) for Ctrl, Alt & Shift combinations (this time for real, hopefully :p).
+
 
 **v2.5 (2020/01/13)**
 

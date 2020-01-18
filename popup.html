@@ -2,10 +2,10 @@
 <html lang="en">
 	<head>
 		<title>Plugin-Window</title>
-		<meta charset="UTF-8"> 
+		<meta charset="UTF-8">
 		<style type="text/css">
 			html {
-				background-image: url("./ext-resources/background.jpg"); 
+				background-image: url("./ext-resources/background.jpg");
 				background-repeat: no-repeat;
 				background-position: center;
     			background-attachment: fixed;
@@ -13,9 +13,15 @@
     			border: 1px solid rgba(0, 0, 0, 0);			/* Invisible border prevents weird bug with table */
 			}
 			body {
-				padding: 5px 33px; 
+				padding: 5px 33px;
 				font-family: 'Helvetica Neue',Verdana,Tahoma,sans-serif;
 				font-size: 14px;
+			}
+			h1 {
+				padding: 1px 5px;
+				border-radius: 5px;
+				font-size: 12px;
+				text-decoration: none;
 			}
 			table {
 				width: 100%;
@@ -23,7 +29,7 @@
 			}
 			tr:nth-child(even) {background: rgba(120, 120, 120, 0.1);}
 			tr:hover {background: rgba(120, 0, 0, 0.2);}
-			th {
+			th, h1 {
 				background: rgba(120, 120, 120, 0.75);
 				text-align: left;
 			}
@@ -33,16 +39,17 @@
 			}
 			.box {
 				min-width: 420px;
-				width: 90%; 
+				max-width: 420px;
+				width: 90%;
 				margin: auto;
-				padding: 5px 25px; 
-				border: 1px solid #000; 
-				border-radius: 25px; 
+				padding: 5px 25px;
+				border: 1px solid #000;
+				border-radius: 25px;
 				background: rgba(240, 240, 240, 0.65);
 			}
 			.title {
-				text-align: center; 
-				font-size: 18px; 
+				text-align: center;
+				font-size: 18px;
 				font-weight: bold;
 				color: red;
 			}
@@ -58,13 +65,27 @@
 				text-align: center;
 			}
 			.button {display: inline-block;}
+			.delete {
+				color: red;
+				font-size: 12px;
+				padding: 0;
+				text-align: center;
+			}
+			.save {
+				color: green;
+				font-size: 12px;
+				padding: 0;
+				text-align: center;
+			}
+			form label {
+				width: 15px;
+			}
 		</style>
-		<script src="popup.js"></script>
 	</head>
 	<body>
 		<h1 class="box title">
 			<span>STORM</span>
-			<span class="version">v2.5</span>
+			<span class="version">v2.6</span>
 		</h1>
 		<br>
 		<div class="buttons">
@@ -77,10 +98,19 @@
 		</div>
 		<br>
 		<div class="box">
-			<p>
-				<b>Your current Jump Point: </b><span id="jumpPoint"></span><br><br>
-
-				Quick key list. See the full readme for better explanations.<br>
+				<h1>Settings</h1>
+				<table>
+					<tr>
+						<td><label for="jump-points">Jump Point (Shift+P)</label></td>
+						<td><select id="jump-points"></select></td>
+						<td><input type="button" id="delete-jp" class="button delete" value="✘"></td>
+					</tr>
+					<tr>
+						<td><label for="officer-role">Officer Role</label></td>
+						<td><input type="text" class="tinput" id="officer-role" ></td>
+						<td><input type="button" id="save-officer" class="button save" value="💾"></td>
+					</tr>
+				</table>
 				<br>
 				<table>
 					<tr><th>Key(s)</th><th>Function</th></tr>
@@ -119,7 +149,9 @@
 					<tr><td><b>[X]</b></td><td>Open dossier → clear dossier</td></tr>
 					<tr><td><b>[Z]</b></td><td>Zombie Control</td></tr>
 				</table>
-			</p>
+				<br>
+				This list is only intended as a quick reference. See the full readme for better descriptions.
 		</div>
+		<script src="popup.js"></script>
 	</body>
 </html>

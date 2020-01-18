@@ -5,14 +5,29 @@
 	let shifted = false;
 	let controlled = false;
 	let alternated = false;
-	if (typeof localStorage.jumpPoint != "string") localStorage.jumpPoint = "https://www.nationstates.net/region=artificial_solar_system";
+	if (typeof localStorage.JumpPoints != "string") localStorage.JumpPoints = "https://www.nationstates.net/region=artificial_solar_system";
+	if (typeof localStorage.Role != "string") localStorage.Role = "Officer";
 
-	// On popup.js requisting jumpPoint
+	let JumpPoint = getJumpPoint();
+
+	// On popup.js requisting JumpPoints
 	chrome.runtime.onMessage.addListener(
 		function(message, sender, sendResponse) {
 			switch(message.type) {
-				case "getJumpPoint":
-					sendResponse(localStorage.jumpPoint);
+				case "getJumpPoints":
+					sendResponse(localStorage.JumpPoints);
+					break;
+				case "setJumpPoint":
+					JumpPoint = setJumpPoint(message.data);
+					break;
+				case "deleteJumpPoint":
+					JumpPoint = deleteJumpPoint(message.data);
+					break;
+				case "getRole":
+					sendResponse(localStorage.Role);
+					break;
+				case "setRole":
+					localStorage.Role = message.data;
 					break;
 				default:
 					console.error("Unrecognised message: ", message);
@@ -56,6 +71,10 @@
 
 	// Key up
 	$(document).keyup(function(e) {
+		if (!shifted) shifted = e.shiftKey;
+        if (!controlled) controlled = e.ctrlKey;
+		if (!alternated) alternated = e.altKey;
+
 		if ($('input:focus').length > 0 || $('textarea:focus').length > 0) 	return;		// Disable in inputs & textareas
 		if (window.location.href.indexOf("forum.nationstates.net") > -1) 	return;		// Disable in the forums
 		if ((controlled || alternated || (shifted && e.keyCode !== 80))) 	return; 	// Ignore most combinations
@@ -339,7 +358,7 @@
 			}
 			// If on on own regional officer page, assign officer role
 			else if (current_url.indexOf("/page=regional_officer") !== -1 && current_url.indexOf(current_nation) !== -1) {
-				$("input[name=office_name]").val("Ace");
+				$("input[name=office_name]").val(localStorage.Role);
 				$("input[name=authority_A]").prop("checked", true);
 				$("input[name=authority_C]").prop("checked", true);
 				$("input[name=authority_E]").prop("checked", true);
@@ -359,15 +378,15 @@
 		else if (e.keyCode === 80){
 			if (shifted) {
 				if (current_url.indexOf("https://www.nationstates.net/region=") !== -1) {
-					localStorage.jumpPoint = current_url;
-					alert("Jump Point Updated")
+					setJumpPoint(current_url);
+					alert("Jump Point Updated");
 				}
 			}
-			else if (current_url === localStorage.jumpPoint){
+			else if (current_url === JumpPoint){
 				$(".button[name=move_region], input[name=move_region]").first().trigger("click");
 			}
 			else {
-				window.location.href = localStorage.jumpPoint;
+				window.location.href = JumpPoint;
 			}
 		}
 		// [A] Activity Feed With Chasing Filters, Activity Feed Without (2x)
@@ -384,16 +403,16 @@
 		}
 		// [S] Prep Switchers
 		else if (e.keyCode === 83){
-			if (window.location.href.indexOf("page=un") <= -1 && window.location.href.indexOf !== localStorage.jumpPoint) {
+			if (window.location.href.indexOf("page=un") <= -1 && window.location.href.indexOf !== JumpPoint) {
 				window.location.href = "https://www.nationstates.net/template-overall=none/page=un";
 			}
 			if (window.location.href.indexOf("page=un") > -1) {
 				$('.button[name=submit]').first().trigger('click');
 			}
 			if (window.location.href.indexOf("page=UN_status") > -1) {
-				window.location.href = localStorage.jumpPoint;
+				window.location.href = JumpPoint;
 			}
-			if (window.location.href === localStorage.jumpPoint) {
+			if (window.location.href === JumpPoint) {
 				$('.button[name=move_region], input[name=move_region]').first().trigger('click');
 			}
 		}
@@ -517,3 +536,29 @@ $( document ).ready(function() {
 		});
 	}
 });
+
+function getJumpPoint() {
+	return localStorage.JumpPoints.split(",")[0];
+}
+
+function setJumpPoint(jp) {
+	let jps = jp + "," + localStorage.JumpPoints;
+	jps = jps.split(",").filter(function(item, pos, self) {
+		return self.indexOf(item) === pos;
+	});
+	localStorage.JumpPoints = jps.join(",");
+	return getJumpPoint();
+}
+
+function deleteJumpPoint(jp) {
+	let jps = localStorage.JumpPoints.split(",");
+	let jps_new;
+	jps.forEach(function (item, index) {
+		if (jp === item) {
+			jps_new = jps.splice(index, 1);
+		}
+	});
+	localStorage.JumpPoints = jps.join(",");
+	return getJumpPoint();
+}
+
