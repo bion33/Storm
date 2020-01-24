@@ -1,564 +1,754 @@
-(function() {
+// =====================================================================================================================
+// Init
 
-	// Variables
-	let current_url = window.location.href;
-	let shifted = false;
-	let controlled = false;
-	let alternated = false;
-	if (typeof localStorage.JumpPoints != "string") localStorage.JumpPoints = "https://www.nationstates.net/region=artificial_solar_system";
-	if (typeof localStorage.Role != "string") localStorage.Role = "Officer";
+// Namespace
+/** @namespace chrome.runtime **/
+/** @namespace chrome.runtime.onMessage **/
 
-	let JumpPoint = getJumpPoint();
+// URL
+let url = window.location.href;
 
-	// On popup.js requisting JumpPoints
-	chrome.runtime.onMessage.addListener(
-		function(message, sender, sendResponse) {
-			switch(message.type) {
-				case "getJumpPoints":
-					sendResponse(localStorage.JumpPoints);
-					break;
-				case "setJumpPoint":
-					JumpPoint = setJumpPoint(message.data);
-					break;
-				case "deleteJumpPoint":
-					JumpPoint = deleteJumpPoint(message.data);
-					break;
-				case "getRole":
-					sendResponse(localStorage.Role);
-					break;
-				case "setRole":
-					localStorage.Role = message.data;
-					break;
-				default:
-					console.error("Unrecognised message: ", message);
-			}
-		}
-	);
+// For debugging: toggle to reset stored data
+// localStorage.clear();
 
-	// On page load
-	$(window).on("load", function(){
-		// Send current page to background script
-		chrome.runtime.sendMessage({action: "store", url: current_url});
-		// If on the reports page and it is loaded
-		if (current_url === "https://www.nationstates.net/template-overall=none/page=reports"){
-			// Make the page border green so the user knows they can safely refresh.
-			$("html").css({"border-color": "#33cc00"});
-		}
-	});
+// Send current page to background script
+chrome.runtime.sendMessage({action: "store", url: url});
 
-	// Key down
-	$(document).keydown(function(f) {
-		if ($('input:focus').length > 0 || $('textarea:focus').length > 0) 	return;		// Disable in inputs & textareas
-		if (window.location.href.indexOf("forum.nationstates.net") > -1) 	return;		// Disable in the forums
+// Set Defaults
+if (localStorage.getItem("KeyReports") === undefined) {
+    localStorage.KeyReports = "32=Spacebar";
+}
+if (localStorage.getItem("KeyBack2") === undefined) {
+    localStorage.KeyBack2 = "8=Backspace";
+}
+if (localStorage.getItem("KeyRefresh1") === undefined) {
+    localStorage.KeyRefresh1 = "116=F5";
+}
+if (localStorage.getItem("KeyCopyUrl") === undefined) {
+    localStorage.KeyCopyUrl = "117=F6";
+}
+if (localStorage.getItem("KeyBack1") === undefined) {
+    localStorage.KeyBack1 = "118=F7";
+}
+if (localStorage.getItem("KeyForward") === undefined) {
+    localStorage.KeyForward = "119=F8";
+}
+if (localStorage.getItem("KeyDosL1") === undefined) {
+    localStorage.KeyDosL1 = "49=1";
+}
+if (localStorage.getItem("KeyDosL2") === undefined) {
+    localStorage.KeyDosL2 = "50=2";
+}
+if (localStorage.getItem("KeyDosL3") === undefined) {
+    localStorage.KeyDosL3 = "51=3";
+}
+if (localStorage.getItem("KeyDosL4") === undefined) {
+    localStorage.KeyDosL4 = "52=4";
+}
+if (localStorage.getItem("KeyDosL5") === undefined) {
+    localStorage.KeyDosL5 = "53=5";
+}
+if (localStorage.getItem("KeyDosR1") === undefined) {
+    localStorage.KeyDosR1 = "97=NP 1";
+}
+if (localStorage.getItem("KeyDosR2") === undefined) {
+    localStorage.KeyDosR2 = "98=NP 2";
+}
+if (localStorage.getItem("KeyDosR3") === undefined) {
+    localStorage.KeyDosR3 = "99=NP 3";
+}
+if (localStorage.getItem("KeyDosR4") === undefined) {
+    localStorage.KeyDosR4 = "100=NP 4";
+}
+if (localStorage.getItem("KeyDosR5") === undefined) {
+    localStorage.KeyDosR5 = "101=NP 5";
+}
+if (localStorage.getItem("KeyActivity") === undefined) {
+    localStorage.KeyActivity = "65=a";
+}
+if (localStorage.getItem("KeyBan") === undefined) {
+    localStorage.KeyBan = "66=b";
+}
+if (localStorage.getItem("KeyCross") === undefined) {
+    localStorage.KeyCross = "67=c";
+}
+if (localStorage.getItem("KeyDoss") === undefined) {
+    localStorage.KeyDoss = "68=d";
+}
+if (localStorage.getItem("KeyEndo") === undefined) {
+    localStorage.KeyEndo = "69=e";
+}
+if (localStorage.getItem("KeyGcrHap") === undefined) {
+    localStorage.KeyGcrHap = "71=g";
+}
+if (localStorage.getItem("KeyRegHap") === undefined) {
+    localStorage.KeyRegHap = "72=h";
+}
+if (localStorage.getItem("KeyWAJL1") === undefined) {
+    localStorage.KeyWAJL1 = "74=j";
+}
+if (localStorage.getItem("KeyRefresh2") === undefined) {
+    localStorage.KeyRefresh2 = "75=k";
+}
+if (localStorage.getItem("KeyWAJL2") === undefined) {
+    localStorage.KeyWAJL2 = "76=l";
+}
+if (localStorage.getItem("KeyMove") === undefined) {
+    localStorage.KeyMove = "77=m";
+}
+if (localStorage.getItem("KeyNation") === undefined) {
+    localStorage.KeyNation = "78=n";
+}
+if (localStorage.getItem("KeyOfficer") === undefined) {
+    localStorage.KeyOfficer = "79=o";
+}
+if (localStorage.getItem("KeyJP") === undefined) {
+    localStorage.KeyJP = "80=p";
+}
+if (localStorage.getItem("KeyRegion") === undefined) {
+    localStorage.KeyRegion = "82=r";
+}
+if (localStorage.getItem("KeySwitch") === undefined) {
+    localStorage.KeySwitch = "83=s";
+}
+if (localStorage.getItem("KeyTemplate") === undefined) {
+    localStorage.KeyTemplate = "84=t";
+}
+if (localStorage.getItem("KeyUpdate") === undefined) {
+    localStorage.KeyUpdate = "85=u";
+}
+if (localStorage.getItem("KeyWAD") === undefined) {
+    localStorage.KeyWAD = "87=w";
+}
+if (localStorage.getItem("KeyClearDoss") === undefined) {
+    localStorage.KeyClearDoss = "88=x";
+}
+if (localStorage.getItem("KeyZombie") === undefined) {
+    localStorage.KeyZombie = "90=z";
+}
+if (localStorage.getItem("Role") === undefined) {
+    localStorage.Role = "Officer";
+}
+if (localStorage.getItem("Scroll") === undefined) {
+    localStorage.Scroll = false;
+}
+if (localStorage.getItem("JumpPoints") === undefined) {
+    localStorage.JumpPoints = "https://www.nationstates.net/region=artificial_solar_system";
+}
 
-		// Detect Shift, Control and Alt keys being pressed
-		shifted = f.shiftKey;
-        controlled = f.ctrlKey;
-		alternated = f.altKey;
-		// Prevent defaults on keydown for [Backspace] and [Spacebar]
-		if (f.keyCode === 8 || f.keyCode === 32){
-			f.preventDefault();
-		}
-		// Prevent defaults on keydown for [F6], [F7] and [F8]
-		if (f.keyCode === 117 || f.keyCode === 118 || f.keyCode === 119) {
-			f.preventDefault();
-		}
-		// Prevent defaults on keydown for [F5] on the reports page, where this extension will press the "Generate Report" button instead of refreshing the page manually.
-		if (current_url === "https://www.nationstates.net/template-overall=none/page=reports" && f.keyCode === 116){
-			f.preventDefault();
-		}
-	});
-
-	// Key up
-	$(document).keyup(function(e) {
-		if (!shifted) shifted = e.shiftKey;
-        if (!controlled) controlled = e.ctrlKey;
-		if (!alternated) alternated = e.altKey;
-
-		if ($('input:focus').length > 0 || $('textarea:focus').length > 0) 	return;		// Disable in inputs & textareas
-		if (window.location.href.indexOf("forum.nationstates.net") > -1) 	return;		// Disable in the forums
-		if ((controlled || alternated || (shifted && e.keyCode !== 80))) 	return; 	// Ignore most combinations
-		
-		// [Enter] confirms dialogs in Chrome and Firefox by default. No code required.
-		// [Ctrl]+[Tab] switches between browser tabs in Chrome and Firefox by default. No code required.
-		// [Space] Reports Page (no template)
-		if (e.keyCode === 32 && e.target === document.body) {
-			let current_url = $(location).attr('href');
-			if (current_url === "https://www.nationstates.net/template-overall=none/page=reports"){
-				window.location.href = "https://www.nationstates.net/page=ajax2/a=reports/view=world/filter=move+member+endo";
-			}
-			else {
-				window.location.href = "https://www.nationstates.net/template-overall=none/page=reports";
-			}
-		}
-		// [F5] Refreshes window in both Chrome and Firefox by default.
-		// If on the reports page and it is reloaded, make the green page border red so the user knows they shouldn't press refresh again.
-		else if (e.keyCode === 116){
-			if (current_url === "https://www.nationstates.net/template-overall=none/page=reports"){
-				// Instead of refreshing, press the "Generate Report" button. If NS ever decides to not make this page refresh when that button is clicked, this extension will benefit from that (as it would load changes faster).
-				e.preventDefault();
-				// Only get reports for the last 6 minutes.
-				$("input[name=report_hours]").val("0.10");
-				// Set the border to red so the user knows not to press refresh.
-				$("html").css({"border-color": "#ff0000"});
-				// Generate new report.
-				$("input[name=generate_report]").first().trigger("click");
-			}
-		}
-		// [F6] copies the link to the current page to the clipboard
-		else if (e.keyCode === 117){
-			e.preventDefault();
-			let $temp = $("<input>");
-			$("body").append($temp);
-			$temp.val(current_url).select();
-			document.execCommand("copy");
-			$temp.remove();
-		}
-		// [F7] & [Backspace] Goes to previous page. [F7] is the shortcut for caret browsing in Firefox but can be disabled. [Backspace] is default for previous page in Firefox but not used in Chrome.
-		else if (e.keyCode === 118 || e.keyCode === 8){
-			e.preventDefault();
-			// Send message to background script
-			chrome.runtime.sendMessage({action: "previous", url: current_url});
-			// Receive and load page in message
-			chrome.runtime.onMessage.addListener(function(load){
-				window.location.href = load.url;
-			});
-		}
-		// [F8] Goes to next page. Unused by both Chrome and Firefox.
-		else if (e.keyCode === 119){
-			e.preventDefault();
-			// Send message to background script
-			chrome.runtime.sendMessage({action: "next", url: current_url});
-			// Receive and load page in message
-			chrome.runtime.onMessage.addListener(function(load){
-				window.location.href = load.url;
-			});
-		}
-		// [1] Add to Dossier
-		else if (e.keyCode === 49){
-			if (current_url === "https://www.nationstates.net/template-overall=none/page=reports"){
-				$("li a:nth-of-type(1)")[0].click();
-				$("li a:nth-of-type(1)").eq(0).css("background-color", "yellow");
-			}
-			if (current_url === "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
-				$("#reports li a:nth-of-type(1)")[0].click();
-				$("#reports li a:nth-of-type(1)").eq(0).css("background-color", "yellow");
-			}
-			else {
-				$(".button[name=action]").first().trigger("click");
-			}
-		}
-		// [2] Add to Dossier
-		else if (e.keyCode === 50){
-			if (current_url === "https://www.nationstates.net/template-overall=none/page=reports"){
-				$("li a:nth-of-type(1)")[1].click();
-				$("li a:nth-of-type(1)").eq(1).css("background-color", "yellow");
-			}
-			if (current_url === "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
-				$("#reports li a:nth-of-type(1)")[1].click();
-				$("#reports li a:nth-of-type(1)").eq(1).css("background-color", "yellow");
-			}
-			else {
-				$(".button[name=action]").first().trigger("click");
-			}
-		}
-		// [3] Add to Dossier
-		else if (e.keyCode === 51){
-			if (current_url === "https://www.nationstates.net/template-overall=none/page=reports"){
-				$("li a:nth-of-type(1)")[2].click();
-				$("li a:nth-of-type(1)").eq(2).css("background-color", "yellow");
-			}
-			if (current_url === "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
-				$("#reports li a:nth-of-type(1)")[2].click();
-				$("#reports li a:nth-of-type(1)").eq(2).css("background-color", "yellow");
-			}
-			else {
-				$(".button[name=action]").first().trigger("click");
-			}
-		}
-		// [4] Add to Dossier
-		else if (e.keyCode === 52){
-			if (current_url === "https://www.nationstates.net/template-overall=none/page=reports"){
-				$("li a:nth-of-type(1)")[3].click();
-				$("li a:nth-of-type(1)").eq(3).css("background-color", "yellow");
-			}
-			if (current_url === "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
-				$("#reports li a:nth-of-type(1)")[3].click();
-				$("#reports li a:nth-of-type(1)").eq(3).css("background-color", "yellow");
-			}
-			else {
-				$(".button[name=action]").first().trigger("click");
-			}
-		}
-		// [5] Add to Dossier
-		else if (e.keyCode === 53){
-			if (current_url === "https://www.nationstates.net/template-overall=none/page=reports"){
-				$("li a:nth-of-type(1)")[4].click();
-				$("li a:nth-of-type(1)").eq(4).css("background-color", "yellow");
-			}
-			if (current_url === "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
-				$("#reports li a:nth-of-type(1)")[4].click();
-				$("#reports li a:nth-of-type(1)").eq(4).css("background-color", "yellow");
-			}
-			else {
-				$(".button[name=action]").first().trigger("click");
-			}
-		}
-		// [Keypad 1] Add to Dossier
-		else if (e.keyCode === 97){
-			if (current_url === "https://www.nationstates.net/template-overall=none/page=reports"){
-				$("li a:nth-of-type(2)")[0].click();
-				$("li a:nth-of-type(2)").eq(0).css("background-color", "yellow");
-			}
-			if (current_url === "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
-				$("#reports li a:nth-of-type(2)")[0].click();
-				$("#reports li a:nth-of-type(2)").eq(0).css("background-color", "yellow");
-			}
-			else {
-				$(".button[name=action]").first().trigger("click");
-			}
-		}
-		// [Keypad 2] Add to Dossier
-		else if (e.keyCode === 98){
-			if (current_url === "https://www.nationstates.net/template-overall=none/page=reports"){
-				$("li a:nth-of-type(2)")[1].click();
-				$("li a:nth-of-type(2)").eq(1).css("background-color", "yellow");
-			}
-			if (current_url === "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
-				$("#reports li a:nth-of-type(2)")[1].click();
-				$("#reports li a:nth-of-type(2)").eq(1).css("background-color", "yellow");
-			}
-			else {
-				$(".button[name=action]").first().trigger("click");
-			}
-		}
-		// [Keypad 3] Add to Dossier
-		else if (e.keyCode === 99){
-			if (current_url === "https://www.nationstates.net/template-overall=none/page=reports"){
-				$("li a:nth-of-type(2)")[2].click();
-				$("li a:nth-of-type(2)").eq(2).css("background-color", "yellow");
-			}
-			if (current_url === "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
-				$("#reports li a:nth-of-type(2)")[2].click();
-				$("#reports li a:nth-of-type(2)").eq(2).css("background-color", "yellow");
-			}
-			else {
-				$(".button[name=action]").first().trigger("click");
-			}
-		}
-		// [Keypad 4] Add to Dossier
-		else if (e.keyCode === 100){
-			if (current_url === "https://www.nationstates.net/template-overall=none/page=reports"){
-				$("li a:nth-of-type(2)")[3].click();
-				$("li a:nth-of-type(2)").eq(3).css("background-color", "yellow");
-			}
-			if (current_url === "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
-				$("#reports li a:nth-of-type(2)")[3].click();
-				$("#reports li a:nth-of-type(2)").eq(3).css("background-color", "yellow");
-			}
-			else {
-				$(".button[name=action]").first().trigger("click");
-			}
-		}
-		// [Keypad 5] Add to Dossier
-		else if (e.keyCode === 101){
-			if (current_url === "https://www.nationstates.net/template-overall=none/page=reports"){
-				$("li a:nth-of-type(2)")[4].click();
-				$("li a:nth-of-type(2)").eq(4).css("background-color", "yellow");
-			}
-			if (current_url === "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
-				$("#reports li a:nth-of-type(2)")[4].click();
-				$("#reports li a:nth-of-type(2)").eq(4).css("background-color", "yellow");
-			}
-			else {
-				$(".button[name=action]").first().trigger("click");
-			}
-		}
-		// [W] WA Delegate
-		else if(e.keyCode === 87){
-			if (current_url.indexOf("/region=") !== -1){
-				// On region"s page
-				$("#content").children("p:nth-child(2)").children("a.nlink:first")[0].click();
-			}
-			else if (current_url.indexOf("/page=change_region") !== -1 && $(".featuredregion").length === 0) {
-				// The region in the sidebar updates too slow when you move regions, so this works better in that case. Should work on the page you get when you just moved, but not on the page with the featured region.
-				$(".info").children("a")[0].click();
-			}
-			else {
-				// Go to region"s page
-				if ($("#paneltitle").length > 0){
-					// Using Rift
-					$("#panel").children(".panelcontent").children(".menu").children("li").children("a")[0].click();
-				}
-				else{
-					// Other themes
-					$("#panel").children("ul").children("li").children("a")[1].click();
-				}
-			}
-		}
-		// [E] Endorse
-		else if (e.keyCode === 69){
-			if ($("input[name=action]").val() === "endorse") $("button.endorse").first().trigger("click");
-		}
-		// [R] Region
-		else if (e.keyCode === 82){
-			if (window.location.href.indexOf("net/region=") > -1 || window.location.href.indexOf("none/region=") > -1) {
-				window.location.reload();
-			}
-			if (window.location.href.indexOf("template-overall=none/page=change_region") > -1) {
-				let region_url = $('a[href^="/region"]').first().text().toLowerCase().split(' ').join('_');
-				window.location.replace("https://www.nationstates.net/region=' "+region_url+"'");
-			}
-			if (window.location.href.indexOf("none/page=reports") > -1 || window.location.href.indexOf("page=ajax2/a=reports") > -1) {
-				$('li a:nth-of-type(3)')[0].click();
-				$('li a:nth-of-type(3)').eq(0).css("background-color", "yellow");
-			}
-			else {
-				if ($('#paneltitle').length > 0){
-					// using Rift
-					$('#panel').children('.panelcontent').children('.menu').children('li').children('a')[0].click();
-				}
-				else{
-					// Default theme
-					$('#panel').children('ul').children('li').children('a')[1].click();
-				}
-			}
-		}
-		// [T] Toggle site template on or off
-		else if (e.keyCode === 84){
-			if (window.location.href.indexOf("none/region") > -1) {
-				let region_url = $('a[href^="/region"]').first().text().toLowerCase().split(' ').join('_');
-				console.log(region_url);
-				window.location.replace("https://www.nationstates.net/region="+region_url+" ");
-			}
-			if (window.location.href.indexOf("none/nation") > -1) {
-				let nation_url = $('.quietlink').first().text().toLowerCase().split(' ').join('_');
-				window.location.replace("https://www.nationstates.net/nation="+nation_url+" ");
-			}
-			if (window.location.href.indexOf("net/region") > -1) {
-				let region_url = $('a[href^="/region"]').first().text().toLowerCase().split(' ').join('_');
-				console.log(region_url);
-				window.location.replace("https://www.nationstates.net/template-overall=none/region="+region_url+" ");
-			}
-			if (window.location.href.indexOf("net/nation") > -1) {
-				let nation_url = $('.quietlink:eq(1)').text().toLowerCase().split(' ').join('_');
-				window.location.replace("https://www.nationstates.net/template-overall=none/nation="+nation_url+" ");
-			}
-		}
-		// [U] Did My Nation Update?
-		else if (e.keyCode === 85){
-			window.location.href = "https://www.nationstates.net/page=ajax2/a=reports/view=self/filter=change";
-		}
-		// [O] Regional officer functionality
-		else if (e.keyCode === 79){
-			let current_nation = $("#loggedin").attr("data-nname");
-			// If on the regional control page, open own regional officer page
-			if (current_url.indexOf("/page=region_control") !== -1){
-				window.location.href = "https://www.nationstates.net/page=regional_officer/nation=" + current_nation;
-			}
-			// If on on own regional officer page, assign officer role
-			else if (current_url.indexOf("/page=regional_officer") !== -1 && current_url.indexOf(current_nation) !== -1) {
-				$("input[name=office_name]").val(localStorage.Role);
-				$("input[name=authority_A]").prop("checked", true);
-				$("input[name=authority_C]").prop("checked", true);
-				$("input[name=authority_E]").prop("checked", true);
-				$("input[name=authority_P]").prop("checked", true);
-				$("button[name=editofficer]").trigger("click");
-			}
-			// If on someone else's regional officer page, dismiss them
-			else if (current_url.indexOf("/page=regional_officer") !== -1) {
-				$("button[name=abolishofficer]").trigger("click");
-			}
-			// If on none of these pages, open regional control page
-			else {
-				window.location.href = "https://www.nationstates.net/page=region_control";
-			}
-		}
-		// [P] Open jump point, Move to jump point (2x), set jump point (+ [Shift])
-		else if (e.keyCode === 80){
-			if (shifted) {
-				if (current_url.indexOf("https://www.nationstates.net/region=") !== -1) {
-					setJumpPoint(current_url);
-					alert("Jump Point Updated");
-				}
-			}
-			else if (current_url === JumpPoint){
-				$(".button[name=move_region], input[name=move_region]").first().trigger("click");
-			}
-			else {
-				window.location.href = JumpPoint;
-			}
-		}
-		// [A] Activity Feed With Chasing Filters, Activity Feed Without (2x)
-		else if (e.keyCode === 65){
-			if (current_url === "https://www.nationstates.net/page=activity/view=world"){
-				window.location.href = "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo";
-			}
-			else if (current_url === "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo"){
-				window.location.href = "https://www.nationstates.net/page=activity/view=world";
-			}
-			else {
-				window.location.href = "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo";
-			}
-		}
-		// [S] Prep Switchers
-		else if (e.keyCode === 83){
-			if (window.location.href.indexOf("page=un") <= -1 && window.location.href.indexOf !== JumpPoint) {
-				window.location.href = "https://www.nationstates.net/template-overall=none/page=un";
-			}
-			if (window.location.href.indexOf("page=un") > -1) {
-				$('.button[name=submit]').first().trigger('click');
-			}
-			if (window.location.href.indexOf("page=UN_status") > -1) {
-				window.location.href = JumpPoint;
-			}
-			if (window.location.href === JumpPoint) {
-				$('.button[name=move_region], input[name=move_region]').first().trigger('click');
-			}
-		}
-		// [D] Add to Dossier
-		else if (e.keyCode === 68){
-			if (current_url.indexOf("region=") !== -1){
-				// On region"s page
-				$(".button[name=add_to_dossier]").first().trigger("click");
-			}
-			else {
-				// Elsewhere
-				$(".button[name=action]").first().trigger("click");
-			}
-		}
-		// [G] Check if a GCR is updating (Same as the plain Activity page, but faster)
-		else if (e.keyCode === 71){
-			window.location.href = "https://www.nationstates.net/page=ajax2/a=reports/view=world/filter=change";
-		}
-		// [H] Ajax2 feed for region happenings
-		else if (e.keyCode === 72){
-			if (window.location.href.indexOf("region=") > -1) {
-				let region_url = $('a[href^="/region"]').first().text().toLowerCase().split(' ').join('_');
-				window.location.href = "https://www.nationstates.net/page=ajax2/a=reports/view=region." +region_url+"/filter=move+member+endo";
-			}
-		}
-		// [J] & [L] Open WA, Apply/Join/Resign in the WA (2x)
-		else if (e.keyCode === 74 || e.keyCode === 76){
-			if (current_url === "https://www.nationstates.net/page=un"){
-				if ($("#content").length > 0){
-					// Modern themes
-					$("#content").children("form").children("p").children("button").trigger("click");
-				}
-				else{
-					// Using Antiquity
-					$("#main").children("form").children("p").children("button").trigger("click");
-				}
-			}
-			else {
-				window.location.href = "https://www.nationstates.net/page=un";
-			}
-		}
-		// [X] Open Dossier, Clear Dossier (2x)
-		else if (e.keyCode === 88){
-			if (current_url === "https://www.nationstates.net/page=dossier"){
-				$(".button[name=clear_dossier]").first().trigger("click");
-			}
-			else {
-				window.location.href = "https://www.nationstates.net/page=dossier";
-			}
-		}
-		// [Z] Zombie Control
-		else if (e.keyCode === 90){
-			window.location.href = "https://www.nationstates.net/page=zombie_control";
-		}
-		// [C] Open nations to cross
-		else if (e.keyCode === 67){
-			// Send message to background script that C has been pressed
-			chrome.runtime.sendMessage({cancross: "?"});
-			// Receive message.
-			chrome.runtime.onMessage.addListener(function docross(reply){
-				// If the user hasn't pressed the cross-endorse button 60 seconds ago or less, open the first 10 endorsers in separate tabs. This satisfies the limit of 10 requests/minute for scripts on NS.
-				if (reply.cancross === true){
-					let cross = $(".unbox").children("p").children("a");
-					for (let i = 0; i < 10 && i < cross.length; i++) {
-						cross[i].target = "_blank";
-						cross[i].click();
-					}
-				}
-				// Remove the listener, or it will keep listening if reply.cancross is not true. That would result in it opening the tabs to cross times the amount you pressed [C] while reply.cancross was not true.
-				chrome.runtime.onMessage.removeListener(docross);
-			});
-		}
-		// [B] Ban nation
-		else if (e.keyCode === 66){
-			$("button[name=ban]").trigger("click");
-		}
-		// [N] My Nation
-		else if (e.keyCode === 78){
-			window.location.href = "https://www.nationstates.net";
-		}
-		// [M] Move, Chase Move (2x)
-		else if (e.keyCode === 77){
-			if (current_url === "https://www.nationstates.net/template-overall=none/page=reports"){
-				$("li a:nth-of-type(3)")[0].click();
-				$("li a:nth-of-type(3)").eq(0).css("background-color", "yellow");
-			}
-			else {
-
-				$(".button[name=move_region], input[name=move_region]").first().trigger("click");
-			}
-		}
-		// Disabled Hotkeys
-		// [H] File a GHR, for salty bois
-		// else if (e.keyCode == 72){
-		//		window.location.href = "https://www.nationstates.net/page=help";
-		// }
-	});
-})();
-
-$( document ).ready(function() {
-	// Displays load time on the reports page
-	if (window.location.href.indexOf("page=reports") > -1 ) {
-		var loadTime = window.performance.timing.domContentLoadedEventEnd- window.performance.timing.navigationStart;
-		$( "h1:first" ).append(" - PAGE LOAD TIME: " +loadTime+ " ms").css( "color", "#006400" );
-	}
-	// Starts nation pages at the bottom when you load them, so you can endorse easier
-	if (window.location.href.indexOf("nation=") > -1 && window.location.href.indexOf('template-overall=none') === -1 &&  window.location.href.indexOf('page=join_WA') === -1) {
-		$('html, body').scrollTop( $(document).height() );
-	}
-	if (window.location.href.indexOf("page=ajax2") > -1 || window.location.href.indexOf("page=reports") > -1) {
-		// Enables clicking on ajax2 reports links
-		$('.nlink').each(function() {
-			$(this).attr("href", function(index, old) {
-				return old.replace("nation", "/template-overall=none/nation");
-			});
-		});
-		$('.rlink').each(function() {
-			$(this).attr("href", function(index, old) {
-				return old.replace("region", "/template-overall=none/region");
-			});
-		});
-	}
+// Global variables (except url, as it is needed above)
+let shifted = false;
+let controlled = false;
+let alternated = false;
+let keyInKeys = false;
+let JumpPoint = localStorage.JumpPoints.split(",")[0];
+let keys = [];
+Object.keys(localStorage).forEach(function (key) {
+    "use strict";
+    let value = Number.parseInt(localStorage[key]);
+    if (key.startsWith("Key") && !Number.isNaN(value)) {
+        keys.push(value);
+    }
 });
 
+// =====================================================================================================================
+// Functions
+
+function preKeyChecks(e) {
+    "use strict";
+    // Detect Shift, Control and Alt keys being pressed
+    if (!shifted) {
+        shifted = e.shiftKey;
+    }
+    if (!controlled) {
+        controlled = e.ctrlKey;
+    }
+    if (!alternated) {
+        alternated = e.altKey;
+    }
+
+    // Stop shortcut in these cases
+    if (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA") {
+        return false;
+    }
+    if (url.includes("forum.nationstates.net")) {
+        return false;
+    }
+    if (controlled || alternated || (shifted && e.keyCode !== Number.parseInt(localStorage.KeyJP))) {
+        return false;
+    }
+
+    // Prevent default action if key active as shortcut
+    if (!keyInKeys && keys.includes(e.keyCode)) {
+        e.preventDefault();
+        keyInKeys = true;
+    } else if (keyInKeys) {
+        e.preventDefault();
+        keyInKeys = false;
+    // Key not a shortcut
+    } else {
+        return false;
+    }
+
+    return true;
+}
+
 function getJumpPoint() {
-	return localStorage.JumpPoints.split(",")[0];
+    "use strict";
+    return localStorage.JumpPoints.split(",")[0];
 }
 
 function setJumpPoint(jp) {
-	let jps = jp + "," + localStorage.JumpPoints;
-	jps = jps.split(",").filter(function(item, pos, self) {
-		return self.indexOf(item) === pos;
-	});
-	localStorage.JumpPoints = jps.join(",");
-	return getJumpPoint();
+    "use strict";
+    let jps = jp + "," + localStorage.JumpPoints;
+    jps = jps.split(",").filter(function (item, pos, self) {
+        return self.indexOf(item) === pos;
+    });
+    localStorage.JumpPoints = jps.join(",");
+    return getJumpPoint();
 }
 
 function deleteJumpPoint(jp) {
-	let jps = localStorage.JumpPoints.split(",");
-	let jps_new;
-	jps.forEach(function (item, index) {
-		if (jp === item) {
-			jps_new = jps.splice(index, 1);
-		}
-	});
-	localStorage.JumpPoints = jps.join(",");
-	return getJumpPoint();
+    "use strict";
+    let jps = localStorage.JumpPoints.split(",");
+    let jps_new = "";
+    jps.forEach(function (item, index) {
+        if (jp === item) {
+            jps_new = jps.splice(index, 1);
+        }
+    });
+    localStorage.JumpPoints = jps_new.join(",");
+    return getJumpPoint();
 }
 
+function setKey(data) {
+    "use strict";
+    let k = data.split("=", 1);
+    let v = data.substring(data.indexOf("=") + 1);
+    if (keys.includes(Number.parseInt(v))) {
+        return false;
+    }
+    localStorage[k] = v;
+    keys = [];
+    Object.keys(localStorage).forEach(function (key) {
+        let value = Number.parseInt(localStorage[key]);
+        if (key.startsWith("Key") && !Number.isNaN(value)) {
+            keys.push(value);
+        }
+    });
+    return true;
+}
+
+function getRegion() {
+    "use strict";
+    if (url.includes("page=reports") || url.includes("page=ajax2")) {
+        return undefined;
+    }
+    let y = Array.from(document.links).find(function (l) {
+        if (l.href.includes("region=")) {
+            return true;
+        }
+    });
+    return y.href.split("region=")[1];
+}
+
+function openRegion() {
+    "use strict";
+    let r = getRegion();
+    if (r) {
+        window.location.replace("https://nationstates.net/region=" + r);
+    }
+}
+
+function moveToRegion() {
+    "use strict";
+    let m = document.getElementsByClassName("button").namedItem("move_region");
+    if (m !== null) {
+        m.click();
+    } else {
+        document.getElementsByTagName("INPUT").namedItem("move_region").click();
+    }
+}
+
+/**
+ * @param lr: left(=0) or right(=1) of happening
+ * @param n: on the nth line (0 being the 1st line)
+ **/
+function openNation(lr, n) {
+    "use strict";
+    // If on reports or activity page
+    if (url.includes("page=reports") || url.includes("page=ajax2")) {
+        let a = document.getElementsByTagName("LI")[n].getElementsByTagName("A")[lr];
+        a.click();
+        a.style.backgroundColor = "yellow";
+    } else {
+        document.getElementsByClassName("button").namedItem("action").click();  // Doss
+    }
+}
+
+function notify(message) {
+    "use strict";
+    let m = document.createElement("div");
+    m.id = "temp-msg";
+    m.style.cssText = "background-color: yellow; padding: 7px 7px; font-size: 14;";
+    m.innerText = message;
+    let c = document.getElementById("content");
+    c.insertBefore(m, c.firstChild);
+    setTimeout(function () {
+        let op = 1;  // initial opacity
+        setInterval(function () {
+            m.style.opacity = op;
+            m.style.filter = "alpha(opacity=" + op * 100 + ")";
+            op -= op * 0.1;
+        }, 50);
+    }, 4800);
+    setTimeout(() => c.removeChild(m), 6000);
+}
+
+// =====================================================================================================================
+// Main
+
+document.addEventListener("readystatechange", function () {
+    "use strict";
+
+    // NOTE for code placed in this event listener:
+    // document.readyState === "interactive" is the first state change, before the DOM is fully loaded
+    // document.readyState === "complete" happens right before the "load" event
+
+    // Right before DOM is loaded
+    if (document.readyState === "interactive") {
+        // If on the reports page
+        if (url === "https://www.nationstates.net/template-overall=none/page=reports") {
+            // Make the page border green so the user knows they can safely refresh.
+            document.getElementsByTagName("HTML")[0].style.borderColor = "#33cc00";
+        }
+    }
+
+    // Right after DOM is loaded
+    // if (document.readyState === "complete") {}
+});
+
+window.addEventListener("DOMContentLoaded", function () {
+    "use strict";
+
+    // Handle Popup Events
+    //noinspection JSLint (surpress message for "sender" not being used, as sender is important)
+    chrome.runtime.onMessage.addListener(
+        function (message, sender, sendResponse) {
+            switch (message.type) {
+            case "getJumpPoints":
+                sendResponse(localStorage.JumpPoints);
+                break;
+            case "setJumpPoint":
+                JumpPoint = setJumpPoint(message.data);
+                break;
+            case "deleteJumpPoint":
+                JumpPoint = deleteJumpPoint(message.data);
+                break;
+            case "getRole":
+                sendResponse(localStorage.Role);
+                break;
+            case "setRole":
+                localStorage.Role = message.data;
+                break;
+            case "getScroll":
+                sendResponse(localStorage.Scroll === "true");
+                break;
+            case "setScroll":
+                localStorage.Scroll = message.data;
+                break;
+            case "getKeys":
+                sendResponse(keys);
+                break;
+            case "getKey":
+                sendResponse(localStorage[message.data]);
+                break;
+            case "setKey":
+                setKey(message.data);
+                break;
+            default:
+                console.error("Unrecognised message: ", message);
+            }
+        }
+    );
+
+    // Handle Key Down
+    document.addEventListener("keydown", function (e) {
+        preKeyChecks(e); // If you add code below, the event should return early when this method returns false
+    });
+
+    // Handle Key Up
+    document.addEventListener("keyup", function (e) {
+        if (!preKeyChecks(e)) {
+            return;
+        }
+
+        // Page: Copy URL
+        // Modes: 1
+        if (e.keyCode === Number.parseInt(localStorage.KeyCopyUrl)) {
+            let temp = document.createElement("INPUT");
+            document.getElementsByTagName("BODY")[0].appendChild(temp);
+            temp.value = url;
+            temp.select();
+            document.execCommand("copy");
+            document.removeChild(temp);
+        }
+
+        // Page: Back
+        // Modes: 1
+        if (e.keyCode === Number.parseInt(localStorage.KeyBack1) || e.keyCode === Number.parseInt(localStorage.KeyBack2)) {
+            // Send message to background script
+            chrome.runtime.sendMessage({action: "previous", url: url});
+            // Receive and load page in message
+            chrome.runtime.onMessage.addListener(function (load) {
+                window.location.href = load.url;
+            });
+        }
+
+        // Page: Forward
+        // Modes: 1
+        if (e.keyCode === Number.parseInt(localStorage.KeyForward)) {
+            // Send message to background script
+            chrome.runtime.sendMessage({action: "next", url: url});
+            // Receive and load page in message
+            chrome.runtime.onMessage.addListener(function (load) {
+                window.location.href = load.url;
+            });
+        }
+
+        // Page: Refresh
+        // Modes: 1
+        if (e.keyCode === Number.parseInt(localStorage.KeyRefresh1) || e.keyCode === Number.parseInt(localStorage.KeyRefresh2)) {
+            // If on the reports page and it is reloaded, make the green page border red so the user knows they shouldn"t press refresh again.
+            if (url === "https://www.nationstates.net/template-overall=none/page=reports") {
+                // Only get reports for the last 6 minutes.
+                document.getElementsByTagName("INPUT").namedItem("report_hours").value = "24";
+                // Set the border to red so the user knows not to press refresh.
+                document.getElementsByTagName("HTML")[0].style.borderColor = "#ff0000";
+                // Generate new report.
+                document.getElementsByTagName("INPUT").namedItem("generate_report").click();
+            } else {
+                window.location.reload();
+            }
+        }
+
+        // -------------------------------------------------------------------------------------------------------------
+
+        // Activity: Nation Update
+        // Modes: 1
+        if (e.keyCode === Number.parseInt(localStorage.KeyUpdate)) {
+            window.location.href = "https://www.nationstates.net/page=ajax2/a=reports/view=self/filter=change";
+        }
+
+        // Activity: Spot ↔ All
+        // Modes: 2
+        if (e.keyCode === Number.parseInt(localStorage.KeyActivity)) {
+            if (url === "https://www.nationstates.net/page=activity/view=world") {
+                window.location.href = "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo";
+            } else if (url === "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo") {
+                window.location.href = "https://www.nationstates.net/page=activity/view=world";
+            } else {
+                window.location.href = "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo";
+            }
+        }
+
+        // Activity: Spot Regional
+        // Modes: 1
+        if (e.keyCode === Number.parseInt(localStorage.KeyRegHap)) {
+            let re = getRegion();
+            if (re) {
+                window.location.href = "https://www.nationstates.net/page=ajax2/a=reports/view=region." + re + "/filter=move+member+endo";
+            }
+        }
+
+        // Activity: World changes
+        // Modes: 1
+        if (e.keyCode === Number.parseInt(localStorage.KeyGcrHap)) {
+            window.location.href = "https://www.nationstates.net/page=ajax2/a=reports/view=world/filter=change";
+        }
+
+        // Banject
+        // Modes: 1
+        if (e.keyCode === Number.parseInt(localStorage.KeyBan)) {
+            document.getElementsByTagName("BUTTON").namedItem("ban").click();
+        }
+
+        // Cross first 10
+        // Modes: 1
+        if (e.keyCode === Number.parseInt(localStorage.KeyCross)) {
+            // Send message to background script that C has been pressed
+            chrome.runtime.sendMessage({cancross: "?"});
+            // Receive message.
+            chrome.runtime.onMessage.addListener(function docross(reply) {
+                // If the user hasn"t pressed the cross-endorse button 60 seconds ago or less, open the first 10 endorsers in separate tabs. This satisfies the limit of 10 requests/minute for scripts on NS.
+                if (reply.cancross === true) {
+                    let cross = document.getElementsByClassName("unbox")[0].getElementsByClassName("nlink");
+                    Array.prototype.some.call(cross, function (a, index) {
+                        a.target = "_blank";
+                        a.click();
+                        return index >= 9;
+                    });
+                }
+                // Remove the listener, or it will keep listening if reply.cancross is not true. That would result in it opening the tabs to cross times the amount you pressed [C] while reply.cancross was not true.
+                chrome.runtime.onMessage.removeListener(docross);
+            });
+        }
+
+        // Dossier → Clear
+        // Modes: 2
+        if (e.keyCode === Number.parseInt(localStorage.KeyClearDoss)) {
+            if (url === "https://www.nationstates.net/page=dossier") {
+                document.getElementsByTagName("BUTTON").namedItem("clear_dossier").click();
+            } else {
+                window.location.href = "https://www.nationstates.net/page=dossier";
+            }
+        }
+
+        // Dossier: Add Nation/Region
+        // Modes: 1
+        if (e.keyCode === Number.parseInt(localStorage.KeyDoss)) {
+            if (url.includes("region=")) {
+                // On region"s page
+                document.getElementsByTagName("BUTTON").namedItem("add_to_dossier").click();
+            } else {
+                // Elsewhere
+                document.getElementsByTagName("BUTTON").namedItem("action").click(); // Doss nation
+            }
+        }
+
+        // Endorse
+        // Modes: 1
+        if (e.keyCode === Number.parseInt(localStorage.KeyEndo)) {
+            if (document.getElementsByTagName("INPUT").namedItem("action").value === "endorse") {
+                document.getElementsByClassName("endorse button")[0].click();
+            }
+        }
+
+        // File GHR
+        // Modes: 1
+        // else if (e.keyCode == 70){
+        //     window.location.href = "https://www.nationstates.net/page=help";
+        // }
+
+        // Jump Point (+[Shift] to set)
+        // Modes: 3
+        if (e.keyCode === Number.parseInt(localStorage.KeyJP)) {
+            if (shifted) {
+                if (url.includes("https://www.nationstates.net/region=")) {
+                    setJumpPoint(url);
+                    notify("JP Updated! -- This region has been saved to your Jump Points and set as your current one. You can change your active JP in the popup window.");
+                }
+            } else if (url === JumpPoint) {
+                moveToRegion();
+            } else {
+                window.location.href = JumpPoint;
+            }
+        }
+
+        // Move
+        // Modes: 2
+        if (e.keyCode === Number.parseInt(localStorage.KeyMove)) {
+            if (url === "https://www.nationstates.net/template-overall=none/page=reports") {
+                let r = document.getElementsByTagName("LI")[0].getElementsByClassName("rlink")[1];
+                r.click();
+                r.style.backgroundColor = "yellow";
+            } else {
+                moveToRegion();
+            }
+        }
+
+        // Nation
+        // Modes: 1
+        if (e.keyCode === Number.parseInt(localStorage.KeyNation)) {
+            window.location.href = "https://www.nationstates.net";
+        }
+
+        // Prepare Switcher
+        // Modes: 4
+        if (e.keyCode === Number.parseInt(localStorage.KeySwitch)) {
+            if (!window.location.href.includes("page=un") && window.location.href !== JumpPoint) {
+                window.location.href = "https://www.nationstates.net/template-overall=none/page=un";
+            }
+            if (window.location.href.includes("page=un")) {
+                document.getElementsByClassName("button").namedItem("submit").click();
+            }
+            if (window.location.href.includes("page=UN_status")) {
+                window.location.href = JumpPoint;
+            }
+            if (window.location.href === JumpPoint) {
+                moveToRegion();
+            }
+        }
+
+        // Region
+        // Modes: 3
+        if (e.keyCode === Number.parseInt(localStorage.KeyRegion)) {
+            if (window.location.href.includes("/region=")) {
+                window.location.reload();
+            } else if (window.location.href.includes("page=reports") || window.location.href.includes("page=ajax2")) {
+                let reg = document.getElementsByTagName("LI")[0].getElementsByClassName("rlink")[1];
+                reg.click();
+                reg.style.backgroundColor = "yellow";
+            } else {
+                openRegion();
+            }
+        }
+
+        // Regional Officer
+        // Modes: 4
+        if (e.keyCode === Number.parseInt(localStorage.KeyOfficer)) {
+            let current_nation = document.getElementById("loggedin").getAttribute("data-nname");
+            // If on the regional control page, open own regional officer page
+            if (url.includes("/page=region_control")) {
+                window.location.href = "https://www.nationstates.net/page=regional_officer/nation=" + current_nation;
+                // If on on own regional officer page, assign officer role
+            } else if (url.includes("/page=regional_officer") && url.includes(current_nation)) {
+                document.getElementsByTagName("INPUT").namedItem("office_name").value = localStorage.Role;
+                document.getElementsByTagName("INPUT").namedItem("authority_A").checked = true;
+                document.getElementsByTagName("INPUT").namedItem("authority_C").checked = true;
+                document.getElementsByTagName("INPUT").namedItem("authority_E").checked = true;
+                document.getElementsByTagName("INPUT").namedItem("authority_P").checked = true;
+                document.getElementsByTagName("BUTTON").namedItem("editofficer").click();
+                // If on someone else"s regional officer page, dismiss them
+            } else if (url.includes("/page=regional_officer")) {
+                document.getElementsByTagName("BUTTON").namedItem("abolishofficer").click();
+                // If on none of these pages, open regional control page
+            } else {
+                window.location.href = "https://www.nationstates.net/page=region_control";
+            }
+        }
+
+        // Reports Page
+        // Modes: 2
+        if (e.keyCode === Number.parseInt(localStorage.KeyReports) && e.target === document.body) {
+            url = window.location.href;
+            if (url === "https://www.nationstates.net/template-overall=none/page=reports") {
+                window.location.href = "https://www.nationstates.net/page=ajax2/a=reports/view=world/filter=move+member+endo";
+            } else {
+                window.location.href = "https://www.nationstates.net/template-overall=none/page=reports";
+            }
+        }
+
+        // Toggle Template
+        // Modes: 2
+        if (e.keyCode === Number.parseInt(localStorage.KeyTemplate)) {
+            if (window.location.href.includes("none/region")) {
+                openRegion();
+            }
+            if (window.location.href.includes("none/nation")) {
+                window.location.replace(document.getElementsByClassName("quietlink")[0].href);
+            }
+            if (window.location.href.includes("net/region")) {
+                let rr = getRegion();
+                if (rr) {
+                    window.location.replace("https://www.nationstates.net/template-overall=none/region=" + rr);
+                }
+            }
+            if (window.location.href.includes("net/nation")) {
+                let nation = document.getElementsByClassName("quietlink")[0].href.split("/nation=")[1];
+                window.location.replace("https://www.nationstates.net/template-overall=none/nation=" + nation);
+            }
+        }
+
+        // WA: Apply/Join/Leave
+        // Modes: 2
+        if (e.keyCode === Number.parseInt(localStorage.KeyWAJL1) || e.keyCode === Number.parseInt(localStorage.KeyWAJL2)) {
+            if (url === "https://www.nationstates.net/page=un") {
+                document.getElementsByClassName("button").namedItem("submit").click();
+            } else {
+                window.location.href = "https://www.nationstates.net/page=un";
+            }
+        }
+
+        // WA: Delegate
+        // Modes: 2
+        if (e.keyCode === Number.parseInt(localStorage.KeyWAD)) {
+            // On region"s page
+            if (document.getElementById("content").getElementsByTagName("P")[0].textContent.includes("WA Delegate: None")) {
+                notify("This region doesn't have a WA delegate.");
+            } else if (url.includes("/region=")) {
+                document.getElementsByClassName("nlink")[0].click();
+            // The region in the sidebar updates too slow when you move regions, so this works better in that case.
+            // Should work on the page you get when you just moved, but not on the page with the featured region.
+            } else if (url.includes("/page=change_region") && document.getElementsByClassName("featuredregion").length === 0) {
+                document.getElementsByClassName("info")[0].getElementsByTagName("A")[0].click();
+            } else {
+                openRegion();
+            }
+        }
+
+        // Zombie Control
+        // Modes: 1
+        if (e.keyCode === Number.parseInt(localStorage.KeyZombie)) {
+            window.location.href = "https://www.nationstates.net/page=zombie_control";
+        }
+
+        // Open left of happening
+        // Modes: 2
+        if (e.keyCode === Number.parseInt(localStorage.KeyDosL1)) {
+            openNation(0, 0);
+        }
+        if (e.keyCode === Number.parseInt(localStorage.KeyDosL2)) {
+            openNation(0, 1);
+        }
+        if (e.keyCode === Number.parseInt(localStorage.KeyDosL3)) {
+            openNation(0, 2);
+        }
+        if (e.keyCode === Number.parseInt(localStorage.KeyDosL4)) {
+            openNation(0, 3);
+        }
+        if (e.keyCode === Number.parseInt(localStorage.KeyDosL5)) {
+            openNation(0, 4);
+        }
+
+        // Open right of happening
+        // Modes: 2
+        if (e.keyCode === Number.parseInt(localStorage.KeyDosR1)) {
+            openNation(1, 0);
+        }
+        if (e.keyCode === Number.parseInt(localStorage.KeyDosR2)) {
+            openNation(1, 1);
+        }
+        if (e.keyCode === Number.parseInt(localStorage.KeyDosR3)) {
+            openNation(1, 2);
+        }
+        if (e.keyCode === Number.parseInt(localStorage.KeyDosR4)) {
+            openNation(1, 3);
+        }
+        if (e.keyCode === Number.parseInt(localStorage.KeyDosR5)) {
+            openNation(1, 4);
+        }
+    });
+});
+
+window.addEventListener("load", function () {
+    "use strict";
+
+    // Starts nation pages at the bottom when you load them, so you can endorse easier
+    if (localStorage.Scroll === "true" && url.includes("nation=") && !url.includes("template-overall=none") && !url.includes("page=join_WA")) {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    // Enables clicking on ajax2 reports links
+    if (url.includes("page=ajax2") || url.includes("page=reports")) {
+        Array.from(document.getElementsByClassName("nlink")).some(function (a, index) {
+            let n = a.href.split("/nation=")[1];
+            a.href = "https://nationstates.net/template-overall=none/nation=" + n;
+            return index > 9;
+        });
+        Array.from(document.getElementsByClassName("rlink")).some(function (a, index) {
+            let r = a.href.split("/region=")[1];
+            a.href = "https://nationstates.net/template-overall=none/region=" + r;
+            return index > 9;
+        });
+    }
+
+    // Displays load time on the reports page
+    if (url.includes("page=reports")) {
+        let loadTime = window.performance.timing.domContentLoadedEventEnd - window.performance.timing.navigationStart;
+        let l = document.createElement("span");
+        l.innerText = " - PAGE LOAD TIME: " + loadTime + " ms";
+        l.style.color = "#006400";
+        document.body.insertBefore(l, document.getElementsByTagName("H1")[0]);
+    }
+});

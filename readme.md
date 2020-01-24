@@ -4,7 +4,7 @@
 
 ## ABOUT
 
-### Latest release: **v2.6**
+### Latest release: **v3.0**
 [Firefox add-on](https://addons.mozilla.org/en-US/firefox/addon/storm-ns/versions/)<br>
 [Chrome Installation Instructions](https://docs.google.com/document/d/103SyyFSHejWzWgktYLY7iP21Z5twQdy5-K9g5k5Yvys/edit?usp=sharing)<br>
 
@@ -26,57 +26,48 @@ All help in making this extension better is welcome! Contact me if you have sugg
 David.#4693 on Discord
 
 
+## Features
 
-## KEY LIST
+Page: Copy URL<br>
+Page: Back<sup>1</sup><br>
+Page: Forward<sup>1</sup><br>
+Page: Refresh<br>
+<sup>1</sup> - With page refresh, so information is up to date and hotkeys are not left disabled.<br>
+<br>
+View activity: check if updated, spot, world changes,...<br>
+Banject a nation<br>
+Open first 10 nations to cross<br>
+Open dossier <br>
+Add Nation/Region to dossier<br>
+Endorse a nation<br>
+Jump points: save regions as JP's, manage them, open & move to your current JP<br>
+Move to a region<br>
+View your own nation<br>
+Prepare a switcher<br>
+View Region<br>
+Open regional controls, appoint yourself & dismiss officers<br>
+Open reports page<br>
+Go to a nation on either side of a happening in the reports page<br>
+Toggle between fast and default themes<br>
+Apply/Join/Leave the WA<br>
+Go to a region's WA Delegate<br>
+Open zombie control
 
-
-Keys native to your browser included.
-
-
-| **Key(s)** | Function |
-| --- | --- |
-| **[Enter]** | Confirm dialogue (useful in the World Assembly). |
-| **[Backspace]** | Go to the previous page. |
-| **[Spacebar]** | View the reports page. 2x for Ajax2 version. |
-| **[Ctrl] + [Tab]** | Switch between browser tabs. |
-| **[Ctrl] + [W]** | Close this browser tab. |
-|  |  |
-| **[F5]** | Refresh this page. |
-| **[F6]** | Copy link to this page. |
-| **[F7]** | Go to the previous page. |
-| **[F8]** | Go to the next page. |
-| **WARNING ⚠** | Reload the page after clicking back/forward browser buttons, otherwise hotkeys will not work and the page may be outdated. This is not needed for [F7], [Backspace] and [F8]. |
-|  |  |
-| **[1-5]** | Select and add the first nation in a happening (Activity or Reports Page) to your dossier. |
-| **Keypad [1-5]** | Select and add the second nation in a happening (Activity or Reports Page) to your dossier. |
-|  |  |
-| **[A]** | View the activity page with the filters "World", "Move", "Member" and "Endorsements". This is ideal for spotting. Press again to view the activity page without filters. This is handy to see if a GCR is updating. |
-| **[B]** | Ban and eject this nation. |
-| **[C]** | Open the first 10 nations endorsing this nation in a separate tab. This function is limited to 10 nations to satisfy NS script rules. If your browser warns you about popups, be sure to allow them for "https://www.nationstates.net". |
-| **[D]** | Add this nation or region to your dossier. |
-| **[E]** | Endorse this nation. |
-| **[G]** | What's updating? |
-| **[H]** | Region Happenings |
-| **[J]** | Apply/Join/Leave the World Assembly. |
-| **[L]** | Apply/Join/Leave the World Assembly. |
-| **[M]** | Move to this region. |
-| **[N]** | The nation you're logged into. |
-| **[O]** | Opens regional controls. There, press to appoint yourself "Ace" with permissions over Appearance, Communications, Embassies and Polls. If you modify another officer, press to dismiss them. |
-| **[P]** | Open jump point. Press again to move there. Hold shift and this key to set your custom jump point. Default: Spear Danes. |
-| **[S]** | Prepare Switchers (press 4 times). |
-| **[T]** | Toggle Templates on and off. |
-| **[U]** | A quick way to check if your nation has updated. |
-| **[W]** | Opens the region you are in, when pressed there goes to its WA Delegate. |
-| **[X]** | Open your dossier. Press again to clear the nations in it. |
-| **[Z]** | Zombie Control |
-
-
-
-
-
- 
 
 ## CHANGELOG
+
+**v3.0 (2020/01/24)**
+
+* Made all non-browser shortcuts customizable. Click a shortcut's button, then press a key to change it. It is automatically saved like the other settings (except Officer Role). Closing the popup menu while the key reads "Press a key" cancels the change.
+* Added configuration for automatically scrolling down on a nation's page. By default it is now disabled. See "Auto-scroll nation page" in the popup menu.
+* Changed README to ABOUT, as the keymap with full key descriptions was removed there.
+* Removed the LAYOUT and README buttons. Click the question mark in the top-right of the popup window to see the ABOUT page. The LAYOUT can also be found there, but will only reflect the default keyboard shortcuts.
+* Added tooltips to the popup with full key descriptions and extra information to replace the README. Hover over an item to see its tooltip.
+* Added [K] as an extra refresh key. It is predictably located near [M] (the default to move) on all keyboard layouts.
+* Added an on-page notification to replace the alert for setting a JP.
+* Fixed and simplified no-template CSS.
+* Removed JQuery dependency to increase performance by a few dozen milliseconds. Don't expect a miracle from this, the gain is negligible compared to the impact of your distance from NS' servers and quality of your internet connection. This change may have both fixed and introduced some unintended behaviours. If something appears to be wrong, or did not work as you expected it to, please report it.
+
 
 **v2.6 (2020/01/18)**
 

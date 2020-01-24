@@ -14,7 +14,7 @@
 			}
 			body {
 				padding: 5px 33px;
-				font-family: 'Helvetica Neue',Verdana,Tahoma,sans-serif;
+				font-family: Verdana,Tahoma,sans-serif;
 				font-size: 14px;
 			}
 			h1 {
@@ -59,10 +59,17 @@
 				color: black;
 				text-align: right;
 			}
-			.buttons {
-				width: 100%;
-				margin: auto;
-				text-align: center;
+			.about {
+				float: right;
+				font-size: 8px;
+				font-weight: normal;
+				color: black;
+				text-align: right;
+				padding-left: 15px;
+				border-left: 1px solid black;
+			}
+			.about a {
+				text-decoration: none;
 			}
 			.button {display: inline-block;}
 			.delete {
@@ -80,77 +87,223 @@
 			form label {
 				width: 15px;
 			}
+			#jump-points {
+				width: 240px;
+			}
+			#officer-role {
+				width: 225px;
+			}
+			.key-input, .disabled-key-input {
+				width: 130px;
+				text-align: center;
+			}
 		</style>
 	</head>
 	<body>
 		<h1 class="box title">
 			<span>STORM</span>
-			<span class="version">v2.6</span>
+			<span class="version">v3.0</span>
+			<span class="about"><a href="about.html" target="_blank">❓</a></span>
 		</h1>
-		<br>
-		<div class="buttons">
-			<form class="button" action="./ext-resources/layout.png" target="_blank">
-				<input type="submit" value="Key Layout" />
-			</form>
-			<form class="button" action="./readme.html" target="_blank">
-				<input type="submit" value="Full Readme" />
-			</form>
-		</div>
 		<br>
 		<div class="box">
 				<h1>Settings</h1>
 				<table>
 					<tr>
 						<td><label for="jump-points">Jump Point (Shift+P)</label></td>
-						<td><select id="jump-points"></select></td>
+						<td><select class="settings-input" id="jump-points"></select></td>
 						<td><input type="button" id="delete-jp" class="button delete" value="✘"></td>
 					</tr>
 					<tr>
 						<td><label for="officer-role">Officer Role</label></td>
-						<td><input type="text" class="tinput" id="officer-role" ></td>
+						<td><input type="text" class="settings-input" id="officer-role" ></td>
 						<td><input type="button" id="save-officer" class="button save" value="💾"></td>
+					</tr>
+					<tr>
+						<td colspan="2"><label for="scroll">Auto-scroll nation page</label></td>
+						<td><input id="scroll" type="checkbox" name="scroll">
 					</tr>
 				</table>
 				<br>
 				<table>
-					<tr><th>Key(s)</th><th>Function</th></tr>
-					<tr><td><b>[Enter]</b></td><td>Yes, confirm (useful in WA)</td></tr>
-					<tr><td><b>[Backspace]</b></td><td>Previous page</td></tr>
-					<tr><td><b>[Spacebar]</b></td><td>Reports page</td></tr>
-					<tr><td><b>[Ctrl] + [Tab]</b></td><td>Switch browser tabs</td></tr>
-					<tr><td><b>[Ctrl] + [W]</b></td><td>Close browser tab</td></tr>
+
+					<tr><th>Function</th><th>Key(s)</th></tr>
+
+					<tr title="Close this browser tab. Note that this is a default browser shortcut, it cannot be changed.">
+						<td><label for="KeyCloseTab">Browser: Close Tab</label></td>
+						<td><input type="button" class="disabled-key-input" id="KeyCloseTab" value="Ctrl + W" disabled></td>
+					</tr>
+					<tr title="Confirm dialogue (useful in the World Assembly). Note that this is a default browser shortcut, it cannot be changed.">
+						<td><label for="KeyConfirm">Browser: Confirm Dialogue</label></td>
+						<td><input type="button" class="disabled-key-input" id="KeyConfirm" value="Enter" disabled></td>
+					</tr>
+					<tr title="Like [Alt]+[Tab] on your desktop, but limited to browser tabs. Press this combination, then use tab to cycle to the desired browser tab.">
+						<td><label for="KeySwitchTab">Browser: Switch Tabs</label></td>
+						<td><input type="button" class="disabled-key-input" id="KeySwitchTab" value="Ctrl + Tab" disabled></td>
+					</tr>
+
 					<tr><td></td><td><br></td></tr>
-					<tr><td><b>[F5]</b></td><td>Refresh page</td></tr>
-					<tr><td><b>[F6]</b></td><td>Copy link to this page</td></tr>
-					<tr><td><b>[F7]</b></td><td>Previous page</td></tr>
-					<tr><td><b>[F8]</b></td><td>Next page</td></tr>
+					<tr title="Reload the page after clicking the back/forward browser buttons, otherwise shortcuts will not work, and the page may be outdated. This is not needed for page forward/back using any of the configured keyboard shortcuts.">
+						<td colspan="2"><b>⚠ Back & forward browser buttons ⚠</b></td>
+					</tr>
+					<tr title="Copy the web address to this page to your clipboard. You can paste it using [Ctrl]+[V]">
+						<td><label for="KeyCopyUrl">Page: Copy URL</label></td>
+						<td><input type="button" class="key-input" id="KeyCopyUrl" value=""></td>
+					</tr>
+					<tr title="Go to the previous page, safely.">
+						<td><label for="KeyBack1">Page: Back</label></td>
+						<td><input type="button" class="key-input" id="KeyBack1" value=""></td>
+					</tr>
+					<tr title="Go to the previous page, safely.">
+						<td><label for="KeyBack2">Page: Back</label></td>
+						<td><input type="button" class="key-input" id="KeyBack2" value=""></td>
+					</tr>
+					<tr title="Go to the next page (if you went at least 1 page back), safely.">
+						<td><label for="KeyForward">Page: Forward</label></td>
+						<td><input type="button" class="key-input" id="KeyForward" value=""></td>
+					</tr>
+					<tr title="Do you need to reload more? Yes.">
+						<td><label for="KeyRefresh1">Page: Refresh</label></td>
+						<td><input type="button" class="key-input" id="KeyRefresh1" value=""></td>
+					</tr>
+					<tr title="More, I say!">
+						<td><label for="KeyRefresh2">Page: Refresh</label></td>
+						<td><input type="button" class="key-input" id="KeyRefresh2" value=""></td>
+					</tr>
+
 					<tr><td></td><td><br></td></tr>
-					<tr><td><b>[1-5]</b></td><td>Open nation on left side of happening</td></tr>
-					<tr><td><b>Keypad [1-5]</b></td><td>Above, but right side</td></tr>
+					<tr title="Opens your nation's activity page with the changes filter. You know when your nation last updated by looking for the first 'influence changed' entry.">
+						<td><label for="KeyUpdate">Activity: Nation Update</label></td>
+						<td><input type="button" class="key-input" id="KeyUpdate" value=""></td>
+					</tr>
+					<tr title="Open the world activity page with filters for spotting. Press again to toggle filters.">
+						<td><label for="KeyActivity">Activity: Spot ↔ All</label></td>
+						<td><input type="button" class="key-input" id="KeyActivity" value=""></td>
+					</tr>
+					<tr title="Open this region's activity page with filters for spotting.">
+						<td><label for="KeyRegHap">Activity: Spot Regional</label></td>
+						<td><input type="button" class="key-input" id="KeyRegHap" value=""></td>
+					</tr>
+					<tr title="See the world changes. Useful to see if a GCR is updating.">
+						<td><label for="KeyGcrHap">Activity: World changes</label></td>
+						<td><input type="button" class="key-input" id="KeyGcrHap" value=""></td>
+					</tr>
+					<tr title="Ban and eject this nation from the region, provided you have the authority to do so.">
+						<td><label for="KeyBan">Banject</label></td>
+						<td><input type="button" class="key-input" id="KeyBan" value=""></td>
+					</tr>
+					<tr title="Open the first 10 nations endorsing this nation. Your browser will warn you about pop-up windows, as 10 windows try to open at once. You can safely allow this for nationstates.net. You still have to endorse each nation. Use [Ctrl]+[Tab] to quickly switch to the next tab, then press the endorse shortcut to endorse each nation. This command can only be used once every minute to comply with NS script rules.">
+						<td><label for="KeyCross">Cross first 10</label></td>
+						<td><input type="button" class="key-input" id="KeyCross" value=""></td>
+					</tr>
+					<tr title="This key opens your dossier. If pressed there, it will clear it.">
+						<td><label for="KeyClearDoss">Dossier → Clear</label></td>
+						<td><input type="button" class="key-input" id="KeyClearDoss" value=""></td>
+					</tr>
+					<tr title="Add this nation or region to your dossier, so that they appear in your reports.">
+						<td><label for="KeyDoss">Dossier: Add Nation/Region</label></td>
+						<td><input type="button" class="key-input" id="KeyDoss" value=""></td>
+					</tr>
+					<tr title="Endorse this nation.">
+						<td><label for="KeyEndo">Endorse</label></td>
+						<td><input type="button" class="key-input" id="KeyEndo" value=""></td>
+					</tr>
+					<tr title="If you are not on the Jump Point's region page, pressing this will take you there. Pressing it there moves your nation to the JP. Holding shift while pressing this key on a region's page adds it to your list of JP's, and sets it as your current JP.">
+						<td><label for="KeyJP">Jump Point (+[Shift] to set)</label></td>
+						<td><input type="button" class="key-input" id="KeyJP" value=""></td>
+					</tr>
+					<tr title="Move your nation to this region, or the region on the right side of the last happening if in reports or activity. You only move when you release the key, so if you accidentally pressed it, don't release it! Instead, click out of your browser window and then release it safely.">
+						<td><label for="KeyMove">Move</label></td>
+						<td><input type="button" class="key-input" id="KeyMove" value=""></td>
+					</tr>
+					<tr title="Open your nation's page. Useful to see who endorsed you, among other things.">
+						<td><label for="KeyNation">Nation</label></td>
+						<td><input type="button" class="key-input" id="KeyNation" value=""></td>
+					</tr>
+					<tr title="On the 1st press, this key will take you to the WA. On the 2nd press, it will apply/join/leave the WA. On the 3rd press, it'll take you to your Jump Point. On the 4th press, it'll move you there.">
+						<td><label for="KeySwitch">Prepare Switcher</label></td>
+						<td><input type="button" class="key-input" id="KeySwitch" value=""></td>
+					</tr>
+					<tr title="Go to the region your nation is currently in. If on any region's page, reload it. If in reports or activity, move to the region on the right side of the last happening.">
+						<td><label for="KeyRegion">Region</label></td>
+						<td><input type="button" class="key-input" id="KeyRegion" value=""></td>
+					</tr>
+					<tr title="First press opens regional controls. There you can press it again to make yourself a Regional Officer. If you modify another RO, pressing this key will dismiss them.">
+						<td><label for="KeyOfficer">Regional Officer</label></td>
+						<td><input type="button" class="key-input" id="KeyOfficer" value=""></td>
+					</tr>
+					<tr title="Open the reports page, showing happenings of nations and regions you've added to your dossier. Press it again to toggle between this and world activity with spotting filters.">
+						<td><label for="KeyReports">Reports Page</label></td>
+						<td><input type="button" class="key-input" id="KeyReports" value=""></td>
+					</tr>
+					<tr title="On nation or region pages this toggles between an ultra-light (and thus fast) theme, and your default theme.">
+						<td><label for="KeyTemplate">Toggle Template</label></td>
+						<td><input type="button" class="key-input" id="KeyTemplate" value=""></td>
+					</tr>
+					<tr title="Press this button to open the World Assembly page. There you can use it to apply to join, Join, or Leave it, depending on current status.">
+						<td><label for="KeyWAJL1">WA: Apply/Join/Leave</label></td>
+						<td><input type="button" class="key-input" id="KeyWAJL1" value=""></td>
+					</tr>
+					<tr title="Press this button to open the World Assembly page. There you can use it to apply to join, Join, or Leave it, depending on current status.">
+						<td><label for="KeyWAJL2">WA: Apply/Join/Leave</label></td>
+						<td><input type="button" class="key-input" id="KeyWAJL2" value=""></td>
+					</tr>
+					<tr title="If on any region's page, this key will take you to its WA Delegate. If not, pressing this key will take you to the page of the region you're currently in.">
+						<td><label for="KeyWAD">WA: Delegate</label></td>
+						<td><input type="button" class="key-input" id="KeyWAD" value=""></td>
+					</tr>
+					<tr title="Open zombie control. Useful during an apocalypse.">
+						<td><label for="KeyZombie">Zombie Control</label></td>
+						<td><input type="button" class="key-input" id="KeyZombie" value=""></td>
+					</tr>
+
+
 					<tr><td></td><td><br></td></tr>
-					<tr><td><b>[A]</b></td><td>Spot activity ↔ remove activity filters</td></tr>
-					<tr><td><b>[B]</b></td><td>Banject</td></tr>
-					<tr><td><b>[C]</b></td><td>Cross (up to 10 nations)</td></tr>
-					<tr><td><b>[D]</b></td><td>Doss (nation or region)</td></tr>
-					<tr><td><b>[E]</b></td><td>Endorse</td></tr>
-					<tr><td><b>[G]</b></td><td>What's updating?</td></tr>
-					<tr><td><b>[H]</b></td><td>Region Happenings</td></tr>
-					<tr><td><b>[J]</b></td><td>Apply/Join/Leave WA</td></tr>
-					<tr><td><b>[L]</b></td><td>Apply/Join/Leave WA</td></tr>
-					<tr><td><b>[M]</b></td><td>Move</td></tr>
-					<tr><td><b>[N]</b></td><td>Nation</td></tr>
-					<tr><td><b>[O]</b></td><td>Regional controls → Appoint/Dismiss RO</td></tr>
-					<tr><td><b>[P]</b></td><td>Move to jump point ([Shift]+[P] to set)</td></tr>
-					<tr><td><b>[R]</b></td><td>Region</td></tr>
-					<tr><td><b>[S]</b></td><td>Prepare Switchers</td></tr>
-					<tr><td><b>[T]</b></td><td>Toggle Template</td></tr>
-					<tr><td><b>[U]</b></td><td>Updated?</td></tr>
-					<tr><td><b>[W]</b></td><td>Region → view WAD</td></tr>
-					<tr><td><b>[X]</b></td><td>Open dossier → clear dossier</td></tr>
-					<tr><td><b>[Z]</b></td><td>Zombie Control</td></tr>
+					<tr title="Works only on nations in the reports page.">
+						<td><label for="KeyDosL1">Open 1st left of happening</label></td>
+						<td><input type="button" class="key-input" id="KeyDosL1" value=""></td>
+					</tr>
+					<tr title="Works only on nations in the reports page.">
+						<td><label for="KeyDosL2">Open 2nd left of happening</label></td>
+						<td><input type="button" class="key-input" id="KeyDosL2" value=""></td>
+					</tr>
+					<tr title="Works only on nations in the reports page.">
+						<td><label for="KeyDosL3">Open 3rd left of happening</label></td>
+						<td><input type="button" class="key-input" id="KeyDosL3" value=""></td>
+					</tr>
+					<tr title="Works only on nations in the reports page.">
+						<td><label for="KeyDosL4">Open 4th left of happening</label></td>
+						<td><input type="button" class="key-input" id="KeyDosL4" value=""></td>
+					</tr>
+					<tr title="Works only on nations in the reports page.">
+						<td><label for="KeyDosL5">Open 5th left of happening</label></td>
+						<td><input type="button" class="key-input" id="KeyDosL5" value=""></td>
+					</tr>
+					<tr title="Works only on nations in the reports page.">
+						<td><label for="KeyDosR1">Open 1st right of happening</label></td>
+						<td><input type="button" class="key-input" id="KeyDosR1" value=""></td>
+					</tr>
+					<tr title="Works only on nations in the reports page.">
+						<td><label for="KeyDosR2">Open 2nd right of happening</label></td>
+						<td><input type="button" class="key-input" id="KeyDosR2" value=""></td>
+					</tr>
+					<tr title="Works only on nations in the reports page.">
+						<td><label for="KeyDosR3">Open 3rd right of happening</label></td>
+						<td><input type="button" class="key-input" id="KeyDosR3" value=""></td>
+					</tr>
+					<tr title="Works only on nations in the reports page.">
+						<td><label for="KeyDosR4">Open 4th right of happening</label></td>
+						<td><input type="button" class="key-input" id="KeyDosR4" value=""></td>
+					</tr>
+					<tr title="Works only on nations in the reports page.">
+						<td><label for="KeyDosR5">Open 5th right of happening</label></td>
+						<td><input type="button" class="key-input" id="KeyDosR5" value=""></td>
+					</tr>
+
 				</table>
-				<br>
-				This list is only intended as a quick reference. See the full readme for better descriptions.
+				<p>
+					Hover over a description to get more information.
+				</p>
 		</div>
 		<script src="popup.js"></script>
 	</body>
