@@ -26,8 +26,13 @@ All help in making this extension better is welcome! Contact me if you have sugg
 [bion@disroot.org](mailto:bion@disroot.org?Subject=Storm)<br>
 David.#4693 on Discord
 
-
 ## Features
+
+![layout](ext-resources/layout.png)
+
+![screen-popup](dev-resources/Screenshots/screen-popup.png)
+
+All shortcuts (except [Enter], [Ctrl]+[W] and [Ctrl]+[Tab]) can be customized. There are shortcuts for the following:
 
 Page: Copy URL<br>
 Page: Back<sup>1</sup><br>

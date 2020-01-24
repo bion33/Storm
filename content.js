@@ -225,17 +225,12 @@ function setKey(data) {
     "use strict";
     let k = data.split("=", 1);
     let v = data.substring(data.indexOf("=") + 1);
+    let oldValue = Number.parseInt(localStorage[k]);
     if (keys.includes(Number.parseInt(v))) {
         return false;
     }
+    keys[keys.findIndex(x => x === oldValue)] = Number.parseInt(v);
     localStorage[k] = v;
-    keys = [];
-    Object.keys(localStorage).forEach(function (key) {
-        let value = Number.parseInt(localStorage[key]);
-        if (key.startsWith("Key") && !Number.isNaN(value)) {
-            keys.push(value);
-        }
-    });
     return true;
 }
 
@@ -332,7 +327,7 @@ window.addEventListener("DOMContentLoaded", function () {
     "use strict";
 
     // Handle Popup Events
-    //noinspection JSLint (surpress message for "sender" not being used, as sender is important)
+    // noinspection JSLint (surpress message for "sender" not being used, as sender is important),JSDeprecatedSymbols
     chrome.runtime.onMessage.addListener(
         function (message, sender, sendResponse) {
             switch (message.type) {
@@ -731,16 +726,15 @@ window.addEventListener("load", function () {
 
     // Enables clicking on ajax2 reports links
     if (url.includes("page=ajax2") || url.includes("page=reports")) {
-        Array.from(document.getElementsByClassName("nlink")).some(function (a, index) {
-            let n = a.href.split("/nation=")[1];
-            a.href = "https://nationstates.net/template-overall=none/nation=" + n;
-            return index > 9;
-        });
-        Array.from(document.getElementsByClassName("rlink")).some(function (a, index) {
-            let r = a.href.split("/region=")[1];
-            a.href = "https://nationstates.net/template-overall=none/region=" + r;
-            return index > 9;
-        });
+        // Plain old for loops are faster
+        let nations = document.getElementsByClassName("nlink");
+        for (let i = 0; i < nations.length && i < 10; i++) {
+            nations[i].href = "https://nationstates.net/template-overall=none/nation=" + nations[i].href.split("/nation=")[1];
+        }
+        let regions = document.getElementsByClassName("rlink");
+        for (let i = 0; i < regions.length && i < 10; i++) {
+            regions[i].href = "https://nationstates.net/template-overall=none/region=" + regions[i].href.split("/region=")[1];
+        }
     }
 
     // Displays load time on the reports page
