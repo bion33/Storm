@@ -10,11 +10,12 @@
 
 Storm is a variant of Breeze++ with additional functionality. See the keylist and changelog for differences between the two.
 
-| NSBreeze  | Breeze++         | Storm   |
-|-----------|------------------|--------------|
+| NSBreeze  | [Breeze++](https://chrome.google.com/webstore/detail/breeze%20%20/fmidibfpgbmcmnfedlafdfcbmglbckkf)         | [Storm](https://addons.mozilla.org/en-GB/firefox/addon/storm-ns/)   |
+|-----------|----------------------|-------------|
 | [Shizensky](http://nationstates.net/Shizensky) | [Vincent W. Drake](https://www.nationstates.net/nation=vincent_drake) | [Krypton Nova](https://www.nationstates.net/nation=krypton_nova) |
 
-#### **Contribute/Collaborate:**
+#### **Contribute / Collaborate:**
+
 All help in making this extension better is welcome! Contact me if you have suggestions, or if you'd like to help with the code (HTML, CSS and JavaScript). I'm also open to suggestions for collaboration between similar extensions.
 
 #### **Licence:**
