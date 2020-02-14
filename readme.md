@@ -4,7 +4,7 @@
 
 ## ABOUT
 
-### Latest release: **v3.0**
+### Latest release: **v3.1**
 [Firefox add-on](https://addons.mozilla.org/en-US/firefox/addon/storm-ns/versions/)<br>
 [Chrome Installation Instructions](https://docs.google.com/document/d/103SyyFSHejWzWgktYLY7iP21Z5twQdy5-K9g5k5Yvys/edit?usp=sharing)<br>
 
@@ -61,6 +61,11 @@ Open zombie control
 
 
 ## CHANGELOG
+
+**v3.1 (2020/02/14)**
+
+* Fixed a critical mistake.
+
 
 **v3.0 (2020/01/24)**
 

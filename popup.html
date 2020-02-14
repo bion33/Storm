@@ -61,7 +61,7 @@
 			}
 			.about {
 				float: right;
-				font-size: 8px;
+				font-size: 14px;
 				font-weight: normal;
 				color: black;
 				text-align: right;
@@ -71,38 +71,37 @@
 			.about a {
 				text-decoration: none;
 			}
-			.button {display: inline-block;}
-			.delete {
+			#delete-jp {
 				color: red;
 				font-size: 12px;
-				padding: 0;
 				text-align: center;
+				padding: 1px;
+				width: 100%;
 			}
-			.save {
+			#save-officer {
 				color: green;
 				font-size: 12px;
-				padding: 0;
 				text-align: center;
+				padding: 1px;
+				width: 100%;
 			}
 			form label {
 				width: 15px;
 			}
-			#jump-points {
-				width: 240px;
-			}
-			#officer-role {
-				width: 225px;
-			}
 			.key-input, .disabled-key-input {
 				width: 130px;
 				text-align: center;
+			}
+			.settings-input {
+				box-sizing: border-box;
+				width: 100%;
 			}
 		</style>
 	</head>
 	<body>
 		<h1 class="box title">
 			<span>STORM</span>
-			<span class="version">v3.0</span>
+			<span class="version">v3.1</span>
 			<span class="about"><a href="about.html" target="_blank">❓</a></span>
 		</h1>
 		<br>
@@ -112,12 +111,12 @@
 					<tr>
 						<td><label for="jump-points">Jump Point (Shift+P)</label></td>
 						<td><select class="settings-input" id="jump-points"></select></td>
-						<td><input type="button" id="delete-jp" class="button delete" value="✘"></td>
+						<td><input type="button" id="delete-jp" value="✘"></td>
 					</tr>
 					<tr>
 						<td><label for="officer-role">Officer Role</label></td>
 						<td><input type="text" class="settings-input" id="officer-role" ></td>
-						<td><input type="button" id="save-officer" class="button save" value="💾"></td>
+						<td><input type="button" id="save-officer" value="💾"></td>
 					</tr>
 					<tr>
 						<td colspan="2"><label for="scroll">Auto-scroll nation page</label></td>

@@ -15,124 +15,124 @@ let url = window.location.href;
 chrome.runtime.sendMessage({action: "store", url: url});
 
 // Set Defaults
-if (localStorage.getItem("KeyReports") === undefined) {
+if (!("KeyReports" in localStorage)) {
     localStorage.KeyReports = "32=Spacebar";
 }
-if (localStorage.getItem("KeyBack2") === undefined) {
+if (!("KeyBack2" in localStorage)) {
     localStorage.KeyBack2 = "8=Backspace";
 }
-if (localStorage.getItem("KeyRefresh1") === undefined) {
+if (!("KeyRefresh1" in localStorage)) {
     localStorage.KeyRefresh1 = "116=F5";
 }
-if (localStorage.getItem("KeyCopyUrl") === undefined) {
+if (!("KeyCopyUrl" in localStorage)) {
     localStorage.KeyCopyUrl = "117=F6";
 }
-if (localStorage.getItem("KeyBack1") === undefined) {
+if (!("KeyBack1" in localStorage)) {
     localStorage.KeyBack1 = "118=F7";
 }
-if (localStorage.getItem("KeyForward") === undefined) {
+if (!("KeyForward" in localStorage)) {
     localStorage.KeyForward = "119=F8";
 }
-if (localStorage.getItem("KeyDosL1") === undefined) {
+if (!("KeyDosL1" in localStorage)) {
     localStorage.KeyDosL1 = "49=1";
 }
-if (localStorage.getItem("KeyDosL2") === undefined) {
+if (!("KeyDosL2" in localStorage)) {
     localStorage.KeyDosL2 = "50=2";
 }
-if (localStorage.getItem("KeyDosL3") === undefined) {
+if (!("KeyDosL3" in localStorage)) {
     localStorage.KeyDosL3 = "51=3";
 }
-if (localStorage.getItem("KeyDosL4") === undefined) {
+if (!("KeyDosL4" in localStorage)) {
     localStorage.KeyDosL4 = "52=4";
 }
-if (localStorage.getItem("KeyDosL5") === undefined) {
+if (!("KeyDosL5" in localStorage)) {
     localStorage.KeyDosL5 = "53=5";
 }
-if (localStorage.getItem("KeyDosR1") === undefined) {
+if (!("KeyDosR1" in localStorage)) {
     localStorage.KeyDosR1 = "97=NP 1";
 }
-if (localStorage.getItem("KeyDosR2") === undefined) {
+if (!("KeyDosR2" in localStorage)) {
     localStorage.KeyDosR2 = "98=NP 2";
 }
-if (localStorage.getItem("KeyDosR3") === undefined) {
+if (!("KeyDosR3" in localStorage)) {
     localStorage.KeyDosR3 = "99=NP 3";
 }
-if (localStorage.getItem("KeyDosR4") === undefined) {
+if (!("KeyDosR4" in localStorage)) {
     localStorage.KeyDosR4 = "100=NP 4";
 }
-if (localStorage.getItem("KeyDosR5") === undefined) {
+if (!("KeyDosR5" in localStorage)) {
     localStorage.KeyDosR5 = "101=NP 5";
 }
-if (localStorage.getItem("KeyActivity") === undefined) {
+if (!("KeyActivity" in localStorage)) {
     localStorage.KeyActivity = "65=a";
 }
-if (localStorage.getItem("KeyBan") === undefined) {
+if (!("KeyBan" in localStorage)) {
     localStorage.KeyBan = "66=b";
 }
-if (localStorage.getItem("KeyCross") === undefined) {
+if (!("KeyCross" in localStorage)) {
     localStorage.KeyCross = "67=c";
 }
-if (localStorage.getItem("KeyDoss") === undefined) {
+if (!("KeyDoss" in localStorage)) {
     localStorage.KeyDoss = "68=d";
 }
-if (localStorage.getItem("KeyEndo") === undefined) {
+if (!("KeyEndo" in localStorage)) {
     localStorage.KeyEndo = "69=e";
 }
-if (localStorage.getItem("KeyGcrHap") === undefined) {
+if (!("KeyGcrHap" in localStorage)) {
     localStorage.KeyGcrHap = "71=g";
 }
-if (localStorage.getItem("KeyRegHap") === undefined) {
+if (!("KeyRegHap" in localStorage)) {
     localStorage.KeyRegHap = "72=h";
 }
-if (localStorage.getItem("KeyWAJL1") === undefined) {
+if (!("KeyWAJL1" in localStorage)) {
     localStorage.KeyWAJL1 = "74=j";
 }
-if (localStorage.getItem("KeyRefresh2") === undefined) {
+if (!("KeyRefresh2" in localStorage)) {
     localStorage.KeyRefresh2 = "75=k";
 }
-if (localStorage.getItem("KeyWAJL2") === undefined) {
+if (!("KeyWAJL2" in localStorage)) {
     localStorage.KeyWAJL2 = "76=l";
 }
-if (localStorage.getItem("KeyMove") === undefined) {
+if (!("KeyMove" in localStorage)) {
     localStorage.KeyMove = "77=m";
 }
-if (localStorage.getItem("KeyNation") === undefined) {
+if (!("KeyNation" in localStorage)) {
     localStorage.KeyNation = "78=n";
 }
-if (localStorage.getItem("KeyOfficer") === undefined) {
+if (!("KeyOfficer" in localStorage)) {
     localStorage.KeyOfficer = "79=o";
 }
-if (localStorage.getItem("KeyJP") === undefined) {
+if (!("KeyJP" in localStorage)) {
     localStorage.KeyJP = "80=p";
 }
-if (localStorage.getItem("KeyRegion") === undefined) {
+if (!("KeyRegion" in localStorage)) {
     localStorage.KeyRegion = "82=r";
 }
-if (localStorage.getItem("KeySwitch") === undefined) {
+if (!("KeySwitch" in localStorage)) {
     localStorage.KeySwitch = "83=s";
 }
-if (localStorage.getItem("KeyTemplate") === undefined) {
+if (!("KeyTemplate" in localStorage)) {
     localStorage.KeyTemplate = "84=t";
 }
-if (localStorage.getItem("KeyUpdate") === undefined) {
+if (!("KeyUpdate" in localStorage)) {
     localStorage.KeyUpdate = "85=u";
 }
-if (localStorage.getItem("KeyWAD") === undefined) {
+if (!("KeyWAD" in localStorage)) {
     localStorage.KeyWAD = "87=w";
 }
-if (localStorage.getItem("KeyClearDoss") === undefined) {
+if (!("KeyClearDoss" in localStorage)) {
     localStorage.KeyClearDoss = "88=x";
 }
-if (localStorage.getItem("KeyZombie") === undefined) {
+if (!("KeyZombie" in localStorage)) {
     localStorage.KeyZombie = "90=z";
 }
-if (localStorage.getItem("Role") === undefined) {
+if (!("Role" in localStorage)) {
     localStorage.Role = "Officer";
 }
-if (localStorage.getItem("Scroll") === undefined) {
+if (!("Scroll" in localStorage)) {
     localStorage.Scroll = false;
 }
-if (localStorage.getItem("JumpPoints") === undefined) {
+if (!("JumpPoints" in localStorage)) {
     localStorage.JumpPoints = "https://www.nationstates.net/region=artificial_solar_system";
 }
 
@@ -150,6 +150,7 @@ Object.keys(localStorage).forEach(function (key) {
         keys.push(value);
     }
 });
+
 
 // =====================================================================================================================
 // Functions
@@ -303,34 +304,11 @@ function notify(message) {
 // =====================================================================================================================
 // Main
 
-document.addEventListener("readystatechange", function () {
-    "use strict";
-
-    // NOTE for code placed in this event listener:
-    // document.readyState === "interactive" is the first state change, before the DOM is fully loaded
-    // document.readyState === "complete" happens right before the "load" event
-
-    // Right before DOM is loaded
-    if (document.readyState === "interactive") {
-        // If on the reports page
-        if (url === "https://www.nationstates.net/template-overall=none/page=reports") {
-            // Make the page border green so the user knows they can safely refresh.
-            document.getElementsByTagName("HTML")[0].style.borderColor = "#33cc00";
-        }
-    }
-
-    // Right after DOM is loaded
-    // if (document.readyState === "complete") {}
-});
-
-window.addEventListener("DOMContentLoaded", function () {
-    "use strict";
-
-    // Handle Popup Events
-    // noinspection JSLint (surpress message for "sender" not being used, as sender is important),JSDeprecatedSymbols
-    chrome.runtime.onMessage.addListener(
-        function (message, sender, sendResponse) {
-            switch (message.type) {
+// Handle Popup Events
+// noinspection JSLint (surpress message for "sender" not being used, as sender is important),JSDeprecatedSymbols
+chrome.runtime.onMessage.addListener(
+    function (message, sender, sendResponse) {
+        switch (message.type) {
             case "getJumpPoints":
                 sendResponse(localStorage.JumpPoints);
                 break;
@@ -363,9 +341,32 @@ window.addEventListener("DOMContentLoaded", function () {
                 break;
             default:
                 console.error("Unrecognised message: ", message);
-            }
         }
-    );
+    }
+);
+
+document.addEventListener("readystatechange", function () {
+    "use strict";
+
+    // NOTE for code placed in this event listener:
+    // document.readyState === "interactive" is the first state change, before the DOM is fully loaded
+    // document.readyState === "complete" happens right before the "load" event
+
+    // Right before DOM is loaded
+    if (document.readyState === "interactive") {
+        // If on the reports page
+        if (url === "https://www.nationstates.net/template-overall=none/page=reports") {
+            // Make the page border green so the user knows they can safely refresh.
+            document.getElementsByTagName("HTML")[0].style.borderColor = "#33cc00";
+        }
+    }
+
+    // Right after DOM is loaded
+    // if (document.readyState === "complete") {}
+});
+
+window.addEventListener("DOMContentLoaded", function () {
+    "use strict";
 
     // Handle Key Down
     document.addEventListener("keydown", function (e) {
