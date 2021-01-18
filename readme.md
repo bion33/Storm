@@ -62,6 +62,13 @@ Open zombie control
 
 ## CHANGELOG
 
+**v3.2 (2021/01/??)**
+
+* Fixed Apply/Join/Leave triggering the "Login" button of the Switch menu.
+* "?" in the popup-menu now redirects to the Readme on GitHub (consolidating information to reduce maintenance).
+* Improved code structure.
+
+
 **v3.1 (2020/02/14)**
 
 * Fixed a critical mistake.

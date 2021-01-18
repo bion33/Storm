@@ -71,6 +71,11 @@ function loaded() {
                 } else {
                     keyInput.value = specialKeys[v];
                 }
+
+                if (keyInput.id == "KeyJP") {
+                    let tip = document.getElementById("JPKey").getAttribute("title").replace("JPKey", keyInput.value);
+                    document.getElementById("JPKey").setAttribute("title", tip);
+                }
             });
         });
     });

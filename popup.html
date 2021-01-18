@@ -101,32 +101,35 @@
 	<body>
 		<h1 class="box title">
 			<span>STORM</span>
-			<span class="version">v3.1</span>
-			<span class="about"><a href="about.html" target="_blank">❓</a></span>
+			<span class="version">v3.2</span>
+			<span class="about"><a href="https://github.com/Krypton-Nova/Storm#storm-readme" target="_blank">❓</a></span>
 		</h1>
 		<br>
 		<div class="box">
+				<p>
+					Hover over a description to get more information.
+				</p>
+
 				<h1>Settings</h1>
 				<table>
-					<tr>
-						<td><label for="jump-points">Jump Point (Shift+P)</label></td>
+					<tr id="JPKey" title="You can add a jump point by navigating to a region's page and pressing Shift+JPKey.">
+						<td><label id="" for="jump-points">Jump Point</label></td>
 						<td><select class="settings-input" id="jump-points"></select></td>
 						<td><input type="button" id="delete-jp" value="✘"></td>
 					</tr>
-					<tr>
+					<tr title="The name of the officer role to create for yourself in the region (provided you have the required authority).">
 						<td><label for="officer-role">Officer Role</label></td>
 						<td><input type="text" class="settings-input" id="officer-role" ></td>
 						<td><input type="button" id="save-officer" value="💾"></td>
 					</tr>
-					<tr>
+					<tr title="Automatically scroll down a nation's page to quickly see who's endorsing it.">
 						<td colspan="2"><label for="scroll">Auto-scroll nation page</label></td>
 						<td><input id="scroll" type="checkbox" name="scroll">
 					</tr>
 				</table>
 				<br>
 				<table>
-
-					<tr><th>Function</th><th>Key(s)</th></tr>
+					<tr><th>Function</th><th>Key</th></tr>
 
 					<tr title="Close this browser tab. Note that this is a default browser shortcut, it cannot be changed.">
 						<td><label for="KeyCloseTab">Browser: Close Tab</label></td>
@@ -298,12 +301,8 @@
 						<td><label for="KeyDosR5">Open 5th right of happening</label></td>
 						<td><input type="button" class="key-input" id="KeyDosR5" value=""></td>
 					</tr>
-
 				</table>
-				<p>
-					Hover over a description to get more information.
-				</p>
 		</div>
-		<script src="popup.js"></script>
+		<script src="/scripts/popup.js"></script>
 	</body>
 </html>

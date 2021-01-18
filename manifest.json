@@ -2,19 +2,19 @@
   "manifest_version": 2,
   "name": "Storm",
   "short_name": "Storm",
-  "version": "3.1",
+  "version": "3.2",
   "author": "Krypton Nova",
   "description": "Storm enables hotkeys for military gameplay on NationStates.",
   "browser_action": {
     "browser_style": false,
-    "default_icon": "./ext-resources/icon.png",
-    "default_popup": "./popup.html",
+    "default_icon": "/ext-resources/icon.png",
+    "default_popup": "/popup.html",
     "default_title": "Storm"},
   "permissions": ["activeTab", "*://*.nationstates.net/*", "storage"],
-  "background": {"scripts": ["background.js"]},
+  "background": {"scripts": ["/scripts/background.js"]},
   "content_scripts": [
     {
-      "js": ["content.js"],
+      "js": ["/scripts/content.js"],
       "matches": ["https://*.nationstates.net/*"],
       "run_at": "document_start"
     }, {
@@ -23,15 +23,15 @@
         "https://*.nationstates.net/template-overall=none/page=reports",
         "https://*.nationstates.net/page=ajax2/a=reports/view=region*"],
       "run_at": "document_start",
-      "css": ["ext-resources/no-template.css"]
+      "css": ["/ext-resources/no-template.css"]
     }, {
       "matches": ["https://*.nationstates.net/template-overall=none/page=reports"],
       "run_at": "document_start",
-      "css": ["ext-resources/no-template-reports.css"]
+      "css": ["/ext-resources/no-template-reports.css"]
     }, {
       "matches": ["https://www.nationstates.net/page=ajax2/a=reports/view=world/filter=change"],
       "run_at": "document_start",
-      "css": ["ext-resources/no-template-world-changes.css"]
+      "css": ["/ext-resources/no-template-world-changes.css"]
     }
   ]
 }
