@@ -2,43 +2,44 @@
 // See: https://stackoverflow.com/questions/48104433/how-to-import-es6-modules-in-content-script-for-chrome-extension
 // That's why this file is separated into several big chunks.
 
+// Namespace
+/** @namespace chrome.runtime **/
+/** @namespace chrome.runtime.onMessage **/
+
+
 // =====================================================================================================================
 // Classes
 // (Declaring these here prevents ReferenceError: can't access lexical declaration 'x' before initialization)
 
 /**
- * Maps keyCodes to an action
+ * Maps keys to an action
  */
 class KeyboardShortcut {
     /**
-     * Create a new KeyboardShortcut for the given keyCodes with the given action
-     * @param {number} keyCodes JavaScript KeyboardEvent keyCode
-     * @param {Function} action The Function to execute when any keyCode in keyCodes is hit
+     * Create a new KeyboardShortcut for the given keys with the given action
+     * @param {Array} keys Array of "key=description" where "key" is a KeyboardEvent key
+     * @param {Function} action The Function to execute when any key in keys is hit
      */
-    constructor(keyCodes, action) {
-        this.keyCodes = [];
-        for (let i = 0; i < keyCodes.length; i++) {
-            this.keyCodes.push(Number.parseInt(keyCodes[i]));
+    constructor(keys, action) {
+        this.keys = [];
+        for (let i = 0; i < keys.length; i++) {
+            this.keys.push(keys[i].split("=")[0]);
         }
         this.action = action;
     }
 
     /**
-     * Run the shortcut's action if the keycode matches any of this KeyboardShortcuts' keyCodes
-     * @param {number} keyCode 
+     * Run the shortcut's action if the key matches any of this KeyboardShortcuts' keys
+     * @param {string} key 
      */
-    run_if_for(keyCode) {
-        if (this.keyCodes.includes(keyCode)) this.action();
+    run_if_for(key) {
+        if (this.keys.includes(key)) this.action();
     }
 }
 
 
 // =====================================================================================================================
 // Init
-
-// Namespace
-/** @namespace chrome.runtime **/
-/** @namespace chrome.runtime.onMessage **/
 
 // URL
 let url = window.location.href;
@@ -56,19 +57,11 @@ setDefaults();
 let shifted = false;
 let controlled = false;
 let alternated = false;
+let numpad = false;
 let keyInKeys = false;
 let JumpPoint = localStorage.JumpPoints.split(",")[0];
-let keys = [];
+let keys = getKeys();
 let shortcuts = defineShortcuts();
-
-// Fill list of keyboard shortcuts ("keys") with those found in localStorage
-Object.keys(localStorage).forEach(function (key) {
-    "use strict";
-    let value = Number.parseInt(localStorage[key]);
-    if (key.startsWith("Key") && !Number.isNaN(value)) {
-        keys.push(value);
-    }
-});
 
 
 // =====================================================================================================================
@@ -106,7 +99,7 @@ chrome.runtime.onMessage.addListener(
                 sendResponse(localStorage[message.data]);
                 break;
             case "setKey":
-                setKey(message.data);
+                sendResponse(setKey(message.data));
                 break;
             default:
                 console.error("Unrecognised message: ", message);
@@ -136,17 +129,29 @@ window.addEventListener("DOMContentLoaded", function () {
 
     // Handle Key Down
     document.addEventListener("keydown", function (e) {
+        shifted = e.shiftKey;
+        controlled = e.ctrlKey;
+        alternated = e.altKey;
+        numpad = (e.location === 3);
+
         preKeyChecks(e); // If you add code below, the event should return early when this method returns false
     });
 
     // Handle Key Up
     document.addEventListener("keyup", function (e) {
+        shifted = e.shiftKey;
+        controlled = e.ctrlKey;
+        alternated = e.altKey;
+        numpad = (e.location === 3);
+
+        console.log()
+
         if (!preKeyChecks(e)) {
             return;
         }
 
         shortcuts.forEach(key => {
-            key.run_if_for(e.keyCode);
+            key.run_if_for(e.key);
         });
     });
 });
@@ -180,49 +185,49 @@ function setDefaults() {
     setDefault("JumpPoints", "https://www.nationstates.net/region=artificial_solar_system");
 
     // Default keybinds
-    setDefaultKey("KeyReports", 32, "Spacebar");
-    setDefaultKey("KeyBack2", 8, "Backspace");
-    setDefaultKey("KeyRefresh1", 116, "F5");
-    setDefaultKey("KeyCopyUrl", 117, "F6");
-    setDefaultKey("KeyBack1", 118, "F7");
-    setDefaultKey("KeyForward", 119, "F8");
-    setDefaultKey("KeyDosL1", 49, "1");
-    setDefaultKey("KeyDosL2", 50, "2");
-    setDefaultKey("KeyDosL3", 51, "3");
-    setDefaultKey("KeyDosL4", 52, "4");
-    setDefaultKey("KeyDosL5", 53, "5");
-    setDefaultKey("KeyDosR1", 97, "NP 1");
-    setDefaultKey("KeyDosR2", 98, "NP 2");
-    setDefaultKey("KeyDosR3", 99, "NP 3");
-    setDefaultKey("KeyDosR4", 100, "NP 4");
-    setDefaultKey("KeyDosR5", 101, "NP 5");
-    setDefaultKey("KeyActivity", 65, "a");
-    setDefaultKey("KeyBan", 66, "b");
-    setDefaultKey("KeyCross", 67, "c");
-    setDefaultKey("KeyDoss", 68, "d");
-    setDefaultKey("KeyEndo", 69, "e");
-    setDefaultKey("KeyGcrHap", 71, "g");
-    setDefaultKey("KeyRegHap", 72, "h");
-    setDefaultKey("KeyWAJL1", 74, "j");
-    setDefaultKey("KeyRefresh2", 75, "k");
-    setDefaultKey("KeyWAJL2", 76, "l");
-    setDefaultKey("KeyMove", 77, "m");
-    setDefaultKey("KeyNation", 78, "n");
-    setDefaultKey("KeyOfficer", 79, "o");
-    setDefaultKey("KeyJP", 80, "p");
-    setDefaultKey("KeyRegion", 82, "r");
-    setDefaultKey("KeySwitch", 83, "s");
-    setDefaultKey("KeyTemplate", 84, "t");
-    setDefaultKey("KeyUpdate", 85, "u");
-    setDefaultKey("KeyWAD", 87, "w");
-    setDefaultKey("KeyClearDoss", 88, "x");
-    setDefaultKey("KeyZombie", 90, "z");
+    setDefaultKey("KeyReports", " ", "Spacebar");
+    setDefaultKey("KeyBack2", "Backspace");
+    setDefaultKey("KeyRefresh1", "F5");
+    setDefaultKey("KeyCopyUrl", "F6");
+    setDefaultKey("KeyBack1", "F7");
+    setDefaultKey("KeyForward", "F8");
+    setDefaultKey("KeyDosL1", "1");
+    setDefaultKey("KeyDosL2", "2");
+    setDefaultKey("KeyDosL3", "3");
+    setDefaultKey("KeyDosL4", "4");
+    setDefaultKey("KeyDosL5", "5");
+    setDefaultKey("KeyDosR1", "1", "NP 1");
+    setDefaultKey("KeyDosR2", "2", "NP 2");
+    setDefaultKey("KeyDosR3", "3", "NP 3");
+    setDefaultKey("KeyDosR4", "4", "NP 4");
+    setDefaultKey("KeyDosR5", "5", "NP 5");
+    setDefaultKey("KeyActivity", "a");
+    setDefaultKey("KeyBan", "b");
+    setDefaultKey("KeyCross", "c");
+    setDefaultKey("KeyDoss", "d");
+    setDefaultKey("KeyEndo", "e");
+    setDefaultKey("KeyGcrHap", "g");
+    setDefaultKey("KeyRegHap", "h");
+    setDefaultKey("KeyWAJL1", "j");
+    setDefaultKey("KeyRefresh2", "k");
+    setDefaultKey("KeyWAJL2", "l");
+    setDefaultKey("KeyMove", "m");
+    setDefaultKey("KeyNation", "n");
+    setDefaultKey("KeyOfficer", "o");
+    setDefaultKey("KeyJP", "p");
+    setDefaultKey("KeyRegion", "r");
+    setDefaultKey("KeySwitch", "s");
+    setDefaultKey("KeyTemplate", "t");
+    setDefaultKey("KeyUpdate", "u");
+    setDefaultKey("KeyWAD", "w");
+    setDefaultKey("KeyClearDoss", "x");
+    setDefaultKey("KeyZombie", "z");
 
 }
 
 /**
  * Assign the given value to the given key in localStorage
- * @param {String} storageKey
+ * @param {string} storageKey
  * @param {any} value
  **/
 function setDefault(storageKey, value) {
@@ -234,36 +239,52 @@ function setDefault(storageKey, value) {
 }
 
 /**
- * Assign the given keyboard key-code and key-value to the given key in localStorage
- * @param {string} storageKey localStorage key
- * @param {number} keyCode JavaScript KeyboardEvent keyCode
- * @param {string} keyValue JavaScript KeyboardEvent key, or a name for the given keyCode
+ * Assign the given shortcut key with optional description to the given key in localStorage
+ * @param {string} storageKey 
+ * @param {string} value KeyboardEvent key
+ * @param {string} description (Optional) Display key
  **/
-function setDefaultKey(storageKey, keyCode, keyValue) {
-    "use strict";
+function setDefaultKey(storageKey, value, description = undefined) {
+    // Don't "use strict" in functions with optional parameters!
 
-    setDefault(storageKey, keyCode + "=" + keyValue);
+    if (description === undefined) description = value;
+    setDefault(storageKey, value + "=" + description);
 }
 
 
 // =====================================================================================================================
 // Settings Management
 
+/**
+ * Get the current jump point
+ */
 function getJumpPoint() {
     "use strict";
     return localStorage.JumpPoints.split(",")[0];
 }
 
+/**
+ * Add a jump point if not yet saved and set it as the current jump point.
+ * @param {string} jp URL to the jump point
+ * @returns {string} Current jump point
+ */
 function setJumpPoint(jp) {
     "use strict";
+    // Set new JP as current
     let jps = jp + "," + localStorage.JumpPoints;
+    // Filter out duplicates
     jps = jps.split(",").filter(function (item, pos, self) {
         return self.indexOf(item) === pos;
     });
     localStorage.JumpPoints = jps.join(",");
+    // Return current JP
     return getJumpPoint();
 }
 
+/**
+ * Remove a jump point from the list
+ * @param {string} jp URL to the jump point
+ */
 function deleteJumpPoint(jp) {
     "use strict";
     let jps = localStorage.JumpPoints.split(",");
@@ -277,16 +298,31 @@ function deleteJumpPoint(jp) {
     return getJumpPoint();
 }
 
+/**
+ * Update the settings to replace a keyboard shortcut's assigned key to another
+ * @param {string} data String formatted as such: "LocalStorageKeyName=key=description", where "key" is a KeyboardEvent key
+ */
 function setKey(data) {
     "use strict";
-    let k = data.split("=", 1);
-    let v = data.substring(data.indexOf("=") + 1);
-    let oldValue = Number.parseInt(localStorage[k]);
-    if (keys.includes(Number.parseInt(v))) {
-        return false;
+
+    data = data.split("=");
+    let k = data[0];
+    let v = data[1];
+    let d = data[2];
+    
+    // Prevent duplicate keys
+    let duplicates = Object.keys(localStorage).filter(key => key.startsWith("Key") && localStorage[key] === v + "=" + d);
+    for (let i = 0; i < duplicates.length; i++) {
+        if (duplicates[i] !== k) return false;
     }
-    keys[keys.findIndex(x => x === oldValue)] = Number.parseInt(v);
-    localStorage[k] = v;
+
+    // Update setting
+    localStorage[k] = v + "=" + d;
+
+    // Rebuild key and shortcuts lists
+    keys = getKeys();
+    shortcuts = defineShortcuts();
+
     return true;
 }
 
@@ -294,6 +330,9 @@ function setKey(data) {
 // =====================================================================================================================
 // NationStates
 
+/**
+ * Get the name of the region your nation is located in
+ */
 function getRegion() {
     "use strict";
     if (url.includes("page=reports") || url.includes("page=ajax2")) {
@@ -307,6 +346,9 @@ function getRegion() {
     return y.href.split("region=")[1];
 }
 
+/**
+ * Open the page of the region your nation is located in
+ */
 function openRegion() {
     "use strict";
     let r = getRegion();
@@ -315,6 +357,9 @@ function openRegion() {
     }
 }
 
+/**
+ * Clicks the move button to move your nation to a region
+ */
 function moveToRegion() {
     "use strict";
     let m = document.getElementsByClassName("button").namedItem("move_region");
@@ -326,6 +371,7 @@ function moveToRegion() {
 }
 
 /**
+ * Open a nation or region link in the ajax2 reports feed at the given position
  * @param lr: left(=0) or right(=1) of happening
  * @param n: on the nth line (0 being the 1st line)
  **/
@@ -337,7 +383,7 @@ function openNation(lr, n) {
         a.click();
         a.style.backgroundColor = "yellow";
     } else {
-        document.getElementsByClassName("button").namedItem("action").click();  // Doss
+        document.getElementsByClassName("button").namedItem("action").click();
     }
 }
 
@@ -428,21 +474,131 @@ function displayLoadTime() {
 // Keyboard Shortcuts
 
 /**
+ * This function serves to make the transition from deprecated keyCode to key easier for the user. It translate a 
+ * JavaScript KeyboardEvent keyCode to a KeyboardEvent key. This translation works only for keyCodes common to all layouts, 
+ * variable keyCodes (in other words, those which are "missing" in the dictionary) are not translated.
+ * @param {number} keyCode 
+ */
+function keyCodeToKey(keyCode) {
+    let dict = {
+        8: "Backspace",
+        9: "Tab",
+        13: "Enter",
+        16: "Shift",
+        17: "Control",
+        18: "Alt",
+        19: "Pause",
+        20: "CapsLock",
+        27: "Escape",
+        32: " ",
+        33: "PageUp",
+        34: "PageDown",
+        35: "End",
+        36: "Home",
+        37: "ArrowLeft",
+        38: "ArrowUp",
+        39: "ArrowRight",
+        40: "ArrowDown",
+        44: "PrintScreen",
+        45: "Insert",
+        46: "Delete",
+        48: "0",
+        49: "1",
+        50: "2",
+        51: "3",
+        52: "4",
+        53: "5",
+        54: "6",
+        55: "7",
+        56: "8",
+        57: "9",
+        65: "a",
+        66: "b",
+        67: "c",
+        68: "d",
+        69: "e",
+        70: "f",
+        71: "g",
+        72: "h",
+        73: "i",
+        74: "j",
+        75: "k",
+        76: "l",
+        77: "m",
+        78: "n",
+        79: "o",
+        80: "p",
+        81: "q",
+        82: "r",
+        83: "s",
+        84: "t",
+        85: "u",
+        86: "v",
+        87: "w",
+        88: "x",
+        89: "y",
+        90: "z",
+        91: "Meta",
+        92: "Meta",
+        93: "ContextMenu",
+        96: "0",
+        97: "1",
+        98: "2",
+        99: "3",
+        100: "4",
+        101: "5",
+        102: "6",
+        103: "7",
+        104: "8",
+        105: "9",
+        106: "*",
+        107: "+",
+        109: "-",
+        110: ".",
+        111: "/",
+        112: "F1",
+        113: "F2",
+        114: "F3",
+        115: "F4",
+        116: "F5",
+        117: "F6",
+        118: "F7",
+        119: "F8",
+        120: "F9",
+        121: "F10",
+        122: "F11",
+        123: "F12",
+        144: "NumLock",
+        145: "ScrollLock",
+        173: "AudioVolumeMute",
+        174: "AudioVolumeDown",
+        175: "AudioVolumeUp",
+        181: "LaunchMediaPlayer",
+        182: "LaunchApplication1",
+        183: "LaunchApplication2",
+        186: ";",
+        187: "=",
+        188: ",",
+        189: "-",
+        190: ".",
+        191: "/",
+        192: "`",
+        219: "[",
+        220: "\\",
+        221: "]",
+        222: "'"
+    };
+
+    return dict[keyCode];
+}
+
+
+/**
  * Update modifiers (shifted, controlled, alternated), ensure user is not filling in a form, and prevent default browser behaviour if pressed key is a shortcut
  * @param {KeyboardEvent} e 
  */
 function preKeyChecks(e) {
     "use strict";
-    // Detect Shift, Control and Alt keys being pressed
-    if (!shifted) {
-        shifted = e.shiftKey;
-    }
-    if (!controlled) {
-        controlled = e.ctrlKey;
-    }
-    if (!alternated) {
-        alternated = e.altKey;
-    }
 
     // Stop shortcut in these cases
     if (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA") {
@@ -451,12 +607,12 @@ function preKeyChecks(e) {
     if (url.includes("forum.nationstates.net")) {
         return false;
     }
-    if (controlled || alternated || (shifted && e.keyCode !== Number.parseInt(localStorage.KeyJP))) {
+    if (controlled || alternated || (shifted && e.key !== localStorage.KeyJP.split("=")[1])) {
         return false;
     }
 
     // Prevent default action if key active as shortcut
-    if (!keyInKeys && keys.includes(e.keyCode)) {
+    if (!keyInKeys && keys.includes(e.key)) {
         e.preventDefault();
         keyInKeys = true;
     } else if (keyInKeys) {
@@ -468,6 +624,35 @@ function preKeyChecks(e) {
     }
 
     return true;
+}
+
+/**
+ * Get KeyboardEvent keys from Key settings in localStorage
+ */
+function getKeys() {
+
+    let k = [];
+
+    // Fill list of keyboard shortcuts ("keys") with those found in localStorage
+    Object.keys(localStorage).forEach(function (key) {
+        "use strict";
+
+        // If this setting is a keyboard shortcut, and the value is a number, it is a keyCode (except for 1 trough 5, those are key names).
+        // This is likely a remnant of v3.1, so translate deprecated keyCode to key.
+        let value = Number.parseInt(localStorage[key]);
+        if (key.startsWith("Key") && !Number.isNaN(value) && (value < 1 || value > 5)) {
+            localStorage[key] = keyCodeToKey(value);
+        }
+
+        // Append key
+        // Stored key is of format "key=description" where "key" is a KeyboardEvent key
+        if (key.startsWith("Key")) {
+            k.push(localStorage[key].split("=")[0]);
+        }
+
+    });
+
+    return k;
 }
 
 /**

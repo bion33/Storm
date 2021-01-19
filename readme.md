@@ -62,9 +62,12 @@ Open zombie control
 
 ## CHANGELOG
 
-**v3.2 (2021/01/??)**
+**v4.0 (2021/01/??)**
 
+* Removed deprecated usage of KeyboardEvent keyCode. A best attempt has been made to update user config, but unfortunately for a lot of "special" keyboard shortcuts this is simply not possible. This means users may have to configure some shortcuts after updating (look for "undefined" keys).
 * Fixed Apply/Join/Leave triggering the "Login" button of the Switch menu.
+* Fixed "stuck" shift key.
+* Tooltips for Jump Point, Officer and Autoscroll.
 * "?" in the popup-menu now redirects to the Readme on GitHub (consolidating information to reduce maintenance).
 * Improved code structure.
 
