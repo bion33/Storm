@@ -10,7 +10,7 @@
     "default_icon": "/ext-resources/icon.png",
     "default_popup": "/popup.html",
     "default_title": "Storm"},
-  "permissions": ["activeTab", "*://*.nationstates.net/*", "storage"],
+  "permissions": ["activeTab", "storage", "*://*.nationstates.net/*"],
   "background": {"scripts": ["/scripts/background.js"]},
   "content_scripts": [
     {

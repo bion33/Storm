@@ -8,14 +8,14 @@ let nextPages = [];
 let usedPrev = false;
 
 // Store the last two pages and the current page, or, the previous page, current page and the next page.
-chrome.runtime.onMessage.addListener(function (page) {
+chrome.runtime.onMessage.addListener(function (request) {
     "use strict";
 
     // User is on a new page (not a reload)
-    if (page.action === "store" && usedPrev === false && (prevPages.length === 0 || prevPages[prevPages.length - 1] !== page.url)) {
+    if (request.action === "store" && usedPrev === false && (prevPages.length === 0 || prevPages[prevPages.length - 1] !== request.url)) {
         // Store the current page in the list and remove the oldest page in the list
         // List should be 11 entries (current + 10 in history)
-        prevPages.push(page.url);
+        prevPages.push(request.url);
         if (prevPages.length > 11) {
             prevPages.splice(0, 1);
         }
@@ -25,8 +25,8 @@ chrome.runtime.onMessage.addListener(function (page) {
         usedPrev = false;
 
     // Go to the previous page, if any
-    } else if (page.action === "previous" && prevPages.length > 1) {
-        nextPages.push(page.url);
+    } else if (request.action === "previous" && prevPages.length > 1) {
+        nextPages.push(request.url);
         // Remove the oldest page in the list if the list grows longer than 10 entries
         if (nextPages.length > 10) nextPages.splice(0, 1);
         // The page to load is the last page in previous pages (length - 2 to skip current page)
@@ -35,13 +35,13 @@ chrome.runtime.onMessage.addListener(function (page) {
         prevPages.splice(prevPages.length - 1, 1);
         // Set this to true so the to-be-loaded page isn't immediately stored back into prevpages
         usedPrev = true;
-        contentSend({url: pageToLoad});
+        contentSend({type: "background", url: pageToLoad});
 
     // Go to the next page (if any) and remove from nextPages
-    } else if (page.action === "next" && nextPages.length > 0) {
+    } else if (request.action === "next" && nextPages.length > 0) {
         let pageToLoad = nextPages[nextPages.length - 1];
         nextPages.splice(nextPages.length - 1, 1);
-        contentSend({url: pageToLoad});
+        contentSend({type: "background", url: pageToLoad});
     }
 });
 
@@ -58,7 +58,7 @@ chrome.runtime.onMessage.addListener(function (request) {
 
     // If a cross request is received and the user did not cross in the last minute, the user can cross
     if (request.cancross === "?" && didCross === false) {
-        contentSend({cancross: true});
+        contentSend({type: "background", cancross: true});
 
         // Cross timeout of 60 seconds
         didCross = true;
@@ -68,8 +68,27 @@ chrome.runtime.onMessage.addListener(function (request) {
 
     // If a cross request is received and the user did cross in the last minute, the user can't cross
     } else if (request.cancross === "?" && didCross === true) {
-        contentSend({cancross: false});
+        contentSend({type: "background", cancross: false});
     }
+});
+
+
+// =====================================================================================================================
+// Get NS cookies, to be used to send POST requests and determine the currently logged in nation.
+// This is perhaps useful for future reference, but is currently not used. Requires "cookies" permission in manifest.json.
+// Don't use unless absolutely necessary.
+
+chrome.runtime.onMessage.addListener(function (request) {
+    if (request.action !== "cookies") return;
+
+    // Names of the cookies to gather
+    let names = ["__cfduid", "telegrams", "autologin", "pin"];
+
+    // Send cookies to content script
+    chrome.cookies.getAll({}, function(cookies) {
+        cookies = cookies.filter(c => names.includes(c.name));
+        contentSend({type: "background", cookies: cookies});
+    }); 
 });
 
 

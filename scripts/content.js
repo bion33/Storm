@@ -33,7 +33,7 @@ class KeyboardShortcut {
      * @param {string} key 
      */
     run_if_for(key) {
-        if (this.keys.includes(key)) this.action();
+        if (this.keys.includes(key.toLowerCase())) this.action();
     }
 }
 
@@ -43,6 +43,10 @@ class KeyboardShortcut {
 
 // URL
 let url = window.location.href;
+
+// User Agent
+let userAgent = "Application: Storm (https://github.com/Krypton-Nova/Storm)";
+if (document.cookie.startsWith("telegrams=")) userAgent += "; User: " + document.cookie.split("=")[1];
 
 // For debugging: toggle to reset stored data
 // localStorage.clear();
@@ -92,6 +96,12 @@ chrome.runtime.onMessage.addListener(
             case "setScroll":
                 localStorage.Scroll = message.data;
                 break;
+            case "getDirectMove":
+                sendResponse(localStorage.DirectMove === "true");
+                break;
+            case "setDirectMove":
+                localStorage.DirectMove = message.data;
+                break;
             case "getKeys":
                 sendResponse(keys);
                 break;
@@ -100,6 +110,8 @@ chrome.runtime.onMessage.addListener(
                 break;
             case "setKey":
                 sendResponse(setKey(message.data));
+                break;
+            case "background":
                 break;
             default:
                 console.error("Unrecognised message: ", message);
@@ -116,6 +128,7 @@ document.addEventListener("readystatechange", function () {
     if (document.readyState === "interactive") {
 
         reloadReady();
+        addMoveToRegionBar();
 
     }
 });
@@ -129,31 +142,17 @@ window.addEventListener("DOMContentLoaded", function () {
 
     // Handle Key Down
     document.addEventListener("keydown", function (e) {
-        shifted = e.shiftKey;
-        controlled = e.ctrlKey;
-        alternated = e.altKey;
-        numpad = (e.location === 3);
-
         preKeyChecks(e); // If you add code below, the event should return early when this method returns false
     });
 
     // Handle Key Up
     document.addEventListener("keyup", function (e) {
-        shifted = e.shiftKey;
-        controlled = e.ctrlKey;
-        alternated = e.altKey;
-        numpad = (e.location === 3);
+        if (!preKeyChecks(e)) return;
 
-        console.log()
+        shortcuts.forEach(key => key.run_if_for(e.key));
 
-        if (!preKeyChecks(e)) {
-            return;
-        }
-
-        shortcuts.forEach(key => {
-            key.run_if_for(e.key);
-        });
     });
+    
 });
 
 
@@ -180,9 +179,10 @@ function setDefaults() {
     "use strict";
 
     // Default Settings
+    setDefault("JumpPoints", "https://www.nationstates.net/region=artificial_solar_system");
     setDefault("Role", "Officer");
     setDefault("Scroll", false);
-    setDefault("JumpPoints", "https://www.nationstates.net/region=artificial_solar_system");
+    setDefault("DirectMove", true);
 
     // Default keybinds
     setDefaultKey("KeyReports", " ", "Spacebar");
@@ -273,9 +273,7 @@ function setJumpPoint(jp) {
     // Set new JP as current
     let jps = jp + "," + localStorage.JumpPoints;
     // Filter out duplicates
-    jps = jps.split(",").filter(function (item, pos, self) {
-        return self.indexOf(item) === pos;
-    });
+    jps = jps.split(",").filter((p, index, self) => p && self.indexOf(p) === index);
     localStorage.JumpPoints = jps.join(",");
     // Return current JP
     return getJumpPoint();
@@ -284,17 +282,13 @@ function setJumpPoint(jp) {
 /**
  * Remove a jump point from the list
  * @param {string} jp URL to the jump point
+ * @returns {string} URL to the current jump point
  */
 function deleteJumpPoint(jp) {
     "use strict";
-    let jps = localStorage.JumpPoints.split(",");
-    let jps_new = "";
-    jps.forEach(function (item, index) {
-        if (jp === item) {
-            jps_new = jps.splice(index, 1);
-        }
-    });
-    localStorage.JumpPoints = jps_new.join(",");
+
+    localStorage.JumpPoints = localStorage.JumpPoints.split(",").filter(p => p !== jp).join(",");
+    
     return getJumpPoint();
 }
 
@@ -329,6 +323,27 @@ function setKey(data) {
 
 // =====================================================================================================================
 // NationStates
+
+/**
+ * Loads the given url in an IFrame, which can be used to get otherwise inaccessible information from.
+ * The advantage of an IFrame is that you can be sure the user remains logged in and cookies remain set.
+ * @param {string} url
+ * @param {Function} then once the frame is interactive execute this Function
+ */
+function openFrame(url, then) {
+    // Create an invisible IFrame which loads the given url
+    let frame = document.createElement("IFRAME");
+    frame.name = "tempFrame" + Math.floor(Math.random() * 1000);
+    frame.style = "height: 0px; width: 0px; position: absolute; visibility: hidden;"
+    frame = document.body.appendChild(frame);
+    window.open(url, frame.name);
+    
+    // Once loaded, return the document within the frame
+    frame.addEventListener("load", function() {
+        "use strict";
+        then(frame.contentDocument);
+    });
+}
 
 /**
  * Get the name of the region your nation is located in
@@ -371,6 +386,33 @@ function moveToRegion() {
 }
 
 /**
+ * Move to the given region instantly from any NationStates page
+ * @param {string} region
+ */
+function moveToRegionDirect(region) {
+    region = region.toLowerCase().replace(/ /g, "_");
+
+    openFrame("https://www.nationstates.net/region=" + region, function(frame) {
+        // Get localid
+        let localid = frame.getElementsByName("localid")[0].value;
+
+        // Send POST to move nation
+        let xhr = new XMLHttpRequest();
+        xhr.open("POST", "https://www.nationstates.net/page=change_region", true);
+        xhr.setRequestHeader("User-Agent", userAgent);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.send("localid=" + localid + "&region_name=" + region + "&move_region=1");
+
+        // Reload page to update screen once request is done (otherwise you wouldn't notice anything)
+        xhr.addEventListener("readystatechange", function() {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                window.location.href = window.location.href;
+            }
+        })
+    });
+}
+
+/**
  * Open a nation or region link in the ajax2 reports feed at the given position
  * @param lr: left(=0) or right(=1) of happening
  * @param n: on the nth line (0 being the 1st line)
@@ -401,7 +443,8 @@ function notify(message) {
     m.id = "temp-msg";
     m.style.cssText = "background-color: yellow; padding: 7px 7px; font-size: 14;";
     m.innerText = message;
-    let c = document.getElementById("content");
+    // First child of content if it exists, else of main (antiquity theme)
+    let c = document.getElementById("content") ? document.getElementById("content") : document.getElementById("main");
     c.insertBefore(m, c.firstChild);
     setTimeout(function () {
         let op = 1;  // initial opacity
@@ -412,6 +455,37 @@ function notify(message) {
         }, 50);
     }, 4800);
     setTimeout(() => c.removeChild(m), 6000);
+}
+
+/**
+ * Add an input to the NS page which users can use to move directly to a region
+ */
+function addMoveToRegionBar() {
+    "use strict";
+
+    if (localStorage.DirectMove === "false") return;
+
+    let bar = document.createElement("div");
+    bar.id = "move-to-region-direct";
+    bar.style.cssText = "padding: 8px; font-size: 14; display: flex; justify-content: center;";
+
+    let field = document.createElement("input");
+    field.type = "text";
+    field.placeholder = "Region Name"
+    field.style.cssText = "margin-right: 8px;"
+    field = bar.appendChild(field);
+
+    let button = document.createElement("button");
+    button.classList.add("button");
+    button.classList.add("primary");
+    button.innerText = "Move";
+    button = bar.appendChild(button);
+    button.addEventListener("click", function() {
+        if (field.value) moveToRegionDirect(field.value);
+    })
+    
+    let c = document.getElementById("content") ? document.getElementById("content") : document.getElementById("main");
+    c.insertBefore(bar, c.firstChild);
 }
 
 /**
@@ -600,6 +674,13 @@ function keyCodeToKey(keyCode) {
 function preKeyChecks(e) {
     "use strict";
 
+    let key = e.key.toLowerCase();
+
+    shifted = e.shiftKey;
+    controlled = e.ctrlKey;
+    alternated = e.altKey;
+    numpad = (e.location === 3);
+
     // Stop shortcut in these cases
     if (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA") {
         return false;
@@ -607,12 +688,13 @@ function preKeyChecks(e) {
     if (url.includes("forum.nationstates.net")) {
         return false;
     }
-    if (controlled || alternated || (shifted && e.key !== localStorage.KeyJP.split("=")[1])) {
+    if (controlled || alternated || (shifted && key !== localStorage.KeyJP.split("=")[1])) {
         return false;
+        console.log("noooo")
     }
 
     // Prevent default action if key active as shortcut
-    if (!keyInKeys && keys.includes(e.key)) {
+    if (!keyInKeys && keys.includes(key)) {
         e.preventDefault();
         keyInKeys = true;
     } else if (keyInKeys) {
@@ -841,7 +923,8 @@ function nationSwitch() {
         window.location.href = "https://www.nationstates.net/template-overall=none/page=un";
     }
     if (window.location.href.includes("page=un")) {
-        document.getElementById("main").getElementsByClassName("button").namedItem("submit").click();
+        let c = document.getElementById("content") ? document.getElementById("content") : document.getElementById("main");
+        c.getElementsByClassName("button").namedItem("submit").click();
     }
     if (window.location.href.includes("page=UN_status")) {
         window.location.href = JumpPoint;
@@ -943,7 +1026,7 @@ function regionMove() {
 }
 
 /**
- * Open jump point. If opened, moves there. If shifted, adds and sets the region in view as jump point.
+ * Move to jump point. If shifted, adds and sets the region in view as jump point.
  */
 function regionJumpPoint() {
     if (shifted) {
@@ -951,10 +1034,13 @@ function regionJumpPoint() {
             setJumpPoint(url);
             notify("JP Updated! -- This region has been saved to your Jump Points and set as your current one. You can change your active JP in the popup window.");
         }
-    } else if (url === JumpPoint) {
-        moveToRegion();
     } else {
-        window.location.href = JumpPoint;
+        let region = JumpPoint.split("=")[1];
+        if (region === undefined) {
+            notify("You have no jump point set. Press Shift+" + localStorage.KeyJP.split("=")[0] + " on a region's page to add it to your jump points.");
+        } else {
+            moveToRegionDirect(region);
+        }
     }
 }
 
@@ -988,7 +1074,8 @@ function officer() {
  */
 function wa() {
     if (url === "https://www.nationstates.net/page=un") {
-        document.getElementById("main").getElementsByClassName("button").namedItem("submit").click();
+        let c = document.getElementById("content") ? document.getElementById("content") : document.getElementById("main");
+        c.getElementsByClassName("button").namedItem("submit").click();
     } else {
         window.location.href = "https://www.nationstates.net/page=un";
     }
@@ -999,7 +1086,8 @@ function wa() {
  */
 function waDelegate() {
     // On region"s page
-    if (document.getElementById("content").getElementsByTagName("P")[0].textContent.includes("WA Delegate: None")) {
+    let c = document.getElementById("content") ? document.getElementById("content") : document.getElementById("main");
+    if (c.getElementsByTagName("P")[0].textContent.includes("WA Delegate: None")) {
         notify("This region doesn't have a WA delegate.");
     } else if (url.includes("/region=")) {
         document.getElementsByClassName("nlink")[0].click();

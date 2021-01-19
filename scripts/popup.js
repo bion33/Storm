@@ -9,6 +9,7 @@ let jumpPointList = document.getElementById("jump-points");
 let deleteJPButton = document.getElementById("delete-jp");
 let saveOfficerButton = document.getElementById("save-officer");
 let scrollCheckBox = document.getElementById("scroll");
+let directMoveBox = document.getElementById("direct-move");
 let keyInputs = document.getElementsByClassName("key-input");
 
 
@@ -32,6 +33,11 @@ document.addEventListener("DOMContentLoaded", function() {
         scrollCheckBox.checked = state;
     });
     
+    // Set direct move checkbox
+    contentRequest({type: "getDirectMove"}, function (state) {
+        directMoveBox.checked = state;
+    });
+
     // Fill shortcuts
     Array.from(keyInputs).forEach(function (keyInput) {
         contentRequest({type: "getKey", data: keyInput.id}, function (value) {
@@ -108,6 +114,12 @@ saveOfficerButton.addEventListener("click", function () {
 scrollCheckBox.addEventListener("click", function () {
     "use strict";
     contentSend({type: "setScroll", data: scrollCheckBox.checked});
+});
+
+// Update direct move
+directMoveBox.addEventListener("click", function () {
+    "use strict";
+    contentSend({type: "setDirectMove", data: directMoveBox.checked});
 });
 
 
