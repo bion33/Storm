@@ -19,6 +19,9 @@ let keyInputs = document.getElementsByClassName("key-input");
 document.addEventListener("DOMContentLoaded", function() {
     "use strict";
     
+    // Latest version
+    latestVersion();
+
     // Fill jump points
     updatejumpPointList();
 
@@ -52,6 +55,26 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
 });
+
+/**
+ * Display the latest version if out of date
+ */
+async function latestVersion() {
+    // Read latest Storm version
+    let response = await fetch("https://api.github.com/repos/Krypton-Nova/Storm/releases");
+    let releases = await response.json();
+    let latestVersion = "v" + releases[0].name;
+    let url = releases[0].html_url
+    
+    // Get current version
+    let versionField = document.getElementsByClassName("version")[0];
+    let currentVersion = versionField.innerText;
+
+    // Show if out of date
+    if (latestVersion !== currentVersion) {
+        versionField.innerHTML += " (latest: <a href=\"" + url + "\">" + latestVersion + "</a>)"
+    }
+}
 
 /**
  * Fill list with jump points
