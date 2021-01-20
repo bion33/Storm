@@ -65,6 +65,13 @@ Open zombie control
 **v4.0 (2021/01/??)**
 
 * Removed deprecated usage of KeyboardEvent keyCode. A best attempt has been made to update user config, but unfortunately for a lot of "special" keyboard shortcuts this is simply not possible. This means users may have to configure some shortcuts after updating (look for "undefined" keys).
+* Changed functionality of "Jump Point" to directly move there.
+* Added a "Move to" field and button to move directly to a region at the top of the page (and a setting to disable it).
+* "Move" can also trigger said button if the field is filled in, and you're not on a region's page.
+* "WA: Delegate" navigates directly to the WA Delegate without going trough the region you're in.
+* "WA: Apply/Join/Leave" applies for and resigns from the WA instantly without navigating to the WA page.
+* "Prepare Switcher" makes use of direct move and instant WA apply/leave, reducing the amount of key presses required to 2. It can now also be used to move back and resign after operations.
+* You will now see if there is a later version of Storm available in the popup menu.
 * Fixed Apply/Join/Leave triggering the "Login" button of the Switch menu.
 * Fixed "stuck" shift key.
 * Tooltips for Jump Point, Officer and Autoscroll.

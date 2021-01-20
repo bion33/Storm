@@ -325,6 +325,18 @@ function setKey(data) {
 // NationStates
 
 /**
+ * Request something from the NationStates API
+ * If this is to be used frequently, it needs a mechanism to impose the rate limit
+ * Currently only used by "waDelegate" on user keypress
+ * @param {*} url API url
+ */
+async function nsApiRequest(url) {
+    let headers = new Headers({"User-Agent": userAgent});
+    let response = await fetch(url, {headers: headers});
+    return await response.text();
+}
+
+/**
  * Loads the given url in an IFrame, which can be used to get otherwise inaccessible information from.
  * The advantage of an IFrame is that you can be sure the user remains logged in and cookies remain set.
  * @param {string} url
@@ -342,6 +354,10 @@ function openFrame(url, then) {
     frame.addEventListener("load", function() {
         "use strict";
         then(frame.contentDocument);
+        // Remove frame after a while
+        setTimeout(function () {
+            document.body.removeChild(frame);
+        }, 500);
     });
 }
 
@@ -353,11 +369,7 @@ function getRegion() {
     if (url.includes("page=reports") || url.includes("page=ajax2")) {
         return undefined;
     }
-    let y = Array.from(document.links).find(function (l) {
-        if (l.href.includes("region=")) {
-            return true;
-        }
-    });
+    let y = Array.from(document.getElementById("panel").getElementsByTagName("A")).find(l => l.href.includes("region="));
     return y.href.split("region=")[1];
 }
 
@@ -387,14 +399,22 @@ function moveToRegion() {
 
 /**
  * Move to the given region instantly from any NationStates page
- * @param {string} region
+ * @param {string} region name or url
  */
 function moveToRegionDirect(region) {
     region = region.toLowerCase().replace(/ /g, "_");
+    if (region.includes("/region=")) region = region.split("=")[1];
 
     openFrame("https://www.nationstates.net/region=" + region, function(frame) {
         // Get localid
-        let localid = frame.getElementsByName("localid")[0].value;
+        let localid = frame.getElementsByName("localid")[0]
+        // Region doesn't exist if localid is undefined
+        if (!localid) {
+            notify("The region " + region + " doesn't exist", "Yellow")
+            return;
+        }
+        // Get value
+        localid = localid.value;
 
         // Send POST to move nation
         let xhr = new XMLHttpRequest();
@@ -406,7 +426,13 @@ function moveToRegionDirect(region) {
         // Reload page to update screen once request is done (otherwise you wouldn't notice anything)
         xhr.addEventListener("readystatechange", function() {
             if (xhr.readyState === XMLHttpRequest.DONE) {
-                window.location.href = window.location.href;
+                if (xhr.status === 200) {
+                    notify("Your nation was moved to " + region, "LightBlue")
+                    window.location.href = window.location.href;
+                }
+                else {
+                    notify("Something went wrong, couldn't move your nation to " + region, "Yellow")
+                }
             }
         })
     });
@@ -436,12 +462,13 @@ function openNation(lr, n) {
 /**
  * Show the given message at the top of a NationStates page
  * @param {string} message
+ * @param {string} color of the message box
  **/
-function notify(message) {
+function notify(message, color) {
     "use strict";
     let m = document.createElement("div");
     m.id = "temp-msg";
-    m.style.cssText = "background-color: yellow; padding: 7px 7px; font-size: 14;";
+    m.style.cssText = "background-color: " + color + "; padding: 7px 7px; font-size: 14;";
     m.innerText = message;
     // First child of content if it exists, else of main (antiquity theme)
     let c = document.getElementById("content") ? document.getElementById("content") : document.getElementById("main");
@@ -470,20 +497,23 @@ function addMoveToRegionBar() {
     bar.style.cssText = "padding: 8px; font-size: 14; display: flex; justify-content: center;";
 
     let field = document.createElement("input");
+    field.id = "direct-move-field";
     field.type = "text";
-    field.placeholder = "Region Name"
+    field.placeholder = "Region name or url"
     field.style.cssText = "margin-right: 8px;"
     field = bar.appendChild(field);
 
     let button = document.createElement("button");
+    button.id = "direct-move-button"
     button.classList.add("button");
     button.classList.add("primary");
-    button.innerText = "Move";
+    button.innerText = "Move to";
     button = bar.appendChild(button);
     button.addEventListener("click", function() {
         if (field.value) moveToRegionDirect(field.value);
     })
     
+
     let c = document.getElementById("content") ? document.getElementById("content") : document.getElementById("main");
     c.insertBefore(bar, c.firstChild);
 }
@@ -690,7 +720,6 @@ function preKeyChecks(e) {
     }
     if (controlled || alternated || (shifted && key !== localStorage.KeyJP.split("=")[1])) {
         return false;
-        console.log("noooo")
     }
 
     // Prevent default action if key active as shortcut
@@ -804,7 +833,7 @@ function pageCopyURL() {
     document.execCommand("copy");
     // No need for cleanup, NS changes page often enough
 
-    notify("Link copied!");
+    notify("Link copied!", "LightBlue");
 }
 
 /**
@@ -842,7 +871,7 @@ function pageRefresh() {
     "use strict";
 
     // If on the reports page and it is reloaded, make the green page border red so the user knows they shouldn"t press refresh again.
-    if (url === "https://www.nationstates.net/template-overall=none/page=reports") {
+    if (url.includes("/template-overall=none/page=reports")) {
         // Only get reports for the last 6 minutes.
         document.getElementsByTagName("INPUT").namedItem("report_hours").value = "24";
         // Set the border to red so the user knows not to press refresh.
@@ -869,9 +898,9 @@ function activityNationUpdate() {
 function activitySpotAll() {
     "use strict";
 
-    if (url === "https://www.nationstates.net/page=activity/view=world") {
+    if (url.includes("/page=activity/view=world")) {
         window.location.href = "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo";
-    } else if (url === "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo") {
+    } else if (url.includes("/page=activity/view=world/filter=move+member+endo")) {
         window.location.href = "https://www.nationstates.net/page=activity/view=world";
     } else {
         window.location.href = "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo";
@@ -882,7 +911,7 @@ function activitySpotAll() {
  * Open the reports page, or open the ajax feed to spot (toggle)
  */
 function activityReportSpot() {
-    if (url === "https://www.nationstates.net/template-overall=none/page=reports") {
+    if (url.includes("/template-overall=none/page=reports")) {
         window.location.href = "https://www.nationstates.net/page=ajax2/a=reports/view=world/filter=move+member+endo";
     } else {
         window.location.href = "https://www.nationstates.net/template-overall=none/page=reports";
@@ -916,22 +945,11 @@ function nation() {
 }
 
 /**
- * Prepare Switcher. This shortcut will open the WA page, apply, open your jump point, and move there.
+ * Switch nations. Move nation to jump point if not there. If there and not in the WA, applies to join. If there and in WA, resigns.
  */
 function nationSwitch() {
-    if (!window.location.href.includes("page=un") && window.location.href !== JumpPoint) {
-        window.location.href = "https://www.nationstates.net/template-overall=none/page=un";
-    }
-    if (window.location.href.includes("page=un")) {
-        let c = document.getElementById("content") ? document.getElementById("content") : document.getElementById("main");
-        c.getElementsByClassName("button").namedItem("submit").click();
-    }
-    if (window.location.href.includes("page=UN_status")) {
-        window.location.href = JumpPoint;
-    }
-    if (window.location.href === JumpPoint) {
-        moveToRegion();
-    }
+    if (url === JumpPoint) wa();
+    else moveToRegionDirect(JumpPoint);
 }
 
 /**
@@ -976,7 +994,7 @@ function nationBanject() {
  * Add nation/region to dossier
  */
 function dossierAdd() {
-    if (url.includes("region=")) {
+    if (url.includes("/region=")) {
         // On region"s page
         document.getElementsByTagName("BUTTON").namedItem("add_to_dossier").click();
     } else {
@@ -989,7 +1007,7 @@ function dossierAdd() {
  * Open your nation's dossier. If open, clear it.
  */
 function dossierClear() {
-    if (url === "https://www.nationstates.net/page=dossier") {
+    if (url.includes("/page=dossier")) {
         document.getElementsByTagName("BUTTON").namedItem("clear_dossier").click();
     } else {
         window.location.href = "https://www.nationstates.net/page=dossier";
@@ -1001,9 +1019,9 @@ function dossierClear() {
  * (so, if it includes "... moved from x to y" it will open region y).
  */
 function region() {
-    if (window.location.href.includes("/region=")) {
+    if (url.includes("/region=")) {
         window.location.reload();
-    } else if (window.location.href.includes("page=reports") || window.location.href.includes("page=ajax2")) {
+    } else if (url.includes("/page=reports") || url.includes("/page=ajax2")) {
         let reg = document.getElementsByTagName("LI")[0].getElementsByClassName("rlink")[1];
         reg.click();
         reg.style.backgroundColor = "yellow";
@@ -1013,15 +1031,20 @@ function region() {
 }
 
 /**
- * Move to the region in view. If in reports view, opens the 2nd region in the last change (so, if it includes "... moved from x to y" it will open region y).
+ * Move to the region in view, or the region filled in in direct move. If in reports view, opens the 2nd region in the last change 
+ * (so, if it includes "... moved from x to y" it will open region y).
  */
 function regionMove() {
-    if (url === "https://www.nationstates.net/template-overall=none/page=reports") {
+    let directMove = document.getElementById("direct-move-field").value;
+
+    if (url.includes("/template-overall=none/page=reports")) {
         let r = document.getElementsByTagName("LI")[0].getElementsByClassName("rlink")[1];
         r.click();
         r.style.backgroundColor = "yellow";
-    } else {
+    } else if (url.includes("/region=")) {
         moveToRegion();
+    } else if (directMove) {
+        moveToRegionDirect(directMove);
     }
 }
 
@@ -1030,14 +1053,14 @@ function regionMove() {
  */
 function regionJumpPoint() {
     if (shifted) {
-        if (url.includes("https://www.nationstates.net/region=")) {
+        if (url.includes("/region=")) {
             setJumpPoint(url);
-            notify("JP Updated! -- This region has been saved to your Jump Points and set as your current one. You can change your active JP in the popup window.");
+            notify("JP Updated! -- This region has been saved to your Jump Points and set as your current one. You can change your active JP in the popup window.", "LightBlue");
         }
     } else {
         let region = JumpPoint.split("=")[1];
         if (region === undefined) {
-            notify("You have no jump point set. Press Shift+" + localStorage.KeyJP.split("=")[0] + " on a region's page to add it to your jump points.");
+            notify("You have no jump point set. Press Shift+" + localStorage.KeyJP.split("=")[0] + " on a region's page to add it to your jump points.", "Yellow");
         } else {
             moveToRegionDirect(region);
         }
@@ -1073,30 +1096,40 @@ function officer() {
  * Apply/Join/Leave the World Assembly
  */
 function wa() {
-    if (url === "https://www.nationstates.net/page=un") {
+    // Confirm to join
+    if (url.includes("/page=join_WA?nation=")) {
         let c = document.getElementById("content") ? document.getElementById("content") : document.getElementById("main");
-        c.getElementsByClassName("button").namedItem("submit").click();
-    } else {
-        window.location.href = "https://www.nationstates.net/page=un";
+        let b = c.querySelector('button[type="submit"]');
+        b.click();
+    }
+    // Apply or leave
+    else {
+        openFrame("https://www.nationstates.net/page=un", function(frame) {
+            let c = frame.getElementById("content") ? frame.getElementById("content") : frame.getElementById("main");
+            let b = c.getElementsByClassName("button").namedItem("submit");
+            let action = b.innerText.includes("Apply") ? "Applied to join" : b.innerText.includes("Resign") ? "Resigned from" : "Joined";
+            b.setAttribute("onclick", "return true;");
+            b.click();
+            notify(action + " the World Assembly", "LightBlue");
+        });
     }
 }
 
 /**
  * Navigate to the WA Delegate (show region, then delegate)
  */
-function waDelegate() {
-    // On region"s page
-    let c = document.getElementById("content") ? document.getElementById("content") : document.getElementById("main");
-    if (c.getElementsByTagName("P")[0].textContent.includes("WA Delegate: None")) {
-        notify("This region doesn't have a WA delegate.");
-    } else if (url.includes("/region=")) {
-        document.getElementsByClassName("nlink")[0].click();
-    // The region in the sidebar updates too slow when you move regions, so this works better in that case.
-    // Should work on the page you get when you just moved, but not on the page with the featured region.
-    } else if (url.includes("/page=change_region") && document.getElementsByClassName("featuredregion").length === 0) {
-        document.getElementsByClassName("info")[0].getElementsByTagName("A")[0].click();
-    } else {
-        openRegion();
+async function waDelegate() {
+    let region = getRegion();
+    if (!region) return;
+
+    let response = await nsApiRequest("https://www.nationstates.net/cgi-bin/api.cgi?region=" + region + "&q=delegate");    
+    let nation = response.substring(response.indexOf("<DELEGATE>") + 10, response.indexOf("</DELEGATE>"));
+    
+    if (nation === "0") {
+        notify("The region you're in doesn't have a WA Delegate", "Yellow");
+    }
+    else {
+        window.location.href = "https://www.nationstates.net/nation=" + nation;
     }
 }
 
@@ -1104,19 +1137,19 @@ function waDelegate() {
  * Toggle styling on or off
  */
 function styling() {
-    if (window.location.href.includes("none/region")) {
+    if (url.includes("/template-overall=none/region=")) {
         openRegion();
     }
-    if (window.location.href.includes("none/nation")) {
+    else if (url.includes("/template-overall=none/nation=")) {
         window.location.replace(document.getElementsByClassName("quietlink")[0].href);
     }
-    if (window.location.href.includes("net/region")) {
+    else if (url.includes("/region=")) {
         let rr = getRegion();
         if (rr) {
             window.location.replace("https://www.nationstates.net/template-overall=none/region=" + rr);
         }
     }
-    if (window.location.href.includes("net/nation")) {
+    else if (url.includes("/nation=")) {
         let nation = document.getElementsByClassName("quietlink")[0].href.split("/nation=")[1];
         window.location.replace("https://www.nationstates.net/template-overall=none/nation=" + nation);
     }
