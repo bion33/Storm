@@ -3,7 +3,7 @@
 All versions from newest to oldest:
 
 
-**v4.0 (2021/01/??)**
+**v4.0 (2021/01/21)**
 
 * Removed deprecated usage of KeyboardEvent keyCode. A best attempt has been made to update user config, but unfortunately for a lot of "special" keyboard shortcuts this is simply not possible. This means users may have to configure some shortcuts after updating (look for "undefined" keys).
 * Changed "Cross Endorse" functionality: it now endorses the next nation with each press. Nations to endorse are the nation in view, and each nation endorsing it. Nations which have already been endorsed show up green. There is a 6-second cooldown between each endorsement to comply with NS script limits. While endorsing manually is faster, this key is useful to provide visual feedback for which nations you still need to endorse, as it also tracks nations endorsed using "Endorse" in different tabs.
