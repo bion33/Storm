@@ -67,6 +67,9 @@ let JumpPoint = localStorage.JumpPoints.split(",")[0];
 let keys = getKeys();
 let shortcuts = defineShortcuts();
 
+// Only for the transition from v3.2 to v4.0: set defaults again to filter out undefined keys
+setDefaults();
+
 
 // =====================================================================================================================
 // Popup.js event resolution
@@ -235,7 +238,7 @@ function setDefaults() {
 function setDefault(storageKey, value) {
     "use strict";
 
-	if (!(storageKey in localStorage)) {
+	if (!(storageKey in localStorage) || localStorage[storageKey] === undefined) {
     	localStorage[storageKey] = value;
 	}
 }
