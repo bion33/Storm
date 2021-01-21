@@ -23,7 +23,7 @@ class KeyboardShortcut {
     constructor(keys, action) {
         this.keys = [];
         for (let i = 0; i < keys.length; i++) {
-            this.keys.push(keys[i].split("=")[0]);
+            this.keys.push(keys[i].split("=")[0].toLowerCase());
         }
         this.action = action;
     }
@@ -36,7 +36,6 @@ class KeyboardShortcut {
         if (this.keys.includes(key.toLowerCase())) this.action();
     }
 }
-
 
 // =====================================================================================================================
 // Init
@@ -62,7 +61,6 @@ let shifted = false;
 let controlled = false;
 let alternated = false;
 let numpad = false;
-let keyInKeys = false;
 let JumpPoint = localStorage.JumpPoints.split(",")[0];
 let keys = getKeys();
 let shortcuts = defineShortcuts();
@@ -162,9 +160,10 @@ window.addEventListener("DOMContentLoaded", function () {
 window.addEventListener("load", function () {
     "use strict";
 
-    scrollToBottom();
-    linkifyAjax();
     displayLoadTime();
+    linkifyAjax();
+    scrollToBottom();
+    highlightEndorsed();
 
 });
 
@@ -328,12 +327,34 @@ function setKey(data) {
  * Request something from the NationStates API
  * If this is to be used frequently, it needs a mechanism to impose the rate limit
  * Currently only used by "waDelegate" on user keypress
- * @param {*} url API url
+ * @param {string} url API url
  */
 async function nsApiRequest(url) {
     let headers = new Headers({"User-Agent": userAgent});
     let response = await fetch(url, {headers: headers});
     return await response.text();
+}
+
+/**
+ * Send a POST request to NationStates
+ * @param {string} url to POST to
+ * @param {string} content (urlencoded)
+ * @param {Function} onSuccess execute function
+ * @param {Function} onFailure execute function with status code
+ */
+function nsPostRequest(url, content, onSuccess, onFailure) {
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("User-Agent", userAgent);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xhr.send(content);
+
+    xhr.addEventListener("readystatechange", function() {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) onSuccess();
+            else onFailure(xhr.status);
+        }
+    });
 }
 
 /**
@@ -343,9 +364,13 @@ async function nsApiRequest(url) {
  * @param {Function} then once the frame is interactive execute this Function
  */
 function openFrame(url, then) {
+    // Prevent creating multiple frames (so shortcut-spam doesn't impact NS)
+    if (document.getElementById("tempFrame")) return undefined;
+
     // Create an invisible IFrame which loads the given url
     let frame = document.createElement("IFRAME");
-    frame.name = "tempFrame" + Math.floor(Math.random() * 1000);
+    frame.id = "tempFrame";
+    frame.name = frame.id;
     frame.style = "height: 0px; width: 0px; position: absolute; visibility: hidden;"
     frame = document.body.appendChild(frame);
     window.open(url, frame.name);
@@ -354,10 +379,11 @@ function openFrame(url, then) {
     frame.addEventListener("load", function() {
         "use strict";
         then(frame.contentDocument);
-        // Remove frame after a while
+
+        // Cooldown and cleanup
         setTimeout(function () {
             document.body.removeChild(frame);
-        }, 500);
+        }, 1000);
     });
 }
 
@@ -410,31 +436,22 @@ function moveToRegionDirect(region) {
         let localid = frame.getElementsByName("localid")[0]
         // Region doesn't exist if localid is undefined
         if (!localid) {
-            notify("The region " + region + " doesn't exist", "Yellow")
+            notify("The region " + region + " doesn't exist", "Yellow");
             return;
         }
-        // Get value
-        localid = localid.value;
 
-        // Send POST to move nation
-        let xhr = new XMLHttpRequest();
-        xhr.open("POST", "https://www.nationstates.net/page=change_region", true);
-        xhr.setRequestHeader("User-Agent", userAgent);
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        xhr.send("localid=" + localid + "&region_name=" + region + "&move_region=1");
+        let target = "https://www.nationstates.net/page=change_region";
+        let content = "localid=" + localid.value + "&region_name=" + region + "&move_region=1";
 
-        // Reload page to update screen once request is done (otherwise you wouldn't notice anything)
-        xhr.addEventListener("readystatechange", function() {
-            if (xhr.readyState === XMLHttpRequest.DONE) {
-                if (xhr.status === 200) {
-                    notify("Your nation was moved to " + region, "LightBlue")
-                    window.location.href = window.location.href;
-                }
-                else {
-                    notify("Something went wrong, couldn't move your nation to " + region, "Yellow")
-                }
-            }
-        })
+        // Move
+        nsPostRequest(target, content, () => {
+            // Success
+            notify("Your nation was moved to " + region, "LightBlue")
+            window.location.href = url; // Refresh
+        }, (status) => {
+            // Failure
+            notify("Something went wrong, couldn't move your nation to " + region, "Yellow");
+        });
     });
 }
 
@@ -465,7 +482,6 @@ function openNation(lr, n) {
  * @param {string} color of the message box
  **/
 function notify(message, color) {
-    "use strict";
     let m = document.createElement("div");
     m.id = "temp-msg";
     m.style.cssText = "background-color: " + color + "; padding: 7px 7px; font-size: 14;";
@@ -571,6 +587,40 @@ function displayLoadTime() {
         l.style.color = "#006400";
         document.body.insertBefore(l, document.getElementsByTagName("H1")[0]);
     }
+}
+
+/**
+ * If viewing a nation page of another nation which is in the WA, ask the background script if it has any information
+ * on which of its endorsees you've endorsed.
+ */
+function highlightEndorsed() {
+    let endobox = document.getElementsByClassName("unbox")[0];
+    if (!(url.includes("/nation=") && endobox && endobox.getElementsByTagName("A"))) return;
+
+    let own = document.body.getAttribute("data-nname");
+    let nation = url.split("=")[1].toLowerCase().replace(/ /g, "_");
+    if (nation === own) return;
+
+    let endorsees = Array.from(document.getElementsByClassName("unbox")[0].getElementsByTagName("A"));
+
+    // Request the nations you've endorsed for this "point"
+    chrome.runtime.sendMessage({action: "endorsed", point: nation});
+
+    // Highlight those nations green background script knows you've already endorsed
+    chrome.runtime.onMessage.addListener(function (response) {
+        if (response.action === "endorsed" && response.endorsed) {
+            endorsees.filter(e => response.endorsed.includes(e.href.split("=")[1]))
+                     .forEach(e => e.style.cssText = "background-color: DarkSeaGreen");
+        }
+    });
+
+    // Highlight nations green when background script discovers it was endorsed
+    chrome.runtime.onMessage.addListener(function (response) {
+        if (response.action === "endorsedUpdate" && response.endorsee) {
+            let found = endorsees.find(e => e.href.split("=")[1] === response.endorsee)
+            if (found) found.style.cssText = "background-color: DarkSeaGreen";
+        }
+    });
 }
 
 
@@ -715,20 +765,13 @@ function preKeyChecks(e) {
     if (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA") {
         return false;
     }
-    if (url.includes("forum.nationstates.net")) {
-        return false;
-    }
     if (controlled || alternated || (shifted && key !== localStorage.KeyJP.split("=")[1])) {
         return false;
     }
 
     // Prevent default action if key active as shortcut
-    if (!keyInKeys && keys.includes(key)) {
+    if (keys.includes(key)) {
         e.preventDefault();
-        keyInKeys = true;
-    } else if (keyInKeys) {
-        e.preventDefault();
-        keyInKeys = false;
     // Key not a shortcut
     } else {
         return false;
@@ -748,17 +791,17 @@ function getKeys() {
     Object.keys(localStorage).forEach(function (key) {
         "use strict";
 
-        // If this setting is a keyboard shortcut, and the value is a number, it is a keyCode (except for 1 trough 5, those are key names).
+        // If this setting is a keyboard shortcut, and the value is a number, it is a keyCode (except for 0 trough 9, those are key names).
         // This is likely a remnant of v3.1, so translate deprecated keyCode to key.
         let value = Number.parseInt(localStorage[key]);
-        if (key.startsWith("Key") && !Number.isNaN(value) && (value < 1 || value > 5)) {
+        if (key.startsWith("Key") && !Number.isNaN(value) && (value < 0 || 9 < value)) {
             localStorage[key] = keyCodeToKey(value);
         }
 
         // Append key
         // Stored key is of format "key=description" where "key" is a KeyboardEvent key
         if (key.startsWith("Key")) {
-            k.push(localStorage[key].split("=")[0]);
+            k.push(localStorage[key].split("=")[0].toLowerCase());
         }
 
     });
@@ -827,11 +870,11 @@ function pageCopyURL() {
     "use strict";
 
     let temp = document.createElement("INPUT");
-    document.getElementsByTagName("BODY")[0].appendChild(temp);
+    temp = document.body.appendChild(temp);
     temp.value = url;
     temp.select();
     document.execCommand("copy");
-    // No need for cleanup, NS changes page often enough
+    document.body.removeChild(temp);
 
     notify("Link copied!", "LightBlue");
 }
@@ -846,6 +889,7 @@ function pageBack() {
     chrome.runtime.sendMessage({action: "previous", url: url});
     // Receive and load page in message
     chrome.runtime.onMessage.addListener(function (load) {
+        if (load.action !== "previous") return;
         window.location.href = load.url;
     });
 }
@@ -860,6 +904,7 @@ function pageForward() {
     chrome.runtime.sendMessage({action: "next", url: url});
     // Receive and load page in message
     chrome.runtime.onMessage.addListener(function (load) {
+        if (load.action !== "next") return;
         window.location.href = load.url;
     });
 }
@@ -957,6 +1002,9 @@ function nationSwitch() {
  */
 function nationEndorse() {
     if (document.getElementsByTagName("INPUT").namedItem("action").value === "endorse") {
+        // Tell background script this nation is now endorsed
+        chrome.runtime.sendMessage({action: "endorse", nation: url.split("=")[1], usedFrame: false});
+        // Endorse
         document.getElementsByClassName("endorse button")[0].click();
     }
 }
@@ -965,21 +1013,42 @@ function nationEndorse() {
  * Cross endorse nations endorsing the nation in view
  */
 function nationCross() {
-    // Send message to background script that C has been pressed
-    chrome.runtime.sendMessage({cancross: "?"});
-    // Receive message.
-    chrome.runtime.onMessage.addListener(function docross(reply) {
-        // If the user hasn"t pressed the cross-endorse button 60 seconds ago or less, open the first 10 endorsers in separate tabs. This satisfies the limit of 10 requests/minute for scripts on NS.
-        if (reply.cancross === true) {
-            let cross = document.getElementsByClassName("unbox")[0].getElementsByClassName("nlink");
-            Array.prototype.some.call(cross, function (a, index) {
-                a.target = "_blank";
-                a.click();
-                return index >= 9;
+    if (! url.includes("/nation=")) return;
+
+    let user = document.body.getAttribute("data-nname");
+    let point = url.split("=")[1];
+    let endorsees = Array.from(document.getElementsByClassName("unbox")[0].getElementsByTagName("A")).map(a => a.href.split("=")[1]);
+    let pin = Math.floor(Math.random() * 1000000000);
+
+    // Tell background script on which point with which endorsees you wish to cross-endorse
+    chrome.runtime.sendMessage({action: "cross", user: user, point: point, endorsees: endorsees, pin: pin});
+
+    // Listen for response. Background script won't send one if user isn't allowed.
+    chrome.runtime.onMessage.addListener(function tryEndorse(response) {
+
+        // If an endorsee and the pins match, endorse
+        // Since only the last listener triggers a response, former listeners (blocked due to timer) should be blocked. This is what the pin does.
+        if (response.action === "cross" && pin === response.pin && response.endorsee) {
+            openFrame("https://www.nationstates.net/nation=" + response.endorsee, function(frame) {
+                // Already endorsed is also success
+                let success = frame.getElementsByTagName("INPUT").namedItem("action").value === "unendorse";
+                // Endorse
+                if (frame.getElementsByTagName("INPUT").namedItem("action").value === "endorse") {
+                    frame.getElementsByClassName("endorse button")[0].click();
+                    success = true;
+                }
+                // Tell background script this nation is now endorsed
+                if (success) {
+                    chrome.runtime.sendMessage({action: "endorse", nation: response.endorsee, usedFrame: true});
+                    // Refresh
+                    // window.location.href = url;
+                }
             });
         }
-        // Remove the listener, or it will keep listening if reply.cancross is not true. That would result in it opening the tabs to cross times the amount you pressed [C] while reply.cancross was not true.
-        chrome.runtime.onMessage.removeListener(docross);
+        // else window.location.href = url;
+
+        // Remove listener
+        chrome.runtime.onMessage.removeListener(tryEndorse);
     });
 }
 
@@ -1105,12 +1174,21 @@ function wa() {
     // Apply or leave
     else {
         openFrame("https://www.nationstates.net/page=un", function(frame) {
-            let c = frame.getElementById("content") ? frame.getElementById("content") : frame.getElementById("main");
-            let b = c.getElementsByClassName("button").namedItem("submit");
-            let action = b.innerText.includes("Apply") ? "Applied to join" : b.innerText.includes("Resign") ? "Resigned from" : "Joined";
-            b.setAttribute("onclick", "return true;");
-            b.click();
-            notify(action + " the World Assembly", "LightBlue");
+            let action = frame.getElementsByName("action")[0].value;
+            let chk = frame.getElementsByName("chk")[0].value;
+            
+            let target = "https://www.nationstates.net/page=UN_status"
+            let content = "action=" + action + "&chk=" + chk + "&submit=1";
+
+            // Apply / leave
+            nsPostRequest(target, content, () => {
+                // Success
+                notify(action.includes("join") ? "Applied to join" : "Resigned from" + " the World Assembly", "LightBlue");
+                window.location.href = url; // Refresh
+            }, (status) => {
+                // Failure
+                notify("Failed to " + action.includes("join") ? "join" : "resign from" + " the World Assembly", "Yellow");
+            });
         });
     }
 }
