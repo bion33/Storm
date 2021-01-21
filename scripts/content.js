@@ -353,14 +353,15 @@ function nsPostRequest(url, content, onSuccess, onFailure) {
     "use strict";
     let xhr = new XMLHttpRequest();
     xhr.open("POST", url, true);
+    xhr.responseType = "document";
     xhr.setRequestHeader("User-Agent", userAgent);
     xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     xhr.send(content);
 
     xhr.addEventListener("readystatechange", function() {
         if (xhr.readyState === XMLHttpRequest.DONE) {
-            if (xhr.status === 200) onSuccess();
-            else onFailure(xhr.status);
+            if (xhr.status === 200) onSuccess(xhr);
+            else onFailure(xhr);
         }
     });
 }
@@ -453,11 +454,11 @@ function moveToRegionDirect(region) {
         let content = "localid=" + localid.value + "&region_name=" + region + "&move_region=1";
 
         // Move
-        nsPostRequest(target, content, () => {
+        nsPostRequest(target, content, (xhr) => {
             // Success
             notify("Your nation was moved to " + region, "LightBlue")
             window.location.href = url; // Refresh
-        }, (status) => {
+        }, (xhr) => {
             // Failure
             notify("Something went wrong, couldn't move your nation to " + region, "Yellow");
         });
@@ -1204,11 +1205,15 @@ function wa() {
             let content = "action=" + action + "&chk=" + chk + "&submit=1";
 
             // Apply / leave
-            nsPostRequest(target, content, () => {
+            nsPostRequest(target, content, (xhr) => {
                 // Success
                 notify((action.includes("join") ? "Applied to join" : "Resigned from") + " the World Assembly", "LightBlue");
                 if (action.includes("leave")) window.location.href = url; // Refresh on leaving the WA, otherwise NS and users could get confused
-            }, (status) => {
+
+                // Warn about email in use for WA
+                let warning = xhr.responseXML.getElementsByClassName("error")[0];
+                if (warning) notify("Your email address " + warning.getElementsByTagName("b")[0].innerText + " is currently registered to another WA member nation.", "Yellow");
+            }, (xhr) => {
                 // Failure
                 notify("Failed to " + (action.includes("join") ? "join" : "resign from") + " the World Assembly", "Yellow");
             });
