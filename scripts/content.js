@@ -1204,7 +1204,7 @@ function wa() {
             nsPostRequest(target, content, () => {
                 // Success
                 notify((action.includes("join") ? "Applied to join" : "Resigned from") + " the World Assembly", "LightBlue");
-                window.location.href = url; // Refresh
+                if (action.includes("leave")) window.location.href = url; // Refresh on leaving the WA, otherwise NS and users could get confused
             }, (status) => {
                 // Failure
                 notify("Failed to " + (action.includes("join") ? "join" : "resign from") + " the World Assembly", "Yellow");
