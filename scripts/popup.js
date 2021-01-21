@@ -72,7 +72,14 @@ async function latestVersion() {
 
     // Show if out of date
     if (latestVersion !== currentVersion) {
-        versionField.innerHTML += " (latest: <a href=\"" + url + "\">" + latestVersion + "</a>)"
+        versionField.innerText += " (latest: ";
+
+        let a = document.createElement("a");
+        a.href = url;
+        a.innerText = latestVersion;
+        versionField.appendChild(a);
+
+        versionField.innerHTML += ")";
     }
 }
 
