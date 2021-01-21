@@ -9,6 +9,7 @@ let usedPrev = false;
 
 // Store pages in history
 chrome.runtime.onMessage.addListener(function (request) {
+    "use strict";
     if (request.action !== "store") return;
 
     // User is on a new page (not a reload)
@@ -27,6 +28,7 @@ chrome.runtime.onMessage.addListener(function (request) {
 
 // Go to the previous page, if any
 chrome.runtime.onMessage.addListener(function (request) {
+    "use strict";
     if (request.action !== "previous") return;
 
     if (prevPages.length > 1) {
@@ -45,6 +47,7 @@ chrome.runtime.onMessage.addListener(function (request) {
 
 // Go to the next page (if any) and remove from nextPages
 chrome.runtime.onMessage.addListener(function (request) {
+    "use strict";
     if (request.action !== "next") return;
 
     if (nextPages.length > 0) {
@@ -70,6 +73,7 @@ let workerDone = false;
 
 // Cross (if allowed by timer)
 chrome.runtime.onMessage.addListener(function (request) {
+    "use strict";
     if (request.action !== "cross" || !canCross) return;
 
     // New point and endorsees
@@ -101,6 +105,7 @@ chrome.runtime.onMessage.addListener(function (request) {
 
 // Add a nation to the list of endorsed nations
 chrome.runtime.onMessage.addListener(function (request) {
+    "use strict";
     if (request.action !== "endorse") return;
     endorsed.push(request.nation);
     contentSend({action: "endorsedUpdate", endorsee: request.nation});
@@ -116,6 +121,7 @@ chrome.runtime.onMessage.addListener(function (request) {
 
 // Return list of endorsed nations
 chrome.runtime.onMessage.addListener(function (request) {
+    "use strict";
     if (request.action !== "endorsed") return;
     contentSend({action: "endorsed", endorsed: endorsed});
 });
@@ -124,6 +130,7 @@ chrome.runtime.onMessage.addListener(function (request) {
  * Checks each endorsee sequentially to see if the user has endorsed it
  */
 function endorsedWorker() {
+    "use strict";
     let startUser = user
     let startPoint = point
 
@@ -158,6 +165,7 @@ function endorsedWorker() {
 // Don't use unless absolutely necessary.
 
 chrome.runtime.onMessage.addListener(function (request) {
+    "use strict";
     if (request.action !== "cookies") return;
 
     // Names of the cookies to gather
@@ -180,6 +188,7 @@ chrome.runtime.onMessage.addListener(function (request) {
  * @param {Function} then after the request has completed execute the given action with the return value from content.js
  */
 function contentRequest(parameters, then) {
+    "use strict";
     parameters.type = "background";
     chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
         chrome.tabs.sendMessage(tabs[0].id, parameters, function (value) {
@@ -193,6 +202,7 @@ function contentRequest(parameters, then) {
  * @param {Object} parameters of the message to content.js (what it needs to process this message)
  */
 function contentSend(parameters) {
+    "use strict";
     parameters.type = "background";
     chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
         chrome.tabs.sendMessage(tabs[0].id, parameters);
@@ -212,16 +222,9 @@ function contentSend(parameters) {
  * @param {Function} then execute callback
  */
 function nsApiRequest(url, userAgent, then) {
+    "use strict";
     let headers = new Headers({"User-Agent": userAgent});
     fetch(url, {headers: headers})
         .then(response => response.text())
         .then(text => then(text));
-}
-
-/**
- * Await this function to delay for the given amount of milliseconds
- * @param {number} ms 
- */
-function delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
 }

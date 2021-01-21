@@ -21,6 +21,7 @@ class KeyboardShortcut {
      * @param {Function} action The Function to execute when any key in keys is hit
      */
     constructor(keys, action) {
+        "use strict";
         this.keys = [];
         for (let i = 0; i < keys.length; i++) {
             this.keys.push(keys[i].split("=")[0].toLowerCase());
@@ -33,6 +34,7 @@ class KeyboardShortcut {
      * @param {string} key 
      */
     run_if_for(key) {
+        "use strict";
         if (this.keys.includes(key.toLowerCase())) this.action();
     }
 }
@@ -72,6 +74,7 @@ let shortcuts = defineShortcuts();
 // noinspection JSLint (surpress message for "sender" not being used, as sender is important),JSDeprecatedSymbols
 chrome.runtime.onMessage.addListener(
     function (message, sender, sendResponse) {
+        "use strict";
         switch (message.type) {
             case "getJumpPoints":
                 sendResponse(localStorage.JumpPoints);
@@ -330,6 +333,7 @@ function setKey(data) {
  * @param {string} url API url
  */
 async function nsApiRequest(url) {
+    "use strict";
     let headers = new Headers({"User-Agent": userAgent});
     let response = await fetch(url, {headers: headers});
     return await response.text();
@@ -343,6 +347,7 @@ async function nsApiRequest(url) {
  * @param {Function} onFailure execute function with status code
  */
 function nsPostRequest(url, content, onSuccess, onFailure) {
+    "use strict";
     let xhr = new XMLHttpRequest();
     xhr.open("POST", url, true);
     xhr.setRequestHeader("User-Agent", userAgent);
@@ -364,6 +369,7 @@ function nsPostRequest(url, content, onSuccess, onFailure) {
  * @param {Function} then once the frame is interactive execute this Function
  */
 function openFrame(url, then) {
+    "use strict";
     // Prevent creating multiple frames (so shortcut-spam doesn't impact NS)
     if (document.getElementById("tempFrame")) return undefined;
 
@@ -377,7 +383,6 @@ function openFrame(url, then) {
     
     // Once loaded, return the document within the frame
     frame.addEventListener("load", function() {
-        "use strict";
         then(frame.contentDocument);
 
         // Cooldown and cleanup
@@ -428,6 +433,7 @@ function moveToRegion() {
  * @param {string} region name or url
  */
 function moveToRegionDirect(region) {
+    "use strict";
     region = region.toLowerCase().replace(/ /g, "_");
     if (region.includes("/region=")) region = region.split("=")[1];
 
@@ -482,6 +488,7 @@ function openNation(lr, n) {
  * @param {string} color of the message box
  **/
 function notify(message, color) {
+    "use strict";
     let m = document.createElement("div");
     m.id = "temp-msg";
     m.style.cssText = "background-color: " + color + "; padding: 7px 7px; font-size: 14;";
@@ -593,6 +600,7 @@ function displayLoadTime() {
  * on which of its endorsees you've endorsed.
  */
 function highlightEndorsed() {
+    "use strict";
     let endobox = document.getElementsByClassName("unbox")[0];
     if (!(url.includes("/nation=") && endobox && endobox.getElementsByTagName("A"))) return;
 
@@ -633,6 +641,7 @@ function highlightEndorsed() {
  * @param {number} keyCode 
  */
 function keyCodeToKey(keyCode) {
+    "use strict";
     let dict = {
         8: "Backspace",
         9: "Tab",
@@ -783,13 +792,11 @@ function preKeyChecks(e) {
  * Get KeyboardEvent keys from Key settings in localStorage
  */
 function getKeys() {
-
+    "use strict";
     let k = [];
 
     // Fill list of keyboard shortcuts ("keys") with those found in localStorage
     Object.keys(localStorage).forEach(function (key) {
-        "use strict";
-
         // If this setting is a keyboard shortcut, and the value is a number, it is a keyCode (except for 0 trough 9, those are key names).
         // This is likely a remnant of v3.1, so translate deprecated keyCode to key.
         let value = Number.parseInt(localStorage[key]);
@@ -813,8 +820,6 @@ function getKeys() {
  */
 function defineShortcuts() {
     "use strict";
-
-    let t = new KeyboardShortcut([localStorage.KeyCopyUrl], pageCopyURL);
 
     return [
 
@@ -955,6 +960,7 @@ function activitySpotAll() {
  * Open the reports page, or open the ajax feed to spot (toggle)
  */
 function activityReportSpot() {
+    "use strict";
     if (url.includes("/template-overall=none/page=reports")) {
         window.location.href = "https://www.nationstates.net/page=ajax2/a=reports/view=world/filter=move+member+endo";
     } else {
@@ -978,6 +984,7 @@ function activitySpotRegional() {
  * Watch the world activity page to see GCR updates
  */
 function activityWorld() {
+    "use strict";
     window.location.href = "https://www.nationstates.net/page=ajax2/a=reports/view=world/filter=change";
 }
 
@@ -985,6 +992,7 @@ function activityWorld() {
  * Watch the activity page to spot (regional)
  */
 function nation() {
+    "use strict";
     window.location.href = "https://www.nationstates.net";
 }
 
@@ -992,6 +1000,7 @@ function nation() {
  * Switch nations. Move nation to jump point if not there. If there and not in the WA, applies to join. If there and in WA, resigns.
  */
 function nationSwitch() {
+    "use strict";
     // If in jump point, apply/leave WA
     if (getRegion() === JumpPoint.split("=")[1]) wa();
     // If not, move to jump point
@@ -1002,6 +1011,7 @@ function nationSwitch() {
  * Endorse the nation in view
  */
 function nationEndorse() {
+    "use strict";
     if (document.getElementsByTagName("INPUT").namedItem("action").value === "endorse") {
         // Tell background script this nation is now endorsed
         chrome.runtime.sendMessage({action: "endorse", nation: url.split("=")[1], usedFrame: false});
@@ -1014,6 +1024,7 @@ function nationEndorse() {
  * Cross endorse nations endorsing the nation in view
  */
 function nationCross() {
+    "use strict";
     if (! url.includes("/nation=")) return;
 
     let user = document.body.getAttribute("data-nname");
@@ -1057,6 +1068,7 @@ function nationCross() {
  * Banject the nation in view
  */
 function nationBanject() {
+    "use strict";
     document.getElementsByTagName("BUTTON").namedItem("ban").click();
 }
 
@@ -1064,6 +1076,7 @@ function nationBanject() {
  * Add nation/region to dossier
  */
 function dossierAdd() {
+    "use strict";
     if (url.includes("/region=")) {
         // On region"s page
         document.getElementsByTagName("BUTTON").namedItem("add_to_dossier").click();
@@ -1077,6 +1090,7 @@ function dossierAdd() {
  * Open your nation's dossier. If open, clear it.
  */
 function dossierClear() {
+    "use strict";
     if (url.includes("/page=dossier")) {
         document.getElementsByTagName("BUTTON").namedItem("clear_dossier").click();
     } else {
@@ -1089,6 +1103,7 @@ function dossierClear() {
  * (so, if it includes "... moved from x to y" it will open region y).
  */
 function region() {
+    "use strict";
     if (url.includes("/region=")) {
         window.location.reload();
     } else if (url.includes("/page=reports") || url.includes("/page=ajax2")) {
@@ -1105,6 +1120,7 @@ function region() {
  * (so, if it includes "... moved from x to y" it will open region y).
  */
 function regionMove() {
+    "use strict";
     let directMove = document.getElementById("direct-move-field").value;
 
     if (url.includes("/template-overall=none/page=reports")) {
@@ -1122,6 +1138,7 @@ function regionMove() {
  * Move to jump point. If shifted, adds and sets the region in view as jump point.
  */
 function regionJumpPoint() {
+    "use strict";
     if (shifted) {
         if (url.includes("/region=")) {
             setJumpPoint(url);
@@ -1141,6 +1158,7 @@ function regionJumpPoint() {
  * Dismisses other nations from being officer, opens own officer page, assigns officer role to own nation, and opens regional controls.
  */
 function officer() {
+    "use strict";
     let current_nation = document.getElementById("loggedin").getAttribute("data-nname");
     // If on the regional control page, open own regional officer page
     if (url.includes("/page=region_control")) {
@@ -1166,6 +1184,7 @@ function officer() {
  * Apply/Join/Leave the World Assembly
  */
 function wa() {
+    "use strict";
     // Confirm to join
     if (url.includes("/page=join_WA?nation=")) {
         let c = document.getElementById("content") ? document.getElementById("content") : document.getElementById("main");
@@ -1198,6 +1217,7 @@ function wa() {
  * Navigate to the WA Delegate (show region, then delegate)
  */
 async function waDelegate() {
+    "use strict";
     let region = getRegion();
     if (!region) return;
 
@@ -1216,6 +1236,7 @@ async function waDelegate() {
  * Toggle styling on or off
  */
 function styling() {
+    "use strict";
     if (url.includes("/template-overall=none/region=")) {
         window.location.href = "https://www.nationstates.net/region=" + url.split("/region=")[1];
     }
@@ -1237,5 +1258,6 @@ function styling() {
  * Zombie Control
  */
 function zombieControl() {
+    "use strict";
     window.location.href = "https://www.nationstates.net/page=zombie_control";
 }

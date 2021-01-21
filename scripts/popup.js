@@ -60,6 +60,8 @@ document.addEventListener("DOMContentLoaded", function() {
  * Display the latest version if out of date
  */
 async function latestVersion() {
+    "use strict";
+
     // Read latest Storm version
     let response = await fetch("https://api.github.com/repos/Krypton-Nova/Storm/releases");
     let releases = await response.json();
@@ -200,6 +202,7 @@ Array.from(keyInputs).forEach(function (keyInput) {
  * @param {Function} then after the request has completed execute the given action with the return value from content.js
  */
 function contentRequest(parameters, then) {
+    "use strict";
     chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
         chrome.tabs.sendMessage(tabs[0].id, parameters, function (value) {
             then(value);
@@ -212,6 +215,7 @@ function contentRequest(parameters, then) {
  * @param {Object} parameters of the message to content.js (what it needs to process this message)
  */
 function contentSend(parameters) {
+    "use strict";
     chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
         chrome.tabs.sendMessage(tabs[0].id, parameters);
     });
