@@ -436,7 +436,7 @@ function moveToRegionDirect(region) {
         let localid = frame.getElementsByName("localid")[0]
         // Region doesn't exist if localid is undefined
         if (!localid) {
-            notify("The region " + region + " doesn't exist", "Yellow");
+            notify("Either " + region + " doesn't exist, or you're already located in it", "Yellow");
             return;
         }
 
@@ -529,9 +529,8 @@ function addMoveToRegionBar() {
         if (field.value) moveToRegionDirect(field.value);
     })
     
-
     let c = document.getElementById("content") ? document.getElementById("content") : document.getElementById("main");
-    c.insertBefore(bar, c.firstChild);
+    if (c) c.insertBefore(bar, c.firstChild);
 }
 
 /**
@@ -943,10 +942,10 @@ function activityNationUpdate() {
 function activitySpotAll() {
     "use strict";
 
-    if (url.includes("/page=activity/view=world")) {
-        window.location.href = "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo";
-    } else if (url.includes("/page=activity/view=world/filter=move+member+endo")) {
+    if (url.includes("/page=activity/view=world/filter=move+member+endo")) {
         window.location.href = "https://www.nationstates.net/page=activity/view=world";
+    } else if (url.includes("/page=activity/view=world")) {
+        window.location.href = "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo";
     } else {
         window.location.href = "https://www.nationstates.net/page=activity/view=world/filter=move+member+endo";
     }
@@ -993,7 +992,9 @@ function nation() {
  * Switch nations. Move nation to jump point if not there. If there and not in the WA, applies to join. If there and in WA, resigns.
  */
 function nationSwitch() {
-    if (url === JumpPoint) wa();
+    // If in jump point, apply/leave WA
+    if (getRegion() === JumpPoint.split("=")[1]) wa();
+    // If not, move to jump point
     else moveToRegionDirect(JumpPoint);
 }
 
@@ -1183,11 +1184,11 @@ function wa() {
             // Apply / leave
             nsPostRequest(target, content, () => {
                 // Success
-                notify(action.includes("join") ? "Applied to join" : "Resigned from" + " the World Assembly", "LightBlue");
+                notify((action.includes("join") ? "Applied to join" : "Resigned from") + " the World Assembly", "LightBlue");
                 window.location.href = url; // Refresh
             }, (status) => {
                 // Failure
-                notify("Failed to " + action.includes("join") ? "join" : "resign from" + " the World Assembly", "Yellow");
+                notify("Failed to " + (action.includes("join") ? "join" : "resign from") + " the World Assembly", "Yellow");
             });
         });
     }
@@ -1216,20 +1217,19 @@ async function waDelegate() {
  */
 function styling() {
     if (url.includes("/template-overall=none/region=")) {
-        openRegion();
+        window.location.href = "https://www.nationstates.net/region=" + url.split("/region=")[1];
     }
     else if (url.includes("/template-overall=none/nation=")) {
-        window.location.replace(document.getElementsByClassName("quietlink")[0].href);
+        window.location.href = "https://www.nationstates.net/nation=" + url.split("/nation=")[1];
     }
     else if (url.includes("/region=")) {
         let rr = getRegion();
         if (rr) {
-            window.location.replace("https://www.nationstates.net/template-overall=none/region=" + rr);
+            window.location.href = "https://www.nationstates.net/template-overall=none/region=" + rr;
         }
     }
     else if (url.includes("/nation=")) {
-        let nation = document.getElementsByClassName("quietlink")[0].href.split("/nation=")[1];
-        window.location.replace("https://www.nationstates.net/template-overall=none/nation=" + nation);
+        window.location.href = "https://www.nationstates.net/template-overall=none/nation=" + url.split("=")[1];
     }
 }
 
