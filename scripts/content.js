@@ -456,7 +456,6 @@ function moveToRegionDirect(region) {
         // Move
         nsPostRequest(target, content, (xhr) => {
             // Success
-            notify("Your nation was moved to " + region, "LightBlue")
             window.location.href = url; // Refresh
         }, (xhr) => {
             // Failure
@@ -1207,8 +1206,10 @@ function wa() {
             // Apply / leave
             nsPostRequest(target, content, (xhr) => {
                 // Success
-                notify((action.includes("join") ? "Applied to join" : "Resigned from") + " the World Assembly", "LightBlue");
                 if (action.includes("leave")) window.location.href = url; // Refresh on leaving the WA, otherwise NS and users could get confused
+
+                // Tell user they have applied
+                else notify((action.includes("join") ? "Applied to join" : "Resigned from") + " the World Assembly", "LightBlue");
 
                 // Warn about email in use for WA
                 let warning = xhr.responseXML.getElementsByClassName("error")[0];
