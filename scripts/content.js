@@ -1107,9 +1107,7 @@ function dossierClear() {
  */
 function region() {
     "use strict";
-    if (url.includes("/region=")) {
-        window.location.reload();
-    } else if (url.includes("/page=reports") || url.includes("/page=ajax2")) {
+    if (url.includes("/page=reports") || url.includes("/page=ajax2")) {
         let reg = document.getElementsByTagName("LI")[0].getElementsByClassName("rlink")[1];
         reg.click();
         reg.style.backgroundColor = "yellow";
