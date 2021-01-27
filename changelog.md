@@ -2,6 +2,13 @@
 
 All versions from newest to oldest:
 
+**v4.1 (2021/01/27)**
+
+- Applying to join the WA will now notify you if your email address is already in use for another WA nation.
+- Removed notifications shown immediately before a reload to prevent unintended confusion.
+- Removed page refresh for applying to join the WA (unnecessary).
+- Reset undefined keys to their defaults.
+- Fixed "Region" shortcut not working when viewing another region's page.
 
 **v4.0 (2021/01/21)**
 
