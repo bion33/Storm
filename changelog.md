@@ -2,6 +2,11 @@
 
 All versions from newest to oldest:
 
+**v4.2 (2021/01/29)**
+
+- Replaced question mark in popup with the word "about" to clarify its use.
+- Fix "latest version" saying there's a later version when this is not the case.
+
 **v4.1 (2021/01/27)**
 
 - Applying to join the WA will now notify you if your email address is already in use for another WA nation.
