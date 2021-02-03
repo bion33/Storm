@@ -19,8 +19,8 @@ let keyInputs = document.getElementsByClassName("key-input");
 document.addEventListener("DOMContentLoaded", function() {
     "use strict";
     
-    // Latest version
-    latestVersion();
+    // Show version (and latest if out of date)
+    version();
 
     // Fill jump points
     updatejumpPointList();
@@ -57,9 +57,9 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 /**
- * Display the latest version if out of date
+ * Display the current version, and the latest version if out of date
  */
-async function latestVersion() {
+async function version() {
     "use strict";
 
     // Read latest Storm version
@@ -70,9 +70,12 @@ async function latestVersion() {
     
     // Get current version
     let versionField = document.getElementsByClassName("version")[0];
-    let currentVersion = versionField.innerText;
+    let currentVersion = "v" + chrome.runtime.getManifest().version;
 
-    // Show if out of date
+    // Display current version
+    versionField.innerText = currentVersion;
+
+    // Show latest if out of date
     if (latestVersion !== currentVersion) {
         versionField.innerText += " (latest: ";
 

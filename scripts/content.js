@@ -435,13 +435,16 @@ function moveToRegion() {
 /**
  * Move to the given region instantly from any NationStates page
  * @param {string} region name or url
+ * @param {boolean} openAfterMove whether to open the region page after moving there
  */
-function moveToRegionDirect(region) {
+function moveToRegionDirect(region, openAfterMove) {
     "use strict";
     region = region.toLowerCase().replace(/ /g, "_");
     if (region.includes("/region=")) region = region.split("=")[1];
+    let regionUrl = "https://www.nationstates.net/region=" + region;
+    let noTemplateRegionUrl = "https://www.nationstates.net/template-overall=none/region=" + region;
 
-    openFrame("https://www.nationstates.net/region=" + region, function(frame) {
+    openFrame(noTemplateRegionUrl, function(frame) {
         // Get localid
         let localid = frame.getElementsByName("localid")[0]
         // Region doesn't exist if localid is undefined
@@ -456,7 +459,7 @@ function moveToRegionDirect(region) {
         // Move
         nsPostRequest(target, content, (xhr) => {
             // Success
-            window.location.href = url; // Refresh
+            window.location.href = (openAfterMove) ? regionUrl : url;   // Open region or refresh
         }, (xhr) => {
             // Failure
             notify("Something went wrong, couldn't move your nation to " + region, "Yellow");
@@ -469,7 +472,7 @@ function moveToRegionDirect(region) {
  * @param lr: left(=0) or right(=1) of happening
  * @param n: on the nth line (0 being the 1st line)
  **/
-function openNation(lr, n) {
+function openNationOrRegion(lr, n) {
     "use strict";
     // If on reports or activity page
     if (url.includes("page=reports") || url.includes("page=ajax2")) {
@@ -536,7 +539,7 @@ function addMoveToRegionBar() {
     button.innerText = "Move to";
     button = bar.appendChild(button);
     button.addEventListener("click", function() {
-        if (field.value) moveToRegionDirect(field.value);
+        if (field.value) moveToRegionDirect(field.value, false);
     })
     
     let c = document.getElementById("content") ? document.getElementById("content") : document.getElementById("main");
@@ -845,16 +848,16 @@ function defineShortcuts() {
 
         new KeyboardShortcut([localStorage.KeyDoss], dossierAdd),
         new KeyboardShortcut([localStorage.KeyClearDoss], dossierClear),
-        new KeyboardShortcut([localStorage.KeyDosL1], function() { openNation(0, 0) }),
-        new KeyboardShortcut([localStorage.KeyDosL2], function() { openNation(0, 1) }),
-        new KeyboardShortcut([localStorage.KeyDosL3], function() { openNation(0, 2) }),
-        new KeyboardShortcut([localStorage.KeyDosL4], function() { openNation(0, 3) }),
-        new KeyboardShortcut([localStorage.KeyDosL5], function() { openNation(0, 4) }),
-        new KeyboardShortcut([localStorage.KeyDosR1], function() { openNation(1, 0) }),
-        new KeyboardShortcut([localStorage.KeyDosR2], function() { openNation(1, 1) }),
-        new KeyboardShortcut([localStorage.KeyDosR3], function() { openNation(1, 2) }),
-        new KeyboardShortcut([localStorage.KeyDosR4], function() { openNation(1, 3) }),
-        new KeyboardShortcut([localStorage.KeyDosR5], function() { openNation(1, 4) }),
+        new KeyboardShortcut([localStorage.KeyDosL1], function() { openNationOrRegion(0, 0) }),
+        new KeyboardShortcut([localStorage.KeyDosL2], function() { openNationOrRegion(0, 1) }),
+        new KeyboardShortcut([localStorage.KeyDosL3], function() { openNationOrRegion(0, 2) }),
+        new KeyboardShortcut([localStorage.KeyDosL4], function() { openNationOrRegion(0, 3) }),
+        new KeyboardShortcut([localStorage.KeyDosL5], function() { openNationOrRegion(0, 4) }),
+        new KeyboardShortcut([localStorage.KeyDosR1], function() { openNationOrRegion(1, 0) }),
+        new KeyboardShortcut([localStorage.KeyDosR2], function() { openNationOrRegion(1, 1) }),
+        new KeyboardShortcut([localStorage.KeyDosR3], function() { openNationOrRegion(1, 2) }),
+        new KeyboardShortcut([localStorage.KeyDosR4], function() { openNationOrRegion(1, 3) }),
+        new KeyboardShortcut([localStorage.KeyDosR5], function() { openNationOrRegion(1, 4) }),
         
         new KeyboardShortcut([localStorage.KeyRegion], region),
         new KeyboardShortcut([localStorage.KeyMove], regionMove),
@@ -992,11 +995,15 @@ function activityWorld() {
 }
 
 /**
- * Watch the activity page to spot (regional)
+ * Open your own nation. If on the reports page, opens the nation or region to the left of the last happening.
  */
 function nation() {
     "use strict";
-    window.location.href = "https://www.nationstates.net";
+    if (url.includes("/page=reports") || url.includes("/page=ajax2")) {
+        openNationOrRegion(0, 0)
+    } else {
+        window.location.href = "https://www.nationstates.net";
+    }
 }
 
 /**
@@ -1007,15 +1014,20 @@ function nationSwitch() {
     // If in jump point, apply/leave WA
     if (getRegion() === JumpPoint.split("=")[1]) wa();
     // If not, move to jump point
-    else moveToRegionDirect(JumpPoint);
+    else moveToRegionDirect(JumpPoint, true);
 }
 
 /**
- * Endorse the nation in view
+ * Endorse the nation in view. If on the reports page, opens the nation or region to the left of the happening.
  */
 function nationEndorse() {
     "use strict";
-    if (document.getElementsByTagName("INPUT").namedItem("action").value === "endorse") {
+
+    if (url.includes("/page=reports") || url.includes("/page=ajax2")) {
+        openNationOrRegion(0, 0)
+    }
+
+    else if (document.getElementsByTagName("INPUT").namedItem("action").value === "endorse") {
         // Tell background script this nation is now endorsed
         chrome.runtime.sendMessage({action: "endorse", nation: url.split("=")[1], usedFrame: false});
         // Endorse
@@ -1044,7 +1056,7 @@ function nationCross() {
         // If an endorsee and the pins match, endorse
         // Since only the last listener triggers a response, former listeners (blocked due to timer) should be blocked. This is what the pin does.
         if (response.action === "cross" && pin === response.pin && response.endorsee) {
-            openFrame("https://www.nationstates.net/nation=" + response.endorsee, function(frame) {
+            openFrame("https://www.nationstates.net/template-overall=none/nation=" + response.endorsee, function(frame) {
                 // Already endorsed is also success
                 let success = frame.getElementsByTagName("INPUT").namedItem("action").value === "unendorse";
                 // Endorse
@@ -1102,36 +1114,32 @@ function dossierClear() {
 }
 
 /**
- * Shows the region you're in or refreshes its page. If in reports view, opens the 2nd region in the last change 
+ * Shows the region you're in or refreshes its page. If in reports view, opens the nation or region to the right of the last happening 
  * (so, if it includes "... moved from x to y" it will open region y).
  */
 function region() {
     "use strict";
     if (url.includes("/page=reports") || url.includes("/page=ajax2")) {
-        let reg = document.getElementsByTagName("LI")[0].getElementsByClassName("rlink")[1];
-        reg.click();
-        reg.style.backgroundColor = "yellow";
+        openNationOrRegion(1, 0)
     } else {
         openRegion();
     }
 }
 
 /**
- * Move to the region in view, or the region filled in in direct move. If in reports view, opens the 2nd region in the last change 
+ * Move to the region in view, or the region filled in in direct move. If in reports view, opens the region to the right of the last change 
  * (so, if it includes "... moved from x to y" it will open region y).
  */
 function regionMove() {
     "use strict";
-    let directMove = document.getElementById("direct-move-field").value;
+    let directMove = document.getElementById("direct-move-field");
 
-    if (url.includes("/template-overall=none/page=reports")) {
-        let r = document.getElementsByTagName("LI")[0].getElementsByClassName("rlink")[1];
-        r.click();
-        r.style.backgroundColor = "yellow";
+    if (url.includes("/page=reports") || url.includes("/page=ajax2")) {
+        openNationOrRegion(1, 0)
     } else if (url.includes("/region=")) {
         moveToRegion();
     } else if (directMove) {
-        moveToRegionDirect(directMove);
+        moveToRegionDirect(directMove.value, false);
     }
 }
 
@@ -1150,7 +1158,7 @@ function regionJumpPoint() {
         if (region === undefined) {
             notify("You have no jump point set. Press Shift+" + localStorage.KeyJP.split("=")[0] + " on a region's page to add it to your jump points.", "Yellow");
         } else {
-            moveToRegionDirect(region);
+            moveToRegionDirect(region, true);
         }
     }
 }
@@ -1194,7 +1202,7 @@ function wa() {
     }
     // Apply or leave
     else {
-        openFrame("https://www.nationstates.net/page=un", function(frame) {
+        openFrame("https://www.nationstates.net/template-overall=none/page=un", function(frame) {
             let action = frame.getElementsByName("action")[0].value;
             let chk = frame.getElementsByName("chk")[0].value;
             

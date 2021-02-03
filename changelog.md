@@ -2,10 +2,17 @@
 
 All versions from newest to oldest:
 
+**v4.3 (2021/02/03)**
+
+- Added the "Endorse" key to open nation/region on the left of the last happening on reports page. Note that the "Nation" key already does this too.
+- Fixed the "Move" key not working to open nation/region on the right of the last happening on reports page.
+- Fixed the "Region" key not working to open nation/region on the right of the last happening on reports page.
+- Reduced time it takes for direct-move and direct-endorse slightly (removed template).
+
 **v4.2 (2021/01/29)**
 
 - Replaced question mark in popup with the word "about" to clarify its use.
-- Fix "latest version" saying there's a later version when this is not the case.
+- Fixed "latest version" saying there's a later version when this is not the case.
 
 **v4.1 (2021/01/27)**
 
