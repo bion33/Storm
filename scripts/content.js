@@ -476,7 +476,10 @@ function openNationOrRegion(lr, n) {
     "use strict";
     // If on reports or activity page
     if (url.includes("page=reports") || url.includes("page=ajax2")) {
-        let a = document.getElementsByTagName("LI")[n].getElementsByTagName("A")[lr];
+        let a = document.getElementsByTagName("LI")[n].getElementsByTagName("A");
+        // When nation relocated from region A to region B, the nation will be considered to the left of the happening, and the destination region (B) to the right.
+        if (a.length === 3 && lr === 1) lr = 2;
+        a = a[lr]
         a.click();
         a.style.backgroundColor = "yellow";
     } else {

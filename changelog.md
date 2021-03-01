@@ -2,6 +2,10 @@
 
 All versions from newest to oldest:
 
+**v4.4 (2021/03/02)**
+
+- Fixed bug on reports & ajax2 pages where opening the region to the right of a "moved to" happening would open the origin region.
+
 **v4.3 (2021/02/03)**
 
 - Added the "Endorse" key to open nation/region on the left of the last happening on reports page. Note that the "Nation" key already does this too.
