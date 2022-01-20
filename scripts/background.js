@@ -81,7 +81,7 @@ chrome.runtime.onMessage.addListener(function (request) {
     if (request.point !== point || request.user !== user) {
         workerDone = false;
         user = request.user;
-        userAgent = "Application: Storm " + "v" + chrome.runtime.getManifest().version + " (https://github.com/Krypton-Nova/Storm); User: " + user; 
+        userAgent = "Application: Storm v" + chrome.runtime.getManifest().version + " (https://github.com/Krypton-Nova/Storm); User: " + user; 
         point = request.point;
         // In case point isn't endorsed yet
         endorsees = [point];
