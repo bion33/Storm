@@ -131,8 +131,10 @@ chrome.runtime.onMessage.addListener(function (request) {
  */
 function endorsedWorker() {
     "use strict";
-    let startUser = user
-    let startPoint = point
+
+    workerDone = false;
+    let startUser = user;
+    let startPoint = point;
 
     // Timer runs every 700ms, which is within the API rate limit (30s / 50 requests = 0.6s).
     let timer = setInterval(() => {
@@ -140,6 +142,7 @@ function endorsedWorker() {
         if (startUser !== user || startPoint !== point || check === endorsees.length) {
             clearInterval(timer);
             workerDone = true;
+            check = 0;
             return;
         }
 
