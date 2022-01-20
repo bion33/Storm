@@ -46,7 +46,7 @@ class KeyboardShortcut {
 let url = window.location.href;
 
 // User Agent
-let userAgent = "Application: Storm (https://github.com/Krypton-Nova/Storm)";
+let userAgent = "Application: Storm v" + chrome.runtime.getManifest().version + " (https://github.com/Krypton-Nova/Storm)";
 if (document.cookie.startsWith("telegrams=")) userAgent += "; User: " + document.cookie.split("=")[1];
 
 // For debugging: toggle to reset stored data

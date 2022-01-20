@@ -81,7 +81,7 @@ chrome.runtime.onMessage.addListener(function (request) {
     if (request.point !== point || request.user !== user) {
         workerDone = false;
         user = request.user;
-        userAgent = "Application: Storm (https://github.com/Krypton-Nova/Storm); User: " + user; 
+        userAgent = "Application: Storm v" + chrome.runtime.getManifest().version + " (https://github.com/Krypton-Nova/Storm); User: " + user; 
         point = request.point;
         // In case point isn't endorsed yet
         endorsees = [point];
@@ -131,8 +131,10 @@ chrome.runtime.onMessage.addListener(function (request) {
  */
 function endorsedWorker() {
     "use strict";
-    let startUser = user
-    let startPoint = point
+
+    workerDone = false;
+    let startUser = user;
+    let startPoint = point;
 
     // Timer runs every 700ms, which is within the API rate limit (30s / 50 requests = 0.6s).
     let timer = setInterval(() => {
@@ -140,6 +142,7 @@ function endorsedWorker() {
         if (startUser !== user || startPoint !== point || check === endorsees.length) {
             clearInterval(timer);
             workerDone = true;
+            check = 0;
             return;
         }
 
@@ -227,4 +230,34 @@ function nsApiRequest(url, userAgent, then) {
     fetch(url, {headers: headers})
         .then(response => response.text())
         .then(text => then(text));
+}
+
+update();
+/**
+ * Check for updates and show user an interactive notification if one is available.
+ */
+function update() {
+    // Read latest Storm version
+    fetch("https://api.github.com/repos/Krypton-Nova/Storm/releases")
+        .then(response => response.json())
+        .then(releases => {
+            let latestVersion = "v" + releases[0].name;
+            let url = releases[0].html_url
+
+            // Get current version
+            let currentVersion = "v" + chrome.runtime.getManifest().version;
+
+            // Show latest if out of date
+            if (latestVersion !== currentVersion) {
+                chrome.notifications.create({
+                    type: "basic",
+                    title: "Storm update",
+                    message: "Version " + latestVersion + " was released. Click to go to release page.",
+                    iconUrl: chrome.extension.getURL("ext-resources/icon.png")
+                });
+                chrome.notifications.onClicked.addListener(function () {
+                    chrome.tabs.create({"url": url});
+                });
+            }
+        });
 }
