@@ -2,6 +2,11 @@
 
 All versions from newest to oldest:
 
+**v4.5 (2022/01/20)**
+
+- Fixed a critical bug which caused Storm to make an excessive amount of API requests when the cross key was pressed after switching or when the key was pressed more often than there were endorsees.
+- Added update notification
+
 **v4.4 (2021/03/02)**
 
 - Fixed bug on reports & ajax2 pages where opening the region to the right of a "moved to" happening would open the origin region.

@@ -231,3 +231,33 @@ function nsApiRequest(url, userAgent, then) {
         .then(response => response.text())
         .then(text => then(text));
 }
+
+update();
+/**
+ * Check for updates and show user an interactive notification if one is available.
+ */
+function update() {
+    // Read latest Storm version
+    fetch("https://api.github.com/repos/Krypton-Nova/Storm/releases")
+        .then(response => response.json())
+        .then(releases => {
+            let latestVersion = "v" + releases[0].name;
+            let url = releases[0].html_url
+
+            // Get current version
+            let currentVersion = "v" + chrome.runtime.getManifest().version;
+
+            // Show latest if out of date
+            if (latestVersion !== currentVersion) {
+                chrome.notifications.create({
+                    type: "basic",
+                    title: "Storm update",
+                    message: "Version " + latestVersion + " was released. Click to go to release page.",
+                    iconUrl: chrome.extension.getURL("ext-resources/icon.png")
+                });
+                chrome.notifications.onClicked.addListener(function () {
+                    chrome.tabs.create({"url": url});
+                });
+            }
+        });
+}
