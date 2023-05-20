@@ -930,8 +930,8 @@ function pageRefresh() {
 
     // If on the reports page and it is reloaded, make the green page border red so the user knows they shouldn"t press refresh again.
     if (url.includes("/template-overall=none/page=reports")) {
-        // Only get reports for the last 6 minutes.
-        document.getElementsByTagName("INPUT").namedItem("report_hours").value = "24";
+        // Only get reports for the last 2* minutes. 3/10ths of 6 minutes to be more accurate. -AC Alex
+        document.getElementsByTagName("INPUT").namedItem("report_hours").value = "0.03";
         // Set the border to red so the user knows not to press refresh.
         document.getElementsByTagName("HTML")[0].style.borderColor = "#ff0000";
         // Generate new report.
@@ -1136,9 +1136,15 @@ function region() {
 function regionMove() {
     "use strict";
     let directMove = document.getElementById("direct-move-field");
-
-    if (url.includes("/page=reports") || url.includes("/page=ajax2")) {
-        openNationOrRegion(1, 0)
+// Changing the functionality so that it will only open the target region when there are 3 links in the happening. -AC Alex
+    if (url.includes("/page=reports") || url.includes("/page=ajax2")) {	
+		let linkElement = document.getElementsByTagName("LI")[0].getElementsByTagName("A");
+        // Checks to see if there are three values in the latest happening. If there are, then sets the moveToLatestRegion to be the third A element. Otherwise, it ends the function. -AC Alex
+        if (linkElement.length !== 3) { return; }
+		let moveToLatestRegion = linkElement[2]
+		moveToLatestRegion.click();
+		moveToLatestRegion.style.backgroundColor = "yellow";
+	}
     } else if (url.includes("/region=")) {
         moveToRegion();
     } else if (directMove) {
