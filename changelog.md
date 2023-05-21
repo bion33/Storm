@@ -1,6 +1,12 @@
 ## CHANGELOG
 
-All versions from newest to oldest:
+All versions, most recent first:
+
+**v4.6 (2023/05/21)**
+
+- Fixed move to region button opening nation links in ajax happenings and dossier reports pages (author: @NOOBonboPRO)
+- Fixed flags in ajax happenings and dossier reports pages (NS no longer uses thumbnails there)
+- Saved the hour limit in the reports page so it stays the same between sessions (requested by: @NOOBonboPRO)
 
 **v4.5 (2022/01/20)**
 
@@ -76,12 +82,12 @@ All versions from newest to oldest:
 
 **v2.5 (2020/01/13)**
 
-* Hotfix to for Ctrl, Alt & Shift triggering an alert.
+* Hotfix for Ctrl, Alt & Shift triggering an alert.
 
 
 **v2.4 (2020/01/12)**
 
-* Bugfix to for Ctrl+W opening delegate page (fixes Ctrl, Alt & Shift combinations in general).
+* Bugfix for Ctrl+W opening delegate page (fixes Ctrl, Alt & Shift combinations in general).
 
 
 **v2.3 (2019/06/13)**
@@ -101,7 +107,7 @@ All versions from newest to oldest:
 
 **v2.0 (2019/06/12)**
 
-* Added features from Breeze++ v3.0.0 (Author: Vincent W. Drake)
+* Added features from Breeze++ v3.0.0 (author: Vincent W. Drake)
 * Re-enabled [Z] (Zombie Control)
 
 
