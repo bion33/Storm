@@ -613,7 +613,6 @@ function setReportHours() {
     "use strict";
     
     if (url.includes("page=reports")) {
-        // Only get reports for the last 2* minutes. 3/10ths of 6 minutes to be more accurate. -AC Alex
         document.querySelector("input[name='report_hours']").value = localStorage.ReportHours;
     }
 }
