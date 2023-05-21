@@ -53,7 +53,7 @@ if (document.cookie.startsWith("telegrams=")) userAgent += "; User: " + document
 // localStorage.clear();
 
 // Send current page to background script
-chrome.runtime.sendMessage({action: "store", url: url});
+chrome.runtime.sendMessage({ action: "store", url: url });
 
 // Set Defaults
 setDefaults();
@@ -156,7 +156,7 @@ window.addEventListener("DOMContentLoaded", function () {
         shortcuts.forEach(key => key.run_if_for(e.key));
 
     });
-    
+
 });
 
 
@@ -168,6 +168,7 @@ window.addEventListener("load", function () {
 
     displayLoadTime();
     linkifyAjax();
+    setReportHours();
     scrollToBottom();
     highlightEndorsed();
 
@@ -188,6 +189,7 @@ function setDefaults() {
     setDefault("Role", "Officer");
     setDefault("Scroll", false);
     setDefault("DirectMove", true);
+    setDefault("ReportHours", 6);
 
     // Default keybinds
     setDefaultKey("KeyReports", " ", "Spacebar");
@@ -238,9 +240,9 @@ function setDefaults() {
 function setDefault(storageKey, value) {
     "use strict";
 
-	if (!(storageKey in localStorage) || localStorage[storageKey] === undefined) {
-    	localStorage[storageKey] = value;
-	}
+    if (!(storageKey in localStorage) || localStorage[storageKey] === undefined) {
+        localStorage[storageKey] = value;
+    }
 }
 
 /**
@@ -293,7 +295,7 @@ function deleteJumpPoint(jp) {
     "use strict";
 
     localStorage.JumpPoints = localStorage.JumpPoints.split(",").filter(p => p !== jp).join(",");
-    
+
     return getJumpPoint();
 }
 
@@ -308,7 +310,7 @@ function setKey(data) {
     let k = data[0];
     let v = data[1];
     let d = data[2];
-    
+
     // Prevent duplicate keys
     let duplicates = Object.keys(localStorage).filter(key => key.startsWith("Key") && localStorage[key] === v + "=" + d);
     for (let i = 0; i < duplicates.length; i++) {
@@ -337,8 +339,8 @@ function setKey(data) {
  */
 async function nsApiRequest(url) {
     "use strict";
-    let headers = new Headers({"User-Agent": userAgent});
-    let response = await fetch(url, {headers: headers});
+    let headers = new Headers({ "User-Agent": userAgent });
+    let response = await fetch(url, { headers: headers });
     return await response.text();
 }
 
@@ -358,7 +360,7 @@ function nsPostRequest(url, content, onSuccess, onFailure) {
     xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     xhr.send(content);
 
-    xhr.addEventListener("readystatechange", function() {
+    xhr.addEventListener("readystatechange", function () {
         if (xhr.readyState === XMLHttpRequest.DONE) {
             if (xhr.status === 200) onSuccess(xhr);
             else onFailure(xhr);
@@ -384,9 +386,9 @@ function openFrame(url, then) {
     frame.style = "height: 0px; width: 0px; position: absolute; visibility: hidden;"
     frame = document.body.appendChild(frame);
     window.open(url, frame.name);
-    
+
     // Once loaded, return the document within the frame
-    frame.addEventListener("load", function() {
+    frame.addEventListener("load", function () {
         then(frame.contentDocument);
 
         // Cooldown and cleanup
@@ -444,7 +446,7 @@ function moveToRegionDirect(region, openAfterMove) {
     let regionUrl = "https://www.nationstates.net/region=" + region;
     let noTemplateRegionUrl = "https://www.nationstates.net/template-overall=none/region=" + region;
 
-    openFrame(noTemplateRegionUrl, function(frame) {
+    openFrame(noTemplateRegionUrl, function (frame) {
         // Get localid
         let localid = frame.getElementsByName("localid")[0]
         // Region doesn't exist if localid is undefined
@@ -541,10 +543,10 @@ function addMoveToRegionBar() {
     button.classList.add("primary");
     button.innerText = "Move to";
     button = bar.appendChild(button);
-    button.addEventListener("click", function() {
+    button.addEventListener("click", function () {
         if (field.value) moveToRegionDirect(field.value, false);
     })
-    
+
     let c = document.getElementById("content") ? document.getElementById("content") : document.getElementById("main");
     if (c) c.insertBefore(bar, c.firstChild);
 }
@@ -605,6 +607,18 @@ function displayLoadTime() {
 }
 
 /**
+ * Set report history length setting from local storage
+ */
+function setReportHours() {
+    "use strict";
+    
+    if (url.includes("page=reports")) {
+        // Only get reports for the last 2* minutes. 3/10ths of 6 minutes to be more accurate. -AC Alex
+        document.querySelector("input[name='report_hours']").value = localStorage.ReportHours;
+    }
+}
+
+/**
  * If viewing a nation page of another nation which is in the WA, ask the background script if it has any information
  * on which of its endorsees you've endorsed.
  */
@@ -620,13 +634,13 @@ function highlightEndorsed() {
     let endorsees = Array.from(document.getElementsByClassName("unbox")[0].getElementsByTagName("A"));
 
     // Request the nations you've endorsed for this "point"
-    chrome.runtime.sendMessage({action: "endorsed", point: nation});
+    chrome.runtime.sendMessage({ action: "endorsed", point: nation });
 
     // Highlight those nations green background script knows you've already endorsed
     chrome.runtime.onMessage.addListener(function (response) {
         if (response.action === "endorsed" && response.endorsed) {
             endorsees.filter(e => response.endorsed.includes(e.href.split("=")[1]))
-                     .forEach(e => e.style.cssText = "background-color: DarkSeaGreen");
+                .forEach(e => e.style.cssText = "background-color: DarkSeaGreen");
         }
     });
 
@@ -851,22 +865,22 @@ function defineShortcuts() {
 
         new KeyboardShortcut([localStorage.KeyDoss], dossierAdd),
         new KeyboardShortcut([localStorage.KeyClearDoss], dossierClear),
-        new KeyboardShortcut([localStorage.KeyDosL1], function() { openNationOrRegion(0, 0) }),
-        new KeyboardShortcut([localStorage.KeyDosL2], function() { openNationOrRegion(0, 1) }),
-        new KeyboardShortcut([localStorage.KeyDosL3], function() { openNationOrRegion(0, 2) }),
-        new KeyboardShortcut([localStorage.KeyDosL4], function() { openNationOrRegion(0, 3) }),
-        new KeyboardShortcut([localStorage.KeyDosL5], function() { openNationOrRegion(0, 4) }),
-        new KeyboardShortcut([localStorage.KeyDosR1], function() { openNationOrRegion(1, 0) }),
-        new KeyboardShortcut([localStorage.KeyDosR2], function() { openNationOrRegion(1, 1) }),
-        new KeyboardShortcut([localStorage.KeyDosR3], function() { openNationOrRegion(1, 2) }),
-        new KeyboardShortcut([localStorage.KeyDosR4], function() { openNationOrRegion(1, 3) }),
-        new KeyboardShortcut([localStorage.KeyDosR5], function() { openNationOrRegion(1, 4) }),
-        
+        new KeyboardShortcut([localStorage.KeyDosL1], function () { openNationOrRegion(0, 0) }),
+        new KeyboardShortcut([localStorage.KeyDosL2], function () { openNationOrRegion(0, 1) }),
+        new KeyboardShortcut([localStorage.KeyDosL3], function () { openNationOrRegion(0, 2) }),
+        new KeyboardShortcut([localStorage.KeyDosL4], function () { openNationOrRegion(0, 3) }),
+        new KeyboardShortcut([localStorage.KeyDosL5], function () { openNationOrRegion(0, 4) }),
+        new KeyboardShortcut([localStorage.KeyDosR1], function () { openNationOrRegion(1, 0) }),
+        new KeyboardShortcut([localStorage.KeyDosR2], function () { openNationOrRegion(1, 1) }),
+        new KeyboardShortcut([localStorage.KeyDosR3], function () { openNationOrRegion(1, 2) }),
+        new KeyboardShortcut([localStorage.KeyDosR4], function () { openNationOrRegion(1, 3) }),
+        new KeyboardShortcut([localStorage.KeyDosR5], function () { openNationOrRegion(1, 4) }),
+
         new KeyboardShortcut([localStorage.KeyRegion], region),
         new KeyboardShortcut([localStorage.KeyMove], regionMove),
         new KeyboardShortcut([localStorage.KeyJP], regionJumpPoint),
         new KeyboardShortcut([localStorage.KeyOfficer], officer),
-        
+
         new KeyboardShortcut([localStorage.KeyWAJL1, localStorage.KeyWAJL2], wa),
         new KeyboardShortcut([localStorage.KeyWAD], waDelegate),
 
@@ -899,7 +913,7 @@ function pageBack() {
     "use strict";
 
     // Send message to background script
-    chrome.runtime.sendMessage({action: "previous", url: url});
+    chrome.runtime.sendMessage({ action: "previous", url: url });
     // Receive and load page in message
     chrome.runtime.onMessage.addListener(function (load) {
         if (load.action !== "previous") return;
@@ -914,7 +928,7 @@ function pageForward() {
     "use strict";
 
     // Send message to background script
-    chrome.runtime.sendMessage({action: "next", url: url});
+    chrome.runtime.sendMessage({ action: "next", url: url });
     // Receive and load page in message
     chrome.runtime.onMessage.addListener(function (load) {
         if (load.action !== "next") return;
@@ -930,8 +944,8 @@ function pageRefresh() {
 
     // If on the reports page and it is reloaded, make the green page border red so the user knows they shouldn"t press refresh again.
     if (url.includes("/template-overall=none/page=reports")) {
-        // Only get reports for the last 6 minutes.
-        document.getElementsByTagName("INPUT").namedItem("report_hours").value = "24";
+        // Save report history length setting to local storage
+        localStorage.ReportHours = document.querySelector("input[name='report_hours']").value;
         // Set the border to red so the user knows not to press refresh.
         document.getElementsByTagName("HTML")[0].style.borderColor = "#ff0000";
         // Generate new report.
@@ -974,7 +988,7 @@ function activityReportSpot() {
         window.location.href = "https://www.nationstates.net/page=ajax2/a=reports/view=world/filter=move+member+endo";
     } else {
         window.location.href = "https://www.nationstates.net/template-overall=none/page=reports";
-    }    
+    }
 }
 
 /**
@@ -1032,7 +1046,7 @@ function nationEndorse() {
 
     else if (document.getElementsByTagName("INPUT").namedItem("action").value === "endorse") {
         // Tell background script this nation is now endorsed
-        chrome.runtime.sendMessage({action: "endorse", nation: url.split("=")[1], usedFrame: false});
+        chrome.runtime.sendMessage({ action: "endorse", nation: url.split("=")[1], usedFrame: false });
         // Endorse
         document.getElementsByClassName("endorse button")[0].click();
     }
@@ -1043,7 +1057,7 @@ function nationEndorse() {
  */
 function nationCross() {
     "use strict";
-    if (! url.includes("/nation=")) return;
+    if (!url.includes("/nation=")) return;
 
     let user = document.body.getAttribute("data-nname");
     let point = url.split("=")[1];
@@ -1051,7 +1065,7 @@ function nationCross() {
     let pin = Math.floor(Math.random() * 1000000000);
 
     // Tell background script on which point with which endorsees you wish to cross-endorse
-    chrome.runtime.sendMessage({action: "cross", user: user, point: point, endorsees: endorsees, pin: pin});
+    chrome.runtime.sendMessage({ action: "cross", user: user, point: point, endorsees: endorsees, pin: pin });
 
     // Listen for response. Background script won't send one if user isn't allowed.
     chrome.runtime.onMessage.addListener(function tryEndorse(response) {
@@ -1059,7 +1073,7 @@ function nationCross() {
         // If an endorsee and the pins match, endorse
         // Since only the last listener triggers a response, former listeners (blocked due to timer) should be blocked. This is what the pin does.
         if (response.action === "cross" && pin === response.pin && response.endorsee) {
-            openFrame("https://www.nationstates.net/template-overall=none/nation=" + response.endorsee, function(frame) {
+            openFrame("https://www.nationstates.net/template-overall=none/nation=" + response.endorsee, function (frame) {
                 // Already endorsed is also success
                 let success = frame.getElementsByTagName("INPUT").namedItem("action").value === "unendorse";
                 // Endorse
@@ -1069,7 +1083,7 @@ function nationCross() {
                 }
                 // Tell background script this nation is now endorsed
                 if (success) {
-                    chrome.runtime.sendMessage({action: "endorse", nation: response.endorsee, usedFrame: true});
+                    chrome.runtime.sendMessage({ action: "endorse", nation: response.endorsee, usedFrame: true });
                     // Refresh
                     // window.location.href = url;
                 }
@@ -1205,10 +1219,10 @@ function wa() {
     }
     // Apply or leave
     else {
-        openFrame("https://www.nationstates.net/template-overall=none/page=un", function(frame) {
+        openFrame("https://www.nationstates.net/template-overall=none/page=un", function (frame) {
             let action = frame.getElementsByName("action")[0].value;
             let chk = frame.getElementsByName("chk")[0].value;
-            
+
             let target = "https://www.nationstates.net/page=UN_status"
             let content = "action=" + action + "&chk=" + chk + "&submit=1";
 
@@ -1239,9 +1253,9 @@ async function waDelegate() {
     let region = getRegion();
     if (!region) return;
 
-    let response = await nsApiRequest("https://www.nationstates.net/cgi-bin/api.cgi?region=" + region + "&q=delegate");    
+    let response = await nsApiRequest("https://www.nationstates.net/cgi-bin/api.cgi?region=" + region + "&q=delegate");
     let nation = response.substring(response.indexOf("<DELEGATE>") + 10, response.indexOf("</DELEGATE>"));
-    
+
     if (nation === "0") {
         notify("The region you're in doesn't have a WA Delegate", "Yellow");
     }
