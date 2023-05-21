@@ -4,3 +4,6 @@ html {
 a:visited {
 	color: #000000;
 }
+.miniflag {
+	width: 30px;
+}
