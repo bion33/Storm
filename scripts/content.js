@@ -497,12 +497,12 @@ function openNationOrRegion(lr, n) {
  * Show the given message at the top of a NationStates page
  * @param {string} message
  * @param {string} color of the message box
+ * @param {string} textColor of the text
  **/
-function notify(message, color) {
-    "use strict";
+function notify(message, color, textColor = 'black') {
     let m = document.createElement("div");
     m.id = "temp-msg";
-    m.style.cssText = "background-color: " + color + "; padding: 7px 7px; font-size: 14;";
+    m.style.cssText = "background-color: " + color + "; color: " + textColor + "; padding: 7px 7px; font-size: 14;";
     m.innerText = message;
     // First child of content if it exists, else of main (antiquity theme)
     let c = document.getElementById("content") ? document.getElementById("content") : document.getElementById("main");
