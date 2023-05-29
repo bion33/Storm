@@ -26,6 +26,9 @@ All help in making this extension better is welcome! Contact me if you have sugg
 
 #### **Contact me:**
 
+Please open an issue if you'd like to see a new functionality added or if something doesn't work as it should.
+
+For other issues:<br>
 [bion@disroot.org](mailto:bion@disroot.org?Subject=Storm)<br>
 David.#4693 on Discord
 
