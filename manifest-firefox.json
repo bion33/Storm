@@ -6,7 +6,6 @@
   "author": "Krypton Nova",
   "description": "Storm enables hotkeys for military gameplay on NationStates.",
   "permissions": [
-    "activeTab", 
     "storage", 
     "notifications"
   ],
