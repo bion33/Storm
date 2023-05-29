@@ -1,160 +1,200 @@
 // =====================================================================================================================
+// Initialise listeners
+
+chrome.runtime.onMessage.addListener(store);
+chrome.runtime.onMessage.addListener(previous);
+chrome.runtime.onMessage.addListener(next);
+chrome.runtime.onMessage.addListener(cross);
+chrome.runtime.onMessage.addListener(endorse);
+chrome.runtime.onMessage.addListener(getAllEndorsed);
+chrome.runtime.onMessage.addListener(getNSCookies);
+
+// =====================================================================================================================
 // This section of the background script keeps track of previous and next pages in relation to the current page. The 
 // purpose of this is to get the latest previous/next page instead of getting it from cache, otherwise shortcuts don't 
 // work and information might be out of date.
 
-let prevPages = [];
-let nextPages = [];
-let usedPrev = false;
-
 // Store pages in history
-chrome.runtime.onMessage.addListener(function (request) {
+async function store(request) {
     "use strict";
+
     if (request.action !== "store") return;
 
+    let state = await PersistentState.load();
+
     // User is on a new page (not a reload)
-    if (usedPrev === false && (prevPages.length === 0 || prevPages[prevPages.length - 1] !== request.url)) {
+    if (state.usedPrev === false && (state.prevPages.length === 0 || state.prevPages[state.prevPages.length - 1] !== request.url)) {
         // Store the current page in the list and remove the oldest page in the list
         // List should be 11 entries (current + 10 in history)
-        prevPages.push(request.url);
-        if (prevPages.length > 11) {
-            prevPages.splice(0, 1);
+        state.prevPages.push(request.url);
+        if (state.prevPages.length > 11) {
+            state.prevPages.splice(0, 1);
         }
     // User navigated back previously, just reset bool
-    } else if (usedPrev === true) {
-        usedPrev = false;
+    } else if (state.usedPrev === true) {
+        state.usedPrev = false;
     }
-});
+
+    state.save();
+}
 
 // Go to the previous page, if any
-chrome.runtime.onMessage.addListener(function (request) {
+async function previous(request) {
     "use strict";
-    if (request.action !== "previous") return;
 
-    if (prevPages.length > 1) {
-        nextPages.push(request.url);
-        // Remove the oldest page in the list if the list grows longer than 10 entries
-        if (nextPages.length > 10) nextPages.splice(0, 1);
-        // The page to load is the last page in previous pages (length - 2 to skip current page)
-        let pageToLoad = prevPages[prevPages.length - 2];
-        // Remove the page to load from the previous pages
-        prevPages.splice(prevPages.length - 1, 1);
-        // Set this to true so the to-be-loaded page isn't immediately stored back into prevpages
-        usedPrev = true;
-        contentSend({action: "previous", url: pageToLoad});
-    }
-});
+    let state = await PersistentState.load();
+
+    if (request.action !== "previous" || state.prevPages.length < 2) return;
+
+    state.nextPages.push(request.url);
+    
+    // Remove the oldest page in the list if the list grows longer than 10 entries
+    if (state.nextPages.length > 10) state.nextPages.splice(0, 1);
+    
+    // The page to load is the last page in previous pages (length - 2 to skip current page)
+    let pageToLoad = state.prevPages[state.prevPages.length - 2];
+    
+    // Remove the page to load from the previous pages
+    state.prevPages.splice(state.prevPages.length - 1, 1);
+
+    // Set this to true so the to-be-loaded page isn't immediately stored back into prevpages
+    state.usedPrev = true;
+    state.save();
+
+    contentSend({action: "previous", url: pageToLoad});
+}
 
 // Go to the next page (if any) and remove from nextPages
-chrome.runtime.onMessage.addListener(function (request) {
+async function next(request) {
     "use strict";
-    if (request.action !== "next") return;
 
-    if (nextPages.length > 0) {
-        let pageToLoad = nextPages[nextPages.length - 1];
-        nextPages.splice(nextPages.length - 1, 1);
-        contentSend({action: "next", url: pageToLoad});
-    }
-});
+    let state = await PersistentState.load();
 
+    if (request.action !== "next" || state.nextPages.length < 1) return;
+
+    let pageToLoad = state.nextPages[state.nextPages.length - 1];
+    state.nextPages.splice(state.nextPages.length - 1, 1);
+
+    state.save();
+
+    contentSend({action: "next", url: pageToLoad});
+}
 
 // =====================================================================================================================
 // This section of the background script keeps track of the state of cross endorsing for the content script. The purpose 
 // of this is to make sure it satisfies rate limits and is aware of who was endorsed across page reloads.
 
-let canCross = true;
-let userAgent = undefined;
-let user = undefined;
-let point = undefined;
-let endorsed = [];
-let endorsees = [];
-let check = 0;
-let workerDone = false;
-
 // Cross (if allowed by timer)
-chrome.runtime.onMessage.addListener(function (request) {
+async function cross(request) {
     "use strict";
-    if (request.action !== "cross" || !canCross) return;
+
+    let state = await PersistentState.load();
+
+    if (request.action !== "cross" || !state.canCross) return;
 
     // New point and endorsees
     // Keep list of endorsed intact in case point is being switched
-    if (request.point !== point || request.user !== user) {
-        workerDone = false;
-        user = request.user;
-        userAgent = "Application: Storm v" + chrome.runtime.getManifest().version + " (https://github.com/Krypton-Nova/Storm); User: " + user; 
-        point = request.point;
+    if (request.point !== state.point || request.user !== state.user) {
+        state.workerDone = false;
+        state.user = request.user;
+        state.userAgent = "Application: Storm v" + chrome.runtime.getManifest().version + " (https://github.com/Krypton-Nova/Storm); User: " + state.user; 
+        state.point = request.point;
         // In case point isn't endorsed yet
-        endorsees = [point];
-        endorsees.push(...request.endorsees);
+        state.endorsees = [state.point];
+        state.endorsees.push(...request.endorsees); // ...Iterable expands it, see spread operator
         // You don't need to endorse yourself
-        endorsed.push(user);
-        // (async) checks each endorsee to see if user has endorsed it
+        state.endorsed.push(state.user);
+        
+        state.save();
         endorsedWorker();
 
     // If same point, just add new endorsees
     } else {
-        let newEndorsees = request.endorsees.filter(e => !endorsees.includes(e));
-        endorsees.push(...newEndorsees);        // ...Iterable expands it, see spread operator
-        if (workerDone) endorsedWorker();
+        let newEndorsees = request.endorsees.filter(e => !state.endorsees.includes(e));
+        state.endorsees.push(...newEndorsees);
+        if (state.workerDone) {
+            state.save();
+            endorsedWorker();
+        }
     }
-    
-    let next = endorsees.filter(e => !endorsed.includes(e))[0];
-    contentSend({action: "cross", endorsee: next, pin: request.pin});
 
-});
+    let next = state.endorsees.filter(e => !state.endorsed.includes(e))[0];
+    contentSend({action: "cross", endorsee: next, pin: request.pin});
+}
 
 // Add a nation to the list of endorsed nations
-chrome.runtime.onMessage.addListener(function (request) {
+async function endorse(request) {
     "use strict";
-    if (request.action !== "endorse") return;
-    endorsed.push(request.nation);
-    contentSend({action: "endorsedUpdate", endorsee: request.nation});
 
-    // Set a cooldown timer of 6 seconds if a frame request was made to comply with script rules
+    if (request.action !== "endorse") return;
+    
+    let state = await PersistentState.load();
+
+    state.endorsed.push(request.nation);
+    contentSend({action: "endorsedUpdate", endorsee: request.nation});
+    
+    // Set a cooldown timer of 6 seconds if a frame request was made to comply with script rules (this is a non-API script action, which has a limit of 6s / request)
+    // Be careful with timeouts, chrome manifest v3 extensions terminate after 30 seconds regardless of how long your timeouts take!
     if (request.usedFrame) {
-        canCross = false;
+        state.canCross = false;
         setTimeout(function () {
-            canCross = true;
+            state.canCross = true;
+            state.save();
         }, 6000);
     }
-});
+
+    state.save();
+}
 
 // Return list of endorsed nations
-chrome.runtime.onMessage.addListener(function (request) {
+async function getAllEndorsed(request) {
     "use strict";
+
     if (request.action !== "endorsed") return;
-    contentSend({action: "endorsed", endorsed: endorsed});
-});
+    
+    let state = await PersistentState.load();
+    contentSend({action: "endorsed", endorsed: state.endorsed});
+}
 
 /**
  * Checks each endorsee sequentially to see if the user has endorsed it
  */
-function endorsedWorker() {
+async function endorsedWorker() {
     "use strict";
 
-    workerDone = false;
-    let startUser = user;
-    let startPoint = point;
+    let state = await PersistentState.load();
+
+    state.workerDone = false;
+    state.save();
+
+    const startUser = state.user;
+    const startPoint = state.point;
 
     // Timer runs every 700ms, which is within the API rate limit (30s / 50 requests = 0.6s).
-    let timer = setInterval(() => {
+    // Be careful with intervals, chrome manifest v3 extensions terminate after 30 seconds regardless of how long your timeouts take!
+    // Luckily chrome.storage.local.* (through using PersistentState) will reset this timeout... 
+    let timer = setInterval(async () => {
+        state = await PersistentState.load();
+
         // While user and point haven't changed, and there are endorsees left to check
-        if (startUser !== user || startPoint !== point || check === endorsees.length) {
+        if (startUser !== state.user || startPoint !== state.point || state.check === state.endorsees.length) {
             clearInterval(timer);
-            workerDone = true;
-            check = 0;
+            state.workerDone = true;
+            state.check = 0;
+            state.save();
             return;
         }
 
-        let endorsee = endorsees[check++];
+        let endorsee = state.endorsees[state.check++];
             
         // Get who endorsed this endorsee
-        nsApiRequest("https://www.nationstates.net/cgi-bin/api.cgi?nation=" + endorsee + "&q=endorsements", userAgent, (text) => {
+        nsApiRequest("https://www.nationstates.net/cgi-bin/api.cgi?nation=" + endorsee + "&q=endorsements", state.userAgent, (text) => {
             let crossEndos = text.substring(text.indexOf("<ENDORSEMENTS>") + 14, text.indexOf("</ENDORSEMENTS>")).split(",");
 
             // Add to endorsed if user crossed this endorsee
-            if (crossEndos.includes(user)) {
-                endorsed.push(endorsee);
+            if (crossEndos.includes(state.user)) {
+                state.endorsed.push(endorsee);
+                state.save();
                 contentSend({action: "endorsedUpdate", endorsee: endorsee});
             }
         });
@@ -167,7 +207,7 @@ function endorsedWorker() {
 // This is perhaps useful for future reference, but is currently not used. Requires "cookies" permission in manifest.json.
 // Don't use unless absolutely necessary.
 
-chrome.runtime.onMessage.addListener(function (request) {
+function getNSCookies(request) {
     "use strict";
     if (request.action !== "cookies") return;
 
@@ -179,7 +219,7 @@ chrome.runtime.onMessage.addListener(function (request) {
         cookies = cookies.filter(c => names.includes(c.name));
         contentSend({action: "cookies", cookies: cookies});
     }); 
-});
+}
 
 
 // =====================================================================================================================
@@ -214,12 +254,49 @@ function contentSend(parameters) {
 
 
 // =====================================================================================================================
-// Utility functions
+// Utility stuff
 
 /**
- * Request something from the NationStates API
- * If this is to be used frequently, it needs a mechanism to impose the rate limit
- * Currently only used by "endorsedWorker" which rate-limits itself
+ * Persistent state object for storing stuff used across event handlers.
+ * Never rely on state being the same across different event handlers and functions, instead use this for state.
+ */
+class PersistentState {
+    
+    constructor(state = undefined) {
+        this.prevPages = state?.prevPages ?? [];
+        this.nextPages = state?.nextPages ?? [];
+        this.usedPrev = state?.usedPrev ?? false;
+        this.canCross = state?.canCross ?? true;
+        this.userAgent = state?.userAgent ?? undefined;
+        this.user = state?.user ?? undefined;
+        this.point = state?.point ?? undefined;
+        this.endorsed = state?.endorsed ?? [];
+        this.endorsees = state?.endorsees ?? [];
+        this.check = state?.check ?? 0;
+        this.workerDone = state?.workerDone ?? false;
+    }
+
+    /**
+     * Asynchronously load the persistent state from local storage 
+     * @returns {Promise<PersistentState>} the persistent state
+     */
+    static async load() {
+        let state = await chrome.storage.local.get(['PersistentState'])
+        return new PersistentState(state.PersistentState);
+    }
+
+    /**
+     * Save this persistent state to local storage
+     */
+    save() {
+        chrome.storage.local.set({'PersistentState': this});
+    }
+}
+
+/**
+ * Request something from the NationStates API.
+ * If this is to be used frequently, it needs a mechanism to impose the rate limit.
+ * Currently only used by "endorsedWorker" which rate-limits itself.
  * @param {string} url API url
  * @param {string} userAgent to identify scrip to NS
  * @param {Function} then execute callback
@@ -253,7 +330,7 @@ function update() {
                     type: "basic",
                     title: "Storm update",
                     message: "Version " + latestVersion + " was released. Click to go to release page.",
-                    iconUrl: chrome.extension.getURL("ext-resources/icon.png")
+                    iconUrl: chrome.runtime.getURL("ext-resources/icon.png")
                 });
                 chrome.notifications.onClicked.addListener(function () {
                     chrome.tabs.create({"url": url});
