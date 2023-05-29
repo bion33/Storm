@@ -537,6 +537,11 @@ function addMoveToRegionBar() {
     field.placeholder = "Region name or url"
     field.style.cssText = "margin-right: 8px;"
     field = bar.appendChild(field);
+    field.addEventListener('keyup', (e) => {
+        if (e.key === 'Enter' && field.value) {
+            moveToRegionDirect(field.value, true);
+        }
+    });
 
     let button = document.createElement("button");
     button.id = "direct-move-button"
@@ -545,7 +550,7 @@ function addMoveToRegionBar() {
     button.innerText = "Move to";
     button = bar.appendChild(button);
     button.addEventListener("click", function () {
-        if (field.value) moveToRegionDirect(field.value, false);
+        if (field.value) moveToRegionDirect(field.value, true);
     })
 
     let c = document.getElementById("content") ? document.getElementById("content") : document.getElementById("main");
