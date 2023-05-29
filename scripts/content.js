@@ -376,6 +376,7 @@ function nsPostRequest(url, content, onSuccess, onFailure) {
  */
 function openFrame(url, then) {
     "use strict";
+
     // Prevent creating multiple frames (so shortcut-spam doesn't impact NS)
     if (document.getElementById("tempFrame")) return undefined;
 
@@ -392,8 +393,8 @@ function openFrame(url, then) {
         then(frame.contentDocument);
 
         // Cooldown and cleanup
-        setTimeout(function () {
-            document.body.removeChild(frame);
+        setTimeout(() => {
+            frame.remove();
         }, 1000);
     });
 }

@@ -104,20 +104,22 @@ async function cross(request) {
         state.endorsees.push(...request.endorsees); // ...Iterable expands it, see spread operator
         // You don't need to endorse yourself
         state.endorsed.push(state.user);
-        // (async) checks each endorsee to see if user has endorsed it
+        
+        state.save();
         endorsedWorker();
 
     // If same point, just add new endorsees
     } else {
         let newEndorsees = request.endorsees.filter(e => !state.endorsees.includes(e));
         state.endorsees.push(...newEndorsees);
-        if (state.workerDone) endorsedWorker();
+        if (state.workerDone) {
+            state.save();
+            endorsedWorker();
+        }
     }
-    
+
     let next = state.endorsees.filter(e => !state.endorsed.includes(e))[0];
     contentSend({action: "cross", endorsee: next, pin: request.pin});
-
-    state.save();
 }
 
 // Add a nation to the list of endorsed nations
@@ -165,8 +167,8 @@ async function endorsedWorker() {
     state.workerDone = false;
     state.save();
 
-    let startUser = state.user;
-    let startPoint = state.point;
+    const startUser = state.user;
+    const startPoint = state.point;
 
     // Timer runs every 700ms, which is within the API rate limit (30s / 50 requests = 0.6s).
     // Be careful with intervals, chrome manifest v3 extensions terminate after 30 seconds regardless of how long your timeouts take!
@@ -175,7 +177,7 @@ async function endorsedWorker() {
         state = await PersistentState.load();
 
         // While user and point haven't changed, and there are endorsees left to check
-        if (startUser !== state.user || startPoint !== state.point || check === state.endorsees.length) {
+        if (startUser !== state.user || startPoint !== state.point || state.check === state.endorsees.length) {
             clearInterval(timer);
             state.workerDone = true;
             state.check = 0;
@@ -183,7 +185,7 @@ async function endorsedWorker() {
             return;
         }
 
-        let endorsee = state.endorsees[check++];
+        let endorsee = state.endorsees[state.check++];
             
         // Get who endorsed this endorsee
         nsApiRequest("https://www.nationstates.net/cgi-bin/api.cgi?nation=" + endorsee + "&q=endorsements", state.userAgent, (text) => {
@@ -192,11 +194,10 @@ async function endorsedWorker() {
             // Add to endorsed if user crossed this endorsee
             if (crossEndos.includes(state.user)) {
                 state.endorsed.push(endorsee);
+                state.save();
                 contentSend({action: "endorsedUpdate", endorsee: endorsee});
             }
         });
-
-        state.save();
     }, 700);
 }
 
@@ -262,17 +263,17 @@ function contentSend(parameters) {
 class PersistentState {
     
     constructor(state = undefined) {
-        this.prevPages = state.prevPages ?? [];
-        this.nextPages = state.nextPages ?? [];
-        this.usedPrev = state.usedPrev ?? false;
-        this.canCross = state.canCross ?? true;
-        this.userAgent = state.userAgent ?? undefined;
-        this.user = state.user ?? undefined;
-        this.point = state.point ?? undefined;
-        this.endorsed = state.endorsed ?? [];
-        this.endorsees = state.endorsees ?? [];
-        this.check = state.check ?? 0;
-        this.workerDone = state.workerDone ?? false;
+        this.prevPages = state?.prevPages ?? [];
+        this.nextPages = state?.nextPages ?? [];
+        this.usedPrev = state?.usedPrev ?? false;
+        this.canCross = state?.canCross ?? true;
+        this.userAgent = state?.userAgent ?? undefined;
+        this.user = state?.user ?? undefined;
+        this.point = state?.point ?? undefined;
+        this.endorsed = state?.endorsed ?? [];
+        this.endorsees = state?.endorsees ?? [];
+        this.check = state?.check ?? 0;
+        this.workerDone = state?.workerDone ?? false;
     }
 
     /**
@@ -293,9 +294,9 @@ class PersistentState {
 }
 
 /**
- * Request something from the NationStates API
- * If this is to be used frequently, it needs a mechanism to impose the rate limit
- * Currently only used by "endorsedWorker" which rate-limits itself
+ * Request something from the NationStates API.
+ * If this is to be used frequently, it needs a mechanism to impose the rate limit.
+ * Currently only used by "endorsedWorker" which rate-limits itself.
  * @param {string} url API url
  * @param {string} userAgent to identify scrip to NS
  * @param {Function} then execute callback
