@@ -2,6 +2,11 @@
 
 All versions, most recent first:
 
+**v4.7 (2023/05/30)**
+
+- Updated extension to manifest v3 (new Google extensions API)
+- Finally published again on the Google Web Store
+
 **v4.6 (2023/05/21)**
 
 - Fixed move to region button opening nation links in ajax happenings and dossier reports pages (author: @NOOBonboPRO)
