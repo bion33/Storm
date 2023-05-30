@@ -43,6 +43,11 @@
       "matches": ["*://www.nationstates.net/page=ajax2/a=reports/view=world/filter=change"],
       "run_at": "document_start",
       "css": ["/ext-resources/no-template-world-changes.css"]
+    } 
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{4a49c185-c0fa-465c-993c-a673c96a6ccc}"
     }
-  ]
+  }
 }
