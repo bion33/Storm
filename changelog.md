@@ -2,6 +2,10 @@
 
 All versions, most recent first:
 
+**v4.8 (2023/05/30)**
+
+- Hotfix for disabled shortcuts on Firefox due to upgrade to manifest v3 
+
 **v4.7 (2023/05/30)**
 
 - Updated extension to manifest v3 (new Google extensions API)
