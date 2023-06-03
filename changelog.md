@@ -2,6 +2,10 @@
 
 All versions, most recent first:
 
+**v4.9 (2023/06/03)**
+
+- Hotfix for disabled shortcuts on Firefox due to upgrade to manifest v3 by explicitly asking the user's permission (this is the real fix hopefully)
+
 **v4.8 (2023/05/30)**
 
 - Hotfix for disabled shortcuts on Firefox due to upgrade to manifest v3 

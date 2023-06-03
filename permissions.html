@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <style type="text/css">
+			html {
+				background-image: url("./ext-resources/background.jpg");
+				background-repeat: no-repeat;
+				background-position: center;
+    			background-attachment: fixed;
+    			background-size: cover;
+    			border: 1px solid rgba(0, 0, 0, 0);			/* Invisible border prevents weird bug with table */
+			}
+			body {
+				padding: 5px 33px;
+				font-family: Verdana,Tahoma,sans-serif;
+				font-size: 14px;
+			}
+			h1 {
+				padding: 1px 5px;
+				border-radius: 5px;
+				font-size: 12px;
+				text-decoration: none;
+			}
+			.box {
+				min-width: 420px;
+				max-width: 420px;
+				width: 90%;
+				margin: auto;
+				padding: 5px 25px;
+				border: 1px solid #000;
+				border-radius: 25px;
+				background: rgba(240, 240, 240, 0.65);
+			}
+			.title {
+				text-align: center;
+				font-size: 18px;
+				font-weight: bold;
+				color: red;
+			}
+            .center {
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+            }
+            .button {
+                background-color: forestgreen;
+                border: 1px solid #000;
+				border-radius: 25px;
+                color: white;
+                padding: 15px 32px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 16px;
+                transition-duration: 0.3s;
+                min-width: 420px;
+				max-width: 420px;
+            }
+            .button:hover {
+                cursor: pointer;
+                background-color: green;
+                color: white;
+            }
+		</style>
+    </header>
+    <body>
+        <h1 class="box title">Please read!</h1>
+        <br>
+        <div class="box">
+            <p>
+                Due to a recent change in Firefox permissions, Storm could not ask you for the permission to "access your data" on NatioNStates (to insert scripts into the page) when you installed it.
+                Unfortunately, without this permission keyboard shortcuts won't work.
+            </p>
+            <p>
+                To open the permission dialogue, please click the button below. This tab will automatically close when you grant the permission.
+            </p>
+            <p>
+                Please reload any existing NationStates tabs after granting the permission if you need to use Storm immediately. 
+            </p>
+        </div> 
+        <br>
+        <div class="center">
+            <button id="open_dialog" class="button">Give Storm permission to run on NationStates</button>
+        </div>
+    </body>
+    <script src="/scripts/permissions.js"></script>
+</html> 

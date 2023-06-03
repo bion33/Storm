@@ -338,3 +338,18 @@ function update() {
             }
         });
 }
+
+requestPermission();
+/**
+ * Ensure the "optional" permission to access NS is requested (this whole extension is useless without it...)
+ */
+async function requestPermission() {
+    const nsPermission = {origins: ["*://www.nationstates.net/*"]};
+
+    // Early return if permission OK
+    if (await browser.permissions.contains(nsPermission)) return;
+
+    chrome.tabs.create({
+        url: "permissions.html"
+    });
+}
