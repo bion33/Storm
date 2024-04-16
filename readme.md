@@ -8,6 +8,7 @@ Storm is an extension for military gameplay on the NationStates website. It make
 [Chrome Extension](https://chrome.google.com/webstore/detail/storm/cjcjjeajapeonoloepkgeifkhogbkjhg)
 
 Storm was originally based on Breeze++ back in 2018, but has since forged its own path. See the keylist and changelog for differences between the two.
+I will maintain it until 2025-06-01 before re-evaluating its usefulness. Let me know if it is useful to you :)
 
 | NSBreeze  | [Breeze++](https://chrome.google.com/webstore/detail/breeze%20%20/fmidibfpgbmcmnfedlafdfcbmglbckkf)         | [Storm](https://addons.mozilla.org/en-GB/firefox/addon/storm-ns/)   |
 |-----------|----------------------|-------------|
