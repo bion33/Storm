@@ -2,6 +2,10 @@
 
 All versions, most recent first:
 
+**v4.10 (2025/06/02)**
+
+- Added a deprecation notice to the extension menu
+
 **v4.9 (2023/06/03)**
 
 - Hotfix for disabled shortcuts on Firefox due to upgrade to manifest v3 by explicitly asking the user's permission (this is the real fix hopefully)

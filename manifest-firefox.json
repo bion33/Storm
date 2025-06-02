@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Storm",
   "short_name": "Storm",
-  "version": "4.9",
+  "version": "4.10",
   "author": "Krypton Nova",
   "description": "Storm enables hotkeys for military gameplay on NationStates.",
   "permissions": [
