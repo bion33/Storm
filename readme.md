@@ -1,5 +1,8 @@
 # Storm README
 
+## This tool is no longer actively maintained (since 2025-06-02)
+You can continue to use it while it works. While I will not maintain this tool, if you do encounter any bugs or would like to see new functionality added, you could fork this repository and have a go at it yourself :)
+
 ## ABOUT
 
 Storm is an extension for military gameplay on the NationStates website. It makes frequently used actions more convenient by assigning hotkeys to them.
